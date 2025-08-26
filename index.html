@@ -129,7 +129,7 @@
         <!-- Экран Библиотеки -->
         <div id="library-screen" class="screen w-full h-full flex flex-col">
             <!-- Кнопка "Добавить" сверху (появляется, когда есть книги) -->
-            <header id="library-header-top" class="p-4 text-center hidden">
+            <header id="library-header-top" class="px-4 py-6 text-center hidden"> <!-- ИЗМЕНЕНЫ ОТСТУПЫ -->
                 <label for="file-input-top"
                     class="btn-custom-add text-white font-bold py-2 px-4 rounded-lg cursor-pointer transition-colors duration-300 inline-block">
                     + Добавить
@@ -138,7 +138,8 @@
             </header>
 
             <!-- Список книг -->
-            <main id="book-list" class="flex-grow p-4 overflow-y-auto flex flex-col gap-4">
+            <main id="book-list" class="flex-grow px-4 pb-4 overflow-y-auto flex flex-col gap-4">
+                <!-- УБРАН ВЕРХНИЙ ОТСТУП -->
                 <!-- Сюда будут добавляться книги -->
             </main>
 
