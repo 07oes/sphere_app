@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -12,27 +13,29 @@
         /* --- НОВЫЙ ТЕМНЫЙ ИНТЕРФЕЙС --- */
         body {
             background-color: #1e1e1e;
-            color: #d4d4d4; /* Светло-серый текст для читаемости */
+            color: #d4d4d4;
+            /* Светло-серый текст для читаемости */
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             overscroll-behavior: none;
         }
-        
+
         /* Фон для экранов */
         .screen {
             background-color: #1e1e1e;
         }
 
         /* Границы для хедера и футера */
-        header, footer {
+        header,
+        footer {
             border-color: #333 !important;
         }
 
         /* Фон для книг в библиотеке */
-        #book-list > div {
+        #book-list>div {
             background-color: #2d2d2d !important;
             border: 1px solid #333;
         }
-        
+
         /* Фон для иконки книги */
         .book-icon-bg {
             background-color: #3e3e3e !important;
@@ -40,7 +43,8 @@
 
         /* Стили для обложки */
         .book-cover-img {
-            object-fit: cover; /* Масштабирует изображение, чтобы оно заполнило контейнер */
+            object-fit: cover;
+            /* Масштабирует изображение, чтобы оно заполнило контейнер */
             object-position: center;
         }
 
@@ -48,6 +52,7 @@
         .btn-custom-add {
             background-color: #2f2f2f !important;
         }
+
         .btn-custom-add:hover {
             background-color: #404040 !important;
         }
@@ -55,7 +60,8 @@
 
         /* --- Базовые стили --- */
         #book-content-wrapper {
-            height: calc(100vh - 120px); /* ВОЗВРАЩАЕМ ГИБКУЮ ВЫСОТУ */
+            height: calc(100vh - 120px);
+            /* ВОЗВРАЩАЕМ ГИБКУЮ ВЫСОТУ */
             overflow: hidden;
             position: relative;
         }
@@ -63,7 +69,8 @@
         #book-content {
             line-height: 1.8;
             text-align: justify;
-            padding: 1rem 2.5rem; /* ИЗМЕНЕНЫ ОТСТУПЫ ПО БОКАМ */
+            padding: 1rem 2.5rem;
+            /* ИЗМЕНЕНЫ ОТСТУПЫ ПО БОКАМ */
             transition: transform 0.3s ease-in-out;
             position: absolute;
             top: 0;
@@ -74,26 +81,48 @@
         .screen {
             transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
         }
+
         .screen.hidden {
             opacity: 0;
             transform: scale(0.95);
             pointer-events: none;
             position: absolute;
         }
-        
+
         .loader-container {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background-color: rgba(0, 0, 0, 0.7);
-            display: flex; justify-content: center; align-items: center; z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
         }
+
         .loader {
-            border: 5px solid #f3f3f3; border-top: 5px solid #3498db;
-            border-radius: 50%; width: 50px; height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
             animation: spin 1s linear infinite;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
+
 <body class="overflow-hidden">
 
     <div id="app" class="h-screen w-screen flex flex-col">
@@ -101,19 +130,34 @@
         <!-- Экран Библиотеки -->
         <div id="library-screen" class="screen w-full h-full flex flex-col">
             <header id="library-header-top" class="px-4 py-6 text-center hidden">
-                 <label for="file-input-top" class="btn-custom-add text-white font-bold py-2 px-4 rounded-lg cursor-pointer transition-colors duration-300 inline-block">
-                    + Добавить
-                </label>
-                <input type="file" id="file-input-top" class="hidden" accept=".fb2,.fb2.zip">
+                <div class="flex justify-center items-center gap-4">
+                    <label for="file-input-top"
+                        class="btn-custom-add text-white font-bold py-2 px-4 rounded-lg cursor-pointer transition-colors duration-300 inline-block">
+                        + Добавить
+                    </label>
+                    <input type="file" id="file-input-top" class="hidden" accept=".fb2,.fb2.zip">
+                    <!-- НОВАЯ КНОПКА НАСТРОЕК -->
+                    <button id="settings-btn"
+                        class="btn-custom-add text-white p-2 rounded-lg cursor-pointer transition-colors duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path
+                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
             </header>
 
             <main id="book-list" class="flex-grow px-4 pb-4 overflow-y-auto flex flex-col gap-4">
                 <!-- Сюда будут добавляться книги -->
             </main>
-            
+
             <div id="empty-library-view" class="flex-grow flex flex-col justify-center items-center text-center p-4">
                 <p class="text-gray-500 mb-6">Ваша библиотека пуста.</p>
-                <label for="file-input-center" class="btn-custom-add text-white font-bold py-3 px-6 rounded-lg cursor-pointer transition-colors duration-300 text-lg">
+                <label for="file-input-center"
+                    class="btn-custom-add text-white font-bold py-3 px-6 rounded-lg cursor-pointer transition-colors duration-300 text-lg">
                     Добавить книгу
                 </label>
                 <input type="file" id="file-input-center" class="hidden" accept=".fb2,.fb2.zip">
@@ -122,20 +166,21 @@
 
         <!-- Экран Чтения -->
         <div id="reader-screen" class="screen hidden w-full h-full flex flex-col">
-            <!-- ИЗМЕНЕНА СТРУКТУРА HEADER -->
-            <header class="p-2 border-b flex items-center justify-between flex-shrink-0">
-                <button id="back-to-library-btn" class="text-blue-500 font-bold py-2 px-4 rounded-lg hover:bg-zinc-800 flex-shrink-0">← Назад</button>
-                <div class="text-center flex-grow mx-2 overflow-hidden">
+            <header class="p-2 border-b flex items-center justify-center relative flex-shrink-0 h-[56px]">
+                <button id="back-to-library-btn"
+                    class="absolute left-2 top-1/2 -translate-y-1/2 text-blue-500 font-bold py-2 px-4 rounded-lg hover:bg-zinc-800">❮
+                    Назад</button>
+                <div class="text-center mx-auto px-24 overflow-hidden">
                     <h2 id="book-title" class="text-lg font-bold truncate">Название книги</h2>
                 </div>
             </header>
-            
+
             <main id="book-content-wrapper" class="flex-grow">
                 <div id="book-content"></div>
             </main>
 
             <footer class="p-2 border-t flex-shrink-0">
-                 <div class="max-w-4xl mx-auto flex justify-between items-center">
+                <div class="max-w-4xl mx-auto flex justify-between items-center">
                     <button id="prev-btn" class="font-bold py-2 px-5 rounded-lg hover:bg-zinc-800">‹</button>
                     <div class="text-center text-sm text-gray-400">
                         <span id="page-info">1 / 1</span>
@@ -144,7 +189,19 @@
                 </div>
             </footer>
         </div>
-        
+
+        <!-- НОВЫЙ ЭКРАН НАСТРОЕК -->
+        <div id="settings-screen" class="screen hidden w-full h-full flex flex-col">
+            <header class="p-2 border-b flex items-center flex-shrink-0">
+                <button id="back-to-library-from-settings-btn"
+                    class="text-blue-500 font-bold py-2 px-4 rounded-lg hover:bg-zinc-800">❮ Назад</button>
+                <h1 class="text-xl font-bold text-center flex-grow">Настройки</h1>
+            </header>
+            <main class="p-4">
+                <p>Здесь будут настройки приложения.</p>
+            </main>
+        </div>
+
         <!-- Индикатор загрузки -->
         <div id="loader-container" class="loader-container hidden">
             <div class="loader"></div>
@@ -169,8 +226,10 @@
             // --- UI Элементы ---
             const libraryScreen = document.getElementById('library-screen');
             const readerScreen = document.getElementById('reader-screen');
+            const settingsScreen = document.getElementById('settings-screen'); // Новый элемент
             const bookList = document.getElementById('book-list');
             const backToLibraryBtn = document.getElementById('back-to-library-btn');
+            const backToLibraryFromSettingsBtn = document.getElementById('back-to-library-from-settings-btn'); // Новый элемент
             const bookTitle = document.getElementById('book-title');
             const bookContent = document.getElementById('book-content');
             const bookContentWrapper = document.getElementById('book-content-wrapper');
@@ -182,6 +241,7 @@
             const emptyLibraryView = document.getElementById('empty-library-view');
             const fileInputTop = document.getElementById('file-input-top');
             const fileInputCenter = document.getElementById('file-input-center');
+            const settingsBtn = document.getElementById('settings-btn'); // Новый элемент
 
 
             // --- Состояние приложения ---
@@ -217,7 +277,7 @@
             async function renderLibrary() {
                 const books = await getAllBooks();
                 bookList.innerHTML = '';
-                
+
                 const hasBooks = books.length > 0;
                 libraryHeaderTop.classList.toggle('hidden', !hasBooks);
                 emptyLibraryView.classList.toggle('hidden', hasBooks);
@@ -229,8 +289,8 @@
                         const progress = (book.lastPage && book.totalPages > 1) ? (book.lastPage / (book.totalPages - 1)) * 100 : 0;
                         const bookElement = document.createElement('div');
                         bookElement.className = 'p-2 rounded-lg cursor-pointer flex items-center gap-4 relative overflow-hidden';
-                        
-                        const coverHtml = book.coverImage 
+
+                        const coverHtml = book.coverImage
                             ? `<img src="${book.coverImage}" alt="Обложка" class="w-24 h-36 flex-shrink-0 book-cover-img rounded">`
                             : `<div class="w-24 h-36 flex-shrink-0 book-icon-bg rounded flex items-center justify-center">
                                    <span class="text-gray-500 text-3xl">📖</span>
@@ -245,25 +305,25 @@
                             <div class="absolute bottom-0 left-0 h-1 bg-blue-500" style="width: ${progress.toFixed(2)}%"></div>
                         `;
                         bookElement.addEventListener('click', () => openBook(book.id));
-                        
+
                         bookElement.addEventListener('contextmenu', (e) => {
                             e.preventDefault();
                             confirmDelete(book.id, book.title);
                         });
                         bookElement.addEventListener('touchstart', (e) => {
                             longPressTimer = setTimeout(() => {
-                               e.preventDefault();
-                               confirmDelete(book.id, book.title)
+                                e.preventDefault();
+                                confirmDelete(book.id, book.title)
                             }, 800);
                         });
                         bookElement.addEventListener('touchend', () => clearTimeout(longPressTimer));
                         bookElement.addEventListener('touchcancel', () => clearTimeout(longPressTimer));
-                        
+
                         bookList.appendChild(bookElement);
                     });
                 }
             }
-            
+
             function getAllBooks() {
                 return new Promise((resolve, reject) => {
                     const transaction = db.transaction(STORE_NAME, 'readonly');
@@ -297,7 +357,7 @@
             async function handleFileSelect(event) {
                 const file = event.target.files[0];
                 if (!file) return;
-                
+
                 showLoader(true);
                 try {
                     let content;
@@ -310,7 +370,7 @@
                     } else {
                         content = await file.text();
                     }
-                    
+
                     const bookData = parseFB2(content);
                     await saveBook(bookData);
                     await renderLibrary();
@@ -323,7 +383,7 @@
                     fileInputCenter.value = '';
                 }
             }
-            
+
             fileInputTop.addEventListener('change', handleFileSelect);
             fileInputCenter.addEventListener('change', handleFileSelect);
 
@@ -364,7 +424,7 @@
             }
 
             function saveBook(bookData) {
-                 return new Promise((resolve, reject) => {
+                return new Promise((resolve, reject) => {
                     const transaction = db.transaction(STORE_NAME, 'readwrite');
                     const store = transaction.objectStore(STORE_NAME);
                     const request = store.add(bookData);
@@ -384,7 +444,7 @@
                 bookContent.innerHTML = book.content;
 
                 switchToScreen('reader');
-                
+
                 requestAnimationFrame(() => {
                     calculatePages();
                     const startPage = book.lastPage || 0;
@@ -401,7 +461,7 @@
                     request.onerror = () => reject("Ошибка при получении книги по ID");
                 });
             }
-            
+
             function calculatePages() {
                 const contentHeight = bookContent.scrollHeight;
                 const wrapperHeight = bookContentWrapper.clientHeight;
@@ -422,19 +482,19 @@
                 updatePageUI();
                 saveMetadata(currentBookId, { lastPage: currentPage });
             }
-            
+
             async function saveMetadata(bookId, data) {
-                 if (!bookId) return;
-                 const transaction = db.transaction(STORE_NAME, 'readwrite');
-                 const store = transaction.objectStore(STORE_NAME);
-                 const request = store.get(bookId);
-                 request.onsuccess = () => {
-                     const book = request.result;
-                     if (book) {
-                         Object.assign(book, data);
-                         store.put(book);
-                     }
-                 };
+                if (!bookId) return;
+                const transaction = db.transaction(STORE_NAME, 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.get(bookId);
+                request.onsuccess = () => {
+                    const book = request.result;
+                    if (book) {
+                        Object.assign(book, data);
+                        store.put(book);
+                    }
+                };
             }
 
             function updatePageUI() {
@@ -447,25 +507,31 @@
 
             // --- Навигация и UI ---
             function switchToScreen(screenName) {
+                libraryScreen.classList.add('hidden');
+                readerScreen.classList.add('hidden');
+                settingsScreen.classList.add('hidden');
+
                 if (screenName === 'library') {
                     libraryScreen.classList.remove('hidden');
-                    readerScreen.classList.add('hidden');
                     renderLibrary();
-                } else {
-                    libraryScreen.classList.add('hidden');
+                } else if (screenName === 'reader') {
                     readerScreen.classList.remove('hidden');
+                } else if (screenName === 'settings') {
+                    settingsScreen.classList.remove('hidden');
                 }
             }
 
             function showLoader(show) {
                 loader.classList.toggle('hidden', !show);
             }
-            
+
             // --- Обработчики событий ---
             backToLibraryBtn.addEventListener('click', () => switchToScreen('library'));
+            settingsBtn.addEventListener('click', () => switchToScreen('settings'));
+            backToLibraryFromSettingsBtn.addEventListener('click', () => switchToScreen('library'));
             prevBtn.addEventListener('click', () => goToPage(currentPage - 1));
             nextBtn.addEventListener('click', () => goToPage(currentPage + 1));
-            
+
             const resizeObserver = new ResizeObserver(() => {
                 if (currentBookId && !readerScreen.classList.contains('hidden')) {
                     calculatePages();
@@ -507,5 +573,7 @@
         });
     </script>
 </body>
+
 </html>
+
 
