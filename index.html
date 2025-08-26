@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>FB2 Reader</title>
+    <!-- Подключение Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Подключение Telegram Web App script -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        /* --- НОВЫЙ ТЕМНЫЙ ИНТЕРФЕЙС --- */
+        body {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            /* Светло-серый текст для читаемости */
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            overscroll-behavior: none;
+        }
+
+        /* Фон для экранов */
+        .screen {
+            background-color: #1e1e1e;
+        }
+
+        /* Границы для хедера и футера */
+        header,
+        footer {
+            border-color: #333 !important;
+        }
+
+        /* Фон для книг в библиотеке */
+        #book-list>div {
+            background-color: #2d2d2d !important;
+            border: 1px solid #333;
+        }
+
+        /* Фон для иконки книги */
+        .book-icon-bg {
+            background-color: #3e3e3e !important;
+        }
+
+        /* Стили для обложки */
+        .book-cover-img {
+            object-fit: cover;
+            /* Масштабирует изображение, чтобы оно заполнило контейнер */
+            object-position: center;
+        }
+
+        /* --- ИЗМЕНЕНИЕ ЦВЕТА КНОПКИ --- */
+        .btn-custom-add {
+            background-color: #2f2f2f !important;
+        }
+
+        .btn-custom-add:hover {
+            background-color: #404040 !important;
+        }
+
+
+        /* --- Базовые стили --- */
+        #book-content-wrapper {
+            height: 600px;
+            /* ИЗМЕНЕНА ВЫСОТА */
+            overflow: hidden;
+            position: relative;
+        }
+
+        #book-content {
+            line-height: 1.8;
+            text-align: justify;
+            padding: 0 1rem;
+            transition: transform 0.3s ease-in-out;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+        }
+
+        .screen {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+
+        .screen.hidden {
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+            position: absolute;
+        }
+
+        .loader-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body class="overflow-hidden">
+
+    <div id="app" class="h-screen w-screen flex flex-col">
+
+        <!-- Экран Библиотеки -->
+        <div id="library-screen" class="screen w-full h-full flex flex-col">
+            <!-- Кнопка "Добавить" сверху (появляется, когда есть книги) -->
+            <header id="library-header-top" class="p-4 text-center hidden">
+                <label for="file-input-top"
+                    class="btn-custom-add text-white font-bold py-2 px-4 rounded-lg cursor-pointer transition-colors duration-300 inline-block">
+                    + Добавить
+                </label>
+                <input type="file" id="file-input-top" class="hidden" accept=".fb2,.fb2.zip">
+            </header>
+
+            <!-- Список книг -->
+            <main id="book-list" class="flex-grow p-4 overflow-y-auto flex flex-col gap-4">
+                <!-- Сюда будут добавляться книги -->
+            </main>
+
+            <!-- Сообщение и кнопка для пустой библиотеки -->
+            <div id="empty-library-view" class="flex-grow flex flex-col justify-center items-center text-center p-4">
+                <p class="text-gray-500 mb-6">Ваша библиотека пуста.</p>
+                <label for="file-input-center"
+                    class="btn-custom-add text-white font-bold py-3 px-6 rounded-lg cursor-pointer transition-colors duration-300 text-lg">
+                    Добавить книгу
+                </label>
+                <input type="file" id="file-input-center" class="hidden" accept=".fb2,.fb2.zip">
+            </div>
+        </div>
+
+        <!-- Экран Чтения -->
+        <div id="reader-screen" class="screen hidden w-full h-full flex-col">
+            <header class="p-2 border-b flex items-center justify-between flex-shrink-0">
+                <button id="back-to-library-btn"
+                    class="text-blue-500 font-bold py-2 px-4 rounded-lg hover:bg-zinc-800">← Назад</button>
+                <div class="text-center flex-grow mx-2">
+                    <h2 id="book-title" class="text-lg font-bold truncate">Название книги</h2>
+                </div>
+                <div class="w-20"></div> <!-- Spacer -->
+            </header>
+
+            <main id="book-content-wrapper">
+                <div id="book-content"></div>
+            </main>
+
+            <footer class="p-2 border-t flex-shrink-0">
+                <div class="max-w-4xl mx-auto flex justify-between items-center">
+                    <button id="prev-btn" class="font-bold py-2 px-5 rounded-lg hover:bg-zinc-800">‹</button>
+                    <div class="text-center text-sm text-gray-400">
+                        <span id="page-info">1 / 1</span>
+                    </div>
+                    <button id="next-btn" class="font-bold py-2 px-5 rounded-lg hover:bg-zinc-800">›</button>
+                </div>
+            </footer>
+        </div>
+
+        <!-- Индикатор загрузки -->
+        <div id="loader-container" class="loader-container hidden">
+            <div class="loader"></div>
+        </div>
+    </div>
+
+    <!-- Подключение JSZip для работы с .fb2.zip -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Инициализация Telegram Web App ---
+            try {
+                const tg = window.Telegram.WebApp;
+                tg.ready();
+                tg.expand();
+                tg.setHeaderColor('#1e1e1e');
+                tg.setBackgroundColor('#1e1e1e');
+            } catch (e) {
+                console.warn("Telegram Web App script not found, running in browser mode.");
+            }
+
+            // --- UI Элементы ---
+            const libraryScreen = document.getElementById('library-screen');
+            const readerScreen = document.getElementById('reader-screen');
+            const bookList = document.getElementById('book-list');
+            const backToLibraryBtn = document.getElementById('back-to-library-btn');
+            const bookTitle = document.getElementById('book-title');
+            const bookContent = document.getElementById('book-content');
+            const bookContentWrapper = document.getElementById('book-content-wrapper');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const pageInfo = document.getElementById('page-info');
+            const loader = document.getElementById('loader-container');
+            const libraryHeaderTop = document.getElementById('library-header-top');
+            const emptyLibraryView = document.getElementById('empty-library-view');
+            const fileInputTop = document.getElementById('file-input-top');
+            const fileInputCenter = document.getElementById('file-input-center');
+
+
+            // --- Состояние приложения ---
+            let db;
+            let currentPage = 0;
+            let totalPages = 0;
+            let currentBookId = null;
+            let longPressTimer;
+
+            // --- База данных (IndexedDB) ---
+            const DB_NAME = 'FB2ReaderDB';
+            const DB_VERSION = 1;
+            const STORE_NAME = 'books';
+
+            function initDB() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open(DB_NAME, DB_VERSION);
+                    request.onerror = (event) => reject("Ошибка при открытии IndexedDB");
+                    request.onupgradeneeded = (event) => {
+                        const db = event.target.result;
+                        if (!db.objectStoreNames.contains(STORE_NAME)) {
+                            db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+                        }
+                    };
+                    request.onsuccess = (event) => {
+                        db = event.target.result;
+                        resolve(db);
+                    };
+                });
+            }
+
+            // --- Логика Библиотеки ---
+            async function renderLibrary() {
+                const books = await getAllBooks();
+                bookList.innerHTML = '';
+
+                const hasBooks = books.length > 0;
+                libraryHeaderTop.classList.toggle('hidden', !hasBooks);
+                emptyLibraryView.classList.toggle('hidden', hasBooks);
+                bookList.classList.toggle('hidden', !hasBooks);
+
+                if (hasBooks) {
+                    books.reverse(); // Чтобы новые книги были сверху
+                    books.forEach(book => {
+                        const progress = (book.lastPage && book.totalPages > 1) ? (book.lastPage / (book.totalPages - 1)) * 100 : 0;
+                        const bookElement = document.createElement('div');
+                        bookElement.className = 'p-2 rounded-lg cursor-pointer flex items-center gap-4 relative overflow-hidden';
+
+                        const coverHtml = book.coverImage
+                            ? `<img src="${book.coverImage}" alt="Обложка" class="w-24 h-36 flex-shrink-0 book-cover-img rounded">`
+                            : `<div class="w-24 h-36 flex-shrink-0 book-icon-bg rounded flex items-center justify-center">
+                                   <span class="text-gray-500 text-3xl">📖</span>
+                               </div>`;
+
+                        bookElement.innerHTML = `
+                            ${coverHtml}
+                            <div class="flex-grow self-start">
+                                <h3 class="font-bold text-lg mb-1">${book.title}</h3>
+                                <p class="text-sm text-gray-400">${book.author || 'Неизвестный автор'}</p>
+                            </div>
+                            <div class="absolute bottom-0 left-0 h-1 bg-blue-500" style="width: ${progress.toFixed(2)}%"></div>
+                        `;
+                        bookElement.addEventListener('click', () => openBook(book.id));
+
+                        bookElement.addEventListener('contextmenu', (e) => {
+                            e.preventDefault();
+                            confirmDelete(book.id, book.title);
+                        });
+                        bookElement.addEventListener('touchstart', (e) => {
+                            longPressTimer = setTimeout(() => {
+                                e.preventDefault();
+                                confirmDelete(book.id, book.title)
+                            }, 800);
+                        });
+                        bookElement.addEventListener('touchend', () => clearTimeout(longPressTimer));
+                        bookElement.addEventListener('touchcancel', () => clearTimeout(longPressTimer));
+
+                        bookList.appendChild(bookElement);
+                    });
+                }
+            }
+
+            function getAllBooks() {
+                return new Promise((resolve, reject) => {
+                    const transaction = db.transaction(STORE_NAME, 'readonly');
+                    const store = transaction.objectStore(STORE_NAME);
+                    const request = store.getAll();
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject("Ошибка при получении книг");
+                });
+            }
+
+            function confirmDelete(bookId, title) {
+                if (confirm(`Вы уверены, что хотите удалить книгу "${title}"?`)) {
+                    deleteBook(bookId);
+                }
+            }
+
+            async function deleteBook(bookId) {
+                return new Promise((resolve, reject) => {
+                    const transaction = db.transaction(STORE_NAME, 'readwrite');
+                    const store = transaction.objectStore(STORE_NAME);
+                    const request = store.delete(bookId);
+                    request.onsuccess = async () => {
+                        await renderLibrary();
+                        resolve();
+                    };
+                    request.onerror = () => reject("Ошибка при удалении книги");
+                });
+            }
+
+            // --- Обработка файлов ---
+            async function handleFileSelect(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                showLoader(true);
+                try {
+                    let content;
+                    if (file.name.toLowerCase().endsWith('.zip')) {
+                        const jszip = new JSZip();
+                        const zip = await jszip.loadAsync(file);
+                        const fb2File = Object.values(zip.files).find(f => f.name.toLowerCase().endsWith('.fb2'));
+                        if (!fb2File) throw new Error('FB2 файл не найден в архиве.');
+                        content = await fb2File.async('string');
+                    } else {
+                        content = await file.text();
+                    }
+
+                    const bookData = parseFB2(content);
+                    await saveBook(bookData);
+                    await renderLibrary();
+                } catch (error) {
+                    console.error("Ошибка обработки файла:", error);
+                    alert("Не удалось обработать файл. Убедитесь, что это корректный .fb2 или .fb2.zip файл.");
+                } finally {
+                    showLoader(false);
+                    fileInputTop.value = '';
+                    fileInputCenter.value = '';
+                }
+            }
+
+            fileInputTop.addEventListener('change', handleFileSelect);
+            fileInputCenter.addEventListener('change', handleFileSelect);
+
+            function parseFB2(xmlString) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(xmlString, "application/xml");
+                const title = doc.querySelector('book-title')?.textContent || 'Без названия';
+                const authorFirstName = doc.querySelector('author first-name')?.textContent || '';
+                const authorLastName = doc.querySelector('author last-name')?.textContent || '';
+                const author = `${authorFirstName} ${authorLastName}`.trim();
+
+                let coverImage = null;
+                const coverpage = doc.querySelector('coverpage image');
+                if (coverpage) {
+                    const imageId = coverpage.getAttribute('l:href')?.substring(1);
+                    if (imageId) {
+                        const binaryImage = doc.querySelector(`binary[id="${imageId}"]`);
+                        if (binaryImage) {
+                            const contentType = binaryImage.getAttribute('content-type') || 'image/jpeg';
+                            const base64Data = binaryImage.textContent;
+                            coverImage = `data:${contentType};base64,${base64Data}`;
+                        }
+                    }
+                }
+
+                const bodyNode = doc.querySelector('body');
+                let contentHTML = '';
+                if (bodyNode) {
+                    bodyNode.querySelectorAll('p, subtitle, empty-line').forEach(node => {
+                        if (node.tagName === 'p') contentHTML += `<p class="mb-4">${node.textContent}</p>`;
+                        else if (node.tagName === 'subtitle') contentHTML += `<h3 class="text-xl font-bold mt-6 mb-4">${node.textContent}</h3>`;
+                        else if (node.tagName === 'empty-line') contentHTML += '<br>';
+                    });
+                } else {
+                    contentHTML = "<p>Не удалось загрузить содержимое книги.</p>";
+                }
+                return { title, author, content: contentHTML, coverImage, lastPage: 0, totalPages: 0 };
+            }
+
+            function saveBook(bookData) {
+                return new Promise((resolve, reject) => {
+                    const transaction = db.transaction(STORE_NAME, 'readwrite');
+                    const store = transaction.objectStore(STORE_NAME);
+                    const request = store.add(bookData);
+                    request.onsuccess = () => resolve();
+                    request.onerror = () => reject("Ошибка при сохранении книги");
+                });
+            }
+
+
+            // --- Логика Читалки ---
+            async function openBook(bookId) {
+                const book = await getBookById(bookId);
+                if (!book) return;
+
+                currentBookId = bookId;
+                bookTitle.textContent = book.title;
+                bookContent.innerHTML = book.content;
+
+                switchToScreen('reader');
+
+                requestAnimationFrame(() => {
+                    calculatePages();
+                    const startPage = book.lastPage || 0;
+                    goToPage(startPage < totalPages ? startPage : 0);
+                });
+            }
+
+            function getBookById(id) {
+                return new Promise((resolve, reject) => {
+                    const transaction = db.transaction(STORE_NAME, 'readonly');
+                    const store = transaction.objectStore(STORE_NAME);
+                    const request = store.get(id);
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject("Ошибка при получении книги по ID");
+                });
+            }
+
+            function calculatePages() {
+                const contentHeight = bookContent.scrollHeight;
+                const wrapperHeight = bookContentWrapper.clientHeight;
+                if (wrapperHeight === 0) {
+                    totalPages = 1;
+                    return;
+                }
+                totalPages = Math.ceil(contentHeight / wrapperHeight);
+                if (totalPages < 1) totalPages = 1;
+                saveMetadata(currentBookId, { totalPages });
+            }
+
+            function goToPage(pageNumber) {
+                if (pageNumber < 0 || pageNumber >= totalPages) return;
+                currentPage = pageNumber;
+                const scrollAmount = currentPage * bookContentWrapper.clientHeight;
+                bookContent.style.transform = `translateY(-${scrollAmount}px)`;
+                updatePageUI();
+                saveMetadata(currentBookId, { lastPage: currentPage });
+            }
+
+            async function saveMetadata(bookId, data) {
+                if (!bookId) return;
+                const transaction = db.transaction(STORE_NAME, 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.get(bookId);
+                request.onsuccess = () => {
+                    const book = request.result;
+                    if (book) {
+                        Object.assign(book, data);
+                        store.put(book);
+                    }
+                };
+            }
+
+            function updatePageUI() {
+                pageInfo.textContent = `${currentPage + 1} / ${totalPages}`;
+                prevBtn.disabled = currentPage === 0;
+                nextBtn.disabled = currentPage >= totalPages - 1;
+                prevBtn.classList.toggle('opacity-50', prevBtn.disabled);
+                nextBtn.classList.toggle('opacity-50', nextBtn.disabled);
+            }
+
+            // --- Навигация и UI ---
+            function switchToScreen(screenName) {
+                if (screenName === 'library') {
+                    libraryScreen.classList.remove('hidden');
+                    readerScreen.classList.add('hidden');
+                    renderLibrary();
+                } else {
+                    libraryScreen.classList.add('hidden');
+                    readerScreen.classList.remove('hidden');
+                }
+            }
+
+            function showLoader(show) {
+                loader.classList.toggle('hidden', !show);
+            }
+
+            // --- Обработчики событий ---
+            backToLibraryBtn.addEventListener('click', () => switchToScreen('library'));
+            prevBtn.addEventListener('click', () => goToPage(currentPage - 1));
+            nextBtn.addEventListener('click', () => goToPage(currentPage + 1));
+
+            const resizeObserver = new ResizeObserver(() => {
+                if (currentBookId && !readerScreen.classList.contains('hidden')) {
+                    calculatePages();
+                    goToPage(currentPage);
+                }
+            });
+            resizeObserver.observe(bookContentWrapper);
+
+            // --- Обработка свайпов ---
+            let touchstartX = 0;
+            bookContentWrapper.addEventListener('touchstart', e => {
+                touchstartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+
+            bookContentWrapper.addEventListener('touchend', e => {
+                const touchendX = e.changedTouches[0].screenX;
+                const deltaX = touchendX - touchstartX;
+                if (Math.abs(deltaX) > 50) {
+                    if (deltaX < 0) goToPage(currentPage + 1);
+                    else goToPage(currentPage + 1);
+                }
+            });
+
+            // --- Запуск приложения ---
+            async function main() {
+                showLoader(true);
+                try {
+                    await initDB();
+                    await renderLibrary();
+                } catch (error) {
+                    console.error("Ошибка инициализации:", error);
+                    alert("Произошла ошибка при запуске приложения.");
+                } finally {
+                    showLoader(false);
+                }
+            }
+
+            main();
+        });
+    </script>
+</body>
+
+</html>
