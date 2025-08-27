@@ -110,6 +110,7 @@
             line-height: 1.8;
             text-align: justify;
             padding: 1rem 2.5rem 5rem;
+            font-size: 18px;
         }
 
         #page-overlay {
@@ -258,7 +259,7 @@
                     <h1 class="text-xl font-bold truncate">Настройки</h1>
                 </div>
             </header>
-            <main class="p-4">
+            <main class="p-4 flex-grow">
                 <div class="mb-6">
                     <h2 class="text-sm font-bold text-gray-400 mb-2">Цветовая схема</h2>
                     <div id="theme-selector"
@@ -279,7 +280,6 @@
                             <span id="font-weight-value">400</span>
                         </div>
                         <input type="range" id="font-weight-slider" min="100" max="900" step="100" class="w-full mt-2">
-                        <!-- НОВЫЙ БЛОК ДЛЯ ВЫБОРА ШРИФТА -->
                         <div class="mt-4">
                             <span class="mb-2 block">Выбор шрифта</span>
                             <div id="font-selector" class="grid grid-cols-2 gap-2">
@@ -289,6 +289,9 @@
                     </div>
                 </div>
             </main>
+            <footer class="p-4 text-center text-xs" style="color: #4a4a4a;">
+                Version 0.1 (application for the test)
+            </footer>
         </div>
 
         <!-- Индикатор загрузки -->
@@ -693,6 +696,7 @@
                 if (e.target.name === 'theme') {
                     globalSettings.readingTheme = e.target.value;
                     saveGlobalSettings();
+                    applyReadingSettings();
                 }
             });
 
@@ -700,6 +704,7 @@
                 const newSize = e.target.value;
                 globalSettings.fontSize = parseInt(newSize, 10);
                 fontSizeValue.textContent = `${newSize}px`;
+                applyReadingSettings();
                 saveGlobalSettings();
             });
 
@@ -707,12 +712,14 @@
                 const newWeight = e.target.value;
                 globalSettings.fontWeight = parseInt(newWeight, 10);
                 fontWeightValue.textContent = newWeight;
+                applyReadingSettings();
                 saveGlobalSettings();
             });
 
             fontSelector.addEventListener('change', (e) => {
                 if (e.target.name === 'font') {
                     globalSettings.fontFamily = e.target.value;
+                    applyReadingSettings();
                     saveGlobalSettings();
                 }
             });
