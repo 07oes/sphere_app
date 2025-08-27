@@ -59,8 +59,7 @@
             color: var(--text-color);
         }
 
-        header,
-        footer {
+        header {
             border-color: var(--border-color) !important;
         }
 
@@ -99,21 +98,28 @@
             color: var(--link-color);
         }
 
+        /* --- СТИЛИ ДЛЯ СКРОЛЛИНГА --- */
         #book-content-wrapper {
-            height: calc(100vh - 120px);
-            overflow: hidden;
-            position: relative;
+            height: calc(100vh - 57px);
+            /* Высота минус шапка */
+            overflow-y: auto;
+            /* Включаем вертикальный скролл */
+            -webkit-overflow-scrolling: touch;
+            /* Плавный скролл на iOS */
         }
 
         #book-content {
             line-height: 1.8;
             text-align: justify;
-            padding: 1rem 2.5rem;
-            transition: transform 0.3s ease-in-out;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
+            padding: 1rem 2.5rem 5rem;
+            /* Добавляем отступ снизу, чтобы текст не уходил под градиент */
+            font-size: 18px;
+            /* НОВЫЙ РАЗМЕР ШРИФТА */
+        }
+
+        /* --- НОВЫЙ СТИЛЬ ДЛЯ ГРАДИЕНТА --- */
+        #page-overlay {
+            background: linear-gradient(to top, var(--bg-color) 10%, transparent);
         }
 
         .screen {
@@ -212,19 +218,15 @@
                 </div>
             </header>
 
-            <main id="book-content-wrapper" class="flex-grow">
-                <div id="book-content"></div>
-            </main>
-
-            <footer class="p-2 border-t flex-shrink-0">
-                <div class="max-w-4xl mx-auto flex justify-between items-center">
-                    <button id="prev-btn" class="font-bold py-2 px-5 rounded-lg hover:bg-zinc-800">‹</button>
-                    <div class="text-center text-sm text-gray-400">
-                        <span id="page-info">1 / 1</span>
-                    </div>
-                    <button id="next-btn" class="font-bold py-2 px-5 rounded-lg hover:bg-zinc-800">›</button>
+            <div class="flex-grow relative">
+                <main id="book-content-wrapper">
+                    <div id="book-content"></div>
+                </main>
+                <div id="page-overlay"
+                    class="absolute bottom-0 left-0 right-0 h-24 pointer-events-none flex justify-center items-end p-4">
+                    <span id="page-info" class="text-sm text-gray-400">1 / 1</span>
                 </div>
-            </footer>
+            </div>
         </div>
 
         <!-- Экран Настроек -->
@@ -239,7 +241,7 @@
             </header>
             <main class="p-4">
                 <div class="mb-6">
-                    <h2 class="text-sm font-bold text-gray-400 mb-2">Цветовая схема для чтения</h2>
+                    <h2 class="text-sm font-bold text-gray-400 mb-2">Цветовая схема</h2>
                     <div id="theme-selector" class="grid grid-cols-2 sm:grid-cols-4 gap-2 rounded-lg p-2">
                         <!-- Опции тем будут вставлены сюда с помощью JS -->
                     </div>
@@ -275,8 +277,6 @@
             const bookTitle = document.getElementById('book-title');
             const bookContent = document.getElementById('book-content');
             const bookContentWrapper = document.getElementById('book-content-wrapper');
-            const prevBtn = document.getElementById('prev-btn');
-            const nextBtn = document.getElementById('next-btn');
             const pageInfo = document.getElementById('page-info');
             const loader = document.getElementById('loader-container');
             const libraryHeaderTop = document.getElementById('library-header-top');
@@ -288,8 +288,6 @@
 
             // --- Состояние приложения ---
             let db;
-            let currentPage = 0;
-            let totalPages = 0;
             let currentBookId = null;
             let longPressTimer;
             let globalSettings = { readingTheme: 'theme-dark' };
@@ -329,7 +327,7 @@
                 if (hasBooks) {
                     books.reverse();
                     books.forEach(book => {
-                        const progress = (book.lastPage && book.totalPages > 1) ? (book.lastPage / (book.totalPages - 1)) * 100 : 0;
+                        const progress = (book.scrollPosition && book.scrollHeight) ? (book.scrollPosition / (book.scrollHeight - bookContentWrapper.clientHeight)) * 100 : 0;
                         const bookElement = document.createElement('div');
                         bookElement.className = 'p-2 rounded-lg cursor-pointer flex items-center gap-4 relative overflow-hidden';
 
@@ -345,7 +343,7 @@
                                 <h3 class="font-bold text-lg mb-1 truncate">${book.title}</h3>
                                 <p class="text-sm text-gray-400 truncate">${book.author || 'Неизвестный автор'}</p>
                             </div>
-                            <div class="absolute bottom-0 left-0 h-1 bg-blue-500" style="width: ${progress.toFixed(2)}%"></div>
+                            <div class="absolute bottom-0 left-0 h-1 bg-blue-500" style="width: ${Math.min(100, progress).toFixed(2)}%"></div>
                         `;
                         bookElement.addEventListener('click', () => openBook(book.id));
 
@@ -452,7 +450,7 @@
                 } else {
                     contentHTML = "<p>Не удалось загрузить содержимое книги.</p>";
                 }
-                return { title, author, content: contentHTML, coverImage, lastPage: 0, totalPages: 0 };
+                return { title, author, content: contentHTML, coverImage, scrollPosition: 0, scrollHeight: 0 };
             }
 
             function saveBook(bookData) {
@@ -478,9 +476,9 @@
                 switchToScreen('reader');
 
                 requestAnimationFrame(() => {
-                    calculatePages();
-                    const startPage = book.lastPage || 0;
-                    goToPage(startPage < totalPages ? startPage : 0);
+                    bookContentWrapper.scrollTop = book.scrollPosition || 0;
+                    updateScrollUI(); // Показываем номер страницы сразу
+                    saveMetadata(currentBookId, { scrollHeight: bookContentWrapper.scrollHeight });
                 });
             }
 
@@ -492,24 +490,6 @@
                     request.onsuccess = () => resolve(request.result);
                     request.onerror = () => reject("Ошибка при получении книги по ID");
                 });
-            }
-
-            function calculatePages() {
-                const contentHeight = bookContent.scrollHeight;
-                const wrapperHeight = bookContentWrapper.clientHeight;
-                if (wrapperHeight === 0) { totalPages = 1; return; }
-                totalPages = Math.ceil(contentHeight / wrapperHeight);
-                if (totalPages < 1) totalPages = 1;
-                saveMetadata(currentBookId, { totalPages });
-            }
-
-            function goToPage(pageNumber) {
-                if (pageNumber < 0 || pageNumber >= totalPages) return;
-                currentPage = pageNumber;
-                const scrollAmount = currentPage * bookContentWrapper.clientHeight;
-                bookContent.style.transform = `translateY(-${scrollAmount}px)`;
-                updatePageUI();
-                saveMetadata(currentBookId, { lastPage: currentPage });
             }
 
             async function saveMetadata(bookId, data) {
@@ -526,12 +506,19 @@
                 };
             }
 
-            function updatePageUI() {
-                pageInfo.textContent = `${currentPage + 1} / ${totalPages}`;
-                prevBtn.disabled = currentPage === 0;
-                nextBtn.disabled = currentPage >= totalPages - 1;
-                prevBtn.classList.toggle('opacity-50', prevBtn.disabled);
-                nextBtn.classList.toggle('opacity-50', nextBtn.disabled);
+            function updateScrollUI() {
+                const scrollTop = bookContentWrapper.scrollTop;
+                const scrollHeight = bookContentWrapper.scrollHeight;
+                const clientHeight = bookContentWrapper.clientHeight;
+
+                if (scrollHeight <= clientHeight) {
+                    pageInfo.textContent = '1 / 1';
+                    return;
+                }
+
+                const totalPages = Math.ceil(scrollHeight / clientHeight);
+                const currentPage = Math.round(scrollTop / clientHeight) + 1;
+                pageInfo.textContent = `${currentPage} / ${totalPages}`;
             }
 
             // --- ЛОГИКА ОБЩИХ НАСТРОЕК ---
@@ -547,7 +534,7 @@
             }
 
             function applyReadingTheme() {
-                readerScreen.className = 'screen w-full h-full flex flex-col'; // ИСПРАВЛЕНИЕ: Убрал 'hidden'
+                readerScreen.className = 'screen w-full h-full flex flex-col';
                 readerScreen.classList.add(globalSettings.readingTheme);
                 try {
                     const themeColors = {
@@ -620,27 +607,14 @@
             backToLibraryBtn.addEventListener('click', () => switchToScreen('library'));
             settingsBtn.addEventListener('click', () => switchToScreen('settings'));
             backToLibraryFromSettingsBtn.addEventListener('click', () => switchToScreen('library'));
-            prevBtn.addEventListener('click', () => goToPage(currentPage - 1));
-            nextBtn.addEventListener('click', () => goToPage(currentPage + 1));
 
-            const resizeObserver = new ResizeObserver(() => {
-                if (currentBookId && !readerScreen.classList.contains('hidden')) {
-                    calculatePages();
-                    goToPage(currentPage);
-                }
-            });
-            resizeObserver.observe(bookContentWrapper);
-
-            // --- Обработка свайпов ---
-            let touchstartX = 0;
-            bookContentWrapper.addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; }, { passive: true });
-            bookContentWrapper.addEventListener('touchend', e => {
-                const touchendX = e.changedTouches[0].screenX;
-                const deltaX = touchendX - touchstartX;
-                if (Math.abs(deltaX) > 50) {
-                    if (deltaX < 0) goToPage(currentPage + 1);
-                    else goToPage(currentPage + 1);
-                }
+            let scrollTimeout;
+            bookContentWrapper.addEventListener('scroll', () => {
+                updateScrollUI();
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(() => {
+                    saveMetadata(currentBookId, { scrollPosition: bookContentWrapper.scrollTop, scrollHeight: bookContentWrapper.scrollHeight });
+                }, 250);
             });
 
             // --- Запуск приложения ---
