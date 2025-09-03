@@ -186,52 +186,62 @@
 
         /* --- СТИЛИ ДЛЯ ТЕКСТА КНИГИ --- */
         #reader-screen #book-content {
-            /*-webkit-hyphens: auto; -ms-hyphens: auto; hyphens: auto; */
-            /* Убираем автоматические переносы */
             text-align: left;
-            /* Выравнивание по левому краю */
+        }
+        /* --- СТИЛИ ДЛЯ ТЕКСТА КНИГИ (С ПОВЫШЕННЫМ ПРИОРИТЕТОМ) --- */
+        #reader-screen #book-content {
+            text-align: left !important;
         }
 
         #reader-screen #book-content p {
-            margin-bottom: 1em;
-            /* Увеличиваем отступ между параграфами */
-            /* text-indent: 1.5em; */
-            /* Убираем отступ первой строки */
-        }
-
-        #reader-screen #book-content h3.chapter-title {
-            text-align: center;
-            /* text-transform: uppercase; */
-            /* Убираем принудительное преобразование в заглавные буквы */
-            font-weight: 600;
-            font-size: 1.25em;
-            /* Относительный размер */
-            margin: 3em 0 2em 0;
-            text-indent: 0;
-            letter-spacing: 0.1em;
-            /* Небольшое разрежение букв */
+            margin-bottom: 1em !important;
+            text-indent: 0 !important;
         }
 
         #reader-screen #book-content .empty-line-break {
-            height: 1em;
-            /* Отступ равный одной строке */
+            height: 1em !important;
         }
 
         #reader-screen #book-content em {
-            font-style: italic;
+            font-style: italic !important;
         }
 
         #reader-screen #book-content strong {
-            font-weight: bold;
+            font-weight: bold !important;
+        }
+
+        /* --- Новые стили для иерархии заголовков --- */
+        #reader-screen #book-content h2,
+        #reader-screen #book-content h3,
+        #reader-screen #book-content h4,
+        #reader-screen #book-content h5,
+        #reader-screen #book-content h6 {
+            text-align: center !important;
+            font-weight: 600 !important;
+            text-indent: 0 !important;
+        }
+
+        #reader-screen #book-content h2 {
+            font-size: 1.4em !important;
+            margin: 4em 0 2em 0 !important;
+        }
+
+        #reader-screen #book-content h3 {
+            font-size: 1.2em !important;
+            margin: 3em 0 2em 0 !important;
+        }
+
+        #reader-screen #book-content h4 {
+            font-size: 1.1em !important;
+            font-weight: 600 !important;
+            margin: 2.5em 0 1.5em 0 !important;
         }
 
         /* Новый стиль для цитат */
         #reader-screen #book-content .quote-block {
-            font-style: italic;
-            margin: 1em 2em;
-            /* Отступы по вертикали и горизонтали */
-            color: var(--meta-color);
-            /* Сделаем цвет текста цитаты немного приглушенным */
+            font-style: italic !important;
+            margin: 1em 2em !important;
+            color: var(--meta-color) !important;
         }
 
 
@@ -239,7 +249,6 @@
         .book-item-wrapper {
             position: relative;
             overflow: hidden;
-            /* Убираем фон и скругление отсюда */
         }
 
         .delete-action {
@@ -249,7 +258,6 @@
             width: 90px;
             height: 92%;
             transform: translateY(-50%) translateX(100%);
-            /* Скрыта за экраном */
             transition: transform 0.3s ease;
             background-color: #af2b1e;
             color: white;
@@ -258,7 +266,6 @@
             justify-content: center;
             user-select: none;
             border-radius: 0.6rem;
-            /* Скругляем саму кнопку */
         }
 
         .book-item-content {
@@ -267,18 +274,14 @@
             position: relative;
             z-index: 1;
             border-radius: 0.5rem;
-            /* Скругляем блок с книгой */
         }
 
-        /* Конечное положение элементов при свайпе */
         .book-item-wrapper.swiped .book-item-content {
             transform: translateX(-110px);
-            /* Сдвигаем блок книги влево */
         }
 
         .book-item-wrapper.swiped .delete-action {
             transform: translateY(-50%) translateX(-10px);
-            /* Показываем кнопку с отступом */
         }
     </style>
 </head>
@@ -713,15 +716,13 @@
             fileInputCenter.addEventListener('change', handleFileSelect);
 
             /**
-             * Рекурсивно обрабатывает узлы тела FB2-файла для создания HTML-разметки.
-             * Эта функция правильно обрабатывает вложенные секции и заголовки.
-             * @param {Node} bodyNode - Корневой узел для парсинга (обычно <body>).
+             * Рекурсивно обрабатывает узлы FB2 для создания HTML-разметки с учетом иерархии заголовков.
+             * @param {Node} rootNode - Корневой узел для парсинга (description или body).
              * @returns {string} - Итоговая строка с HTML.
              */
-            function parseFB2Body(bodyNode) {
-                if (!bodyNode) return "<p>Не удалось загрузить содержимое книги.</p>";
+            function parseFB2Body(rootNode) {
+                if (!rootNode) return "";
 
-                // Внутренняя функция для обработки тегов форматирования (курсив, жирный)
                 function processFormatting(node) {
                     if (!node || !node.childNodes) return '';
                     let html = '';
@@ -739,7 +740,6 @@
                                     html += `<strong>${innerHTML}</strong>`;
                                     break;
                                 default:
-                                    // Для других вложенных тегов просто рекурсивно обрабатываем их содержимое
                                     html += innerHTML;
                             }
                         }
@@ -747,8 +747,7 @@
                     return html;
                 }
 
-                // Внутренняя функция для обработки основных структурных тегов
-                function processNodeChildren(parentNode) {
+                function processNodeChildren(parentNode, level) {
                     let html = '';
                     parentNode.childNodes.forEach(node => {
                         if (node.nodeType !== Node.ELEMENT_NODE) return;
@@ -756,7 +755,8 @@
                         const tagName = node.tagName.toLowerCase();
                         switch (tagName) {
                             case 'title':
-                                html += `<h3 class="chapter-title">${processFormatting(node)}</h3>`;
+                                const headingTag = `h${Math.min(6, level + 2)}`;
+                                html += `<${headingTag}>${processFormatting(node)}</${headingTag}>`;
                                 break;
                             case 'p':
                                 html += `<p>${processFormatting(node) || '&nbsp;'}</p>`;
@@ -765,26 +765,23 @@
                                 html += '<div class="empty-line-break"></div>';
                                 break;
                             case 'section':
-                                // Рекурсивно обрабатываем дочерние узлы секции
-                                html += processNodeChildren(node);
+                                html += processNodeChildren(node, level + 1);
                                 break;
                             case 'subtitle':
-                                html += `<h3 class="chapter-title">${processFormatting(node)}</h3>`;
+                                html += `<h3>${processFormatting(node)}</h3>`;
                                 break;
-                            case 'cite': // Новый обработчик для цитат
+                            case 'cite':
                                 html += `<div class="quote-block">${processFormatting(node)}</div>`;
                                 break;
                             default:
-                                // ОБНОВЛЕНИЕ: Обрабатываем любой другой тег, рекурсивно обрабатывая его дочерние узлы.
-                                // Это предотвращает потерю текста из-за неизвестных тегов.
-                                html += processNodeChildren(node);
+                                html += processNodeChildren(node, level);
                                 break;
                         }
                     });
                     return html;
                 }
 
-                return processNodeChildren(bodyNode);
+                return processNodeChildren(rootNode, 0);
             }
 
 
@@ -811,7 +808,6 @@
                     }
                 }
 
-                // ОБНОВЛЕНИЕ: Сначала обрабатываем описание, потом тело книги.
                 const descriptionNode = doc.querySelector('description');
                 const bodyNode = doc.querySelector('body');
                 let contentHTML = '';
