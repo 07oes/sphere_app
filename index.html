@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>FB2 Reader</title>
     <!-- Подключение Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
     <!-- Подключение Telegram Web App script -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="[https://telegram.org/js/telegram-web-app.js](https://telegram.org/js/telegram-web-app.js)"></script>
     <style>
         /* --- СТАНДАРТНАЯ ТЕМА (ТЕМНАЯ) --- */
         body {
@@ -107,9 +107,23 @@
 
         #book-content {
             line-height: 1.8;
-            padding: 1rem 1.5rem 5rem; /* Уменьшаем боковые отступы для мобильных */
+            padding: 1rem 1.5rem 5rem;
+            /* Уменьшаем боковые отступы для мобильных */
             font-size: 18px;
         }
+        
+        /* --- УПРОЩЕННЫЕ СТИЛИ ДЛЯ ТЕКСТА КНИГИ --- */
+        #book-content h2, 
+        #book-content h3, 
+        #book-content h4, 
+        #book-content h5, 
+        #book-content h6 {
+            text-align: center !important;
+            margin-top: 2em !important;
+            margin-bottom: 1.5em !important;
+            font-weight: 600 !important;
+        }
+
 
         #page-overlay {
             background: linear-gradient(to top, var(--bg-color) 10%, transparent);
@@ -239,7 +253,7 @@
                     <input type="file" id="file-input-top" class="hidden" accept=".fb2,.fb2.zip">
                     <button id="settings-btn"
                         class="btn-custom-add text-white p-2 rounded-lg cursor-pointer transition-colors duration-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width="24" height="24" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="3"></circle>
                             <path
@@ -354,7 +368,7 @@
     </div>
 
     <!-- Подключение JSZip для работы с .fb2.zip -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="[https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js](https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js)"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // --- Инициализация Telegram Web App ---
@@ -654,8 +668,8 @@
             fileInputCenter.addEventListener('change', handleFileSelect);
 
             /**
-             * Рекурсивно обрабатывает узлы FB2 для создания HTML-разметки с учетом иерархии заголовков.
-             * @param {Node} rootNode - Корневой узел для парсинга (description или body).
+             * Упрощенный парсер, который создает HTML-структуру, а стили применяются через CSS.
+             * @param {Node} rootNode - Корневой узел для парсинга.
              * @returns {string} - Итоговая строка с HTML.
              */
             function parseFB2Body(rootNode) {
@@ -688,55 +702,39 @@
                 function processNodeChildren(parentNode, level) {
                     let html = '';
                     parentNode.childNodes.forEach(node => {
+                        if (node.nodeType === Node.TEXT_NODE && node.textContent.trim().length > 0) {
+                             html += `<p>${node.textContent}</p>`;
+                             return;
+                        }
+
                         if (node.nodeType !== Node.ELEMENT_NODE) return;
 
                         const tagName = node.tagName.toLowerCase();
-                        
-                        // Определяем стили в зависимости от тега
-                        let style = '';
-                        let tag = 'div'; // Тег по умолчанию, если это не p или заголовок
-                        let content = '';
 
                         switch (tagName) {
                             case 'title':
                                 const headingLevel = Math.min(6, level + 2);
-                                tag = `h${headingLevel}`;
-                                const fontSizes = ['1.4em', '1.2em', '1.1em'];
-                                const margins = ['4em 0 2em 0', '3em 0 2em 0', '2.5em 0 1.5em 0'];
-                                style = `text-align: center; font-weight: 600; font-size: ${fontSizes[headingLevel-2] || '1em'}; margin: ${margins[headingLevel-2] || '1em 0'};`;
-                                content = processFormatting(node);
+                                html += `<h${headingLevel}>${processFormatting(node)}</h${headingLevel}>`;
                                 break;
                             case 'p':
-                                tag = 'p';
-                                style = `margin-bottom: 1em; text-indent: 0;`;
-                                content = processFormatting(node) || '&nbsp;';
+                                html += `<p>${processFormatting(node) || '&nbsp;'}</p>`;
                                 break;
                             case 'empty-line':
-                                tag = 'div';
-                                style = 'height: 1em;';
+                                html += '<div class="empty-line-break"></div>';
                                 break;
                             case 'section':
                                 html += processNodeChildren(node, level + 1);
-                                return; // Выходим, чтобы не создавать лишний div
+                                break;
                             case 'subtitle':
-                                tag = 'h3';
-                                style = 'text-align: center; font-weight: 600; font-size: 1.2em; margin: 3em 0 2em 0;';
-                                content = processFormatting(node);
+                                html += `<h3>${processFormatting(node)}</h3>`;
                                 break;
                             case 'cite':
-                                tag = 'div';
-                                style = `font-style: italic; margin: 1em 2em; color: var(--meta-color);`;
-                                content = processFormatting(node);
+                                html += `<div class="quote-block">${processFormatting(node)}</div>`;
                                 break;
                             default:
                                 html += processNodeChildren(node, level);
-                                return; // Выходим
+                                break;
                         }
-
-                        if (tag) {
-                           html += `<${tag} style="${style}">${content}</${tag}>`;
-                        }
-
                     });
                     return html;
                 }
