@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -17,60 +18,220 @@
             --border-color: #333;
             --meta-color: #a0a0a0;
             --link-color: #0a84ff;
-            
+
             background-color: var(--bg-color);
             color: var(--text-color);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             overscroll-behavior: none;
         }
-        
-        /* --- ТЕМЫ ДЛЯ ЭКРАНА ЧТЕНИЯ --- */
-        #reader-screen.theme-light { --bg-color: #ffffff; --text-color: #000000; --border-color: #e0e0e0; --link-color: #007aff; }
-        #reader-screen.theme-dark { --bg-color: #1e1e1e; --text-color: #d4d4d4; --border-color: #333; --link-color: #0a84ff; }
-        #reader-screen.theme-sepia { --bg-color: #fbf0d9; --text-color: #5b4636; --border-color: #e6dace; --link-color: #716854; }
-        #reader-screen.theme-console { --bg-color: #000000; --text-color: #00ff00; --border-color: #333; --link-color: #00b500; }
 
-        .screen { background-color: var(--bg-color); color: var(--text-color); }
-        header { border-color: var(--border-color) !important; }
-        #book-list > div, .settings-block { background-color: var(--ui-bg) !important; }
-        #book-list > div { border: 1px solid #2d2d2d }
-        .book-icon-bg { background-color: #3e3e3e !important; }
-        .book-cover-img { object-fit: cover; object-position: center; }
-        .btn-custom-add { background-color: #2f2f2f !important; }
-        .btn-custom-add:hover { background-color: #404040 !important; }
-        #theme-selector input:checked + span, #font-selector input:checked + span { background-color: #4a4a4a; color: #ffffff; }
-        .back-button { color: var(--link-color); }
+        body.grabbing {
+            cursor: grabbing;
+        }
+
+        /* --- ТЕМЫ ДЛЯ ЭКРАНА ЧТЕНИЯ --- */
+        #reader-screen.theme-light {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --border-color: #e0e0e0;
+            --link-color: #007aff;
+        }
+
+        #reader-screen.theme-dark {
+            --bg-color: #1e1e1e;
+            --text-color: #d4d4d4;
+            --border-color: #333;
+            --link-color: #0a84ff;
+        }
+
+        #reader-screen.theme-sepia {
+            --bg-color: #fbf0d9;
+            --text-color: #5b4636;
+            --border-color: #e6dace;
+            --link-color: #716854;
+        }
+
+        #reader-screen.theme-console {
+            --bg-color: #000000;
+            --text-color: #00ff00;
+            --border-color: #333;
+            --link-color: #00b500;
+        }
+
+        .screen {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        header {
+            border-color: var(--border-color) !important;
+        }
+
+        .settings-block {
+            background-color: var(--ui-bg) !important;
+        }
+
+        .book-icon-bg {
+            background-color: #3e3e3e !important;
+        }
+
+        .book-cover-img {
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .btn-custom-add {
+            background-color: #2d2d2d !important;
+        }
+
+        .btn-custom-add:hover {
+            background-color: #404040 !important;
+        }
+
+        #theme-selector input:checked+span,
+        #font-selector input:checked+span {
+            background-color: #4a4a4a;
+            color: #ffffff;
+        }
+
+        .back-button {
+            color: var(--link-color);
+        }
 
         /* --- СТИЛИ ДЛЯ СКРОЛЛИНГА --- */
-        #book-content-wrapper { 
+        #book-content-wrapper {
             height: calc(100vh - 57px);
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
         }
+
         #book-content {
             line-height: 1.8;
             text-align: justify;
             padding: 1rem 2.5rem 5rem;
             font-size: 18px;
         }
-        
+
         #page-overlay {
             background: linear-gradient(to top, var(--bg-color) 10%, transparent);
         }
 
-        .screen { transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; }
-        .screen.hidden { opacity: 0; transform: scale(0.95); pointer-events: none; position: absolute; }
-        
-        .loader-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center; z-index: 9999; }
-        .loader { border: 5px solid #f3f3f3; border-top: 5px solid #3498db; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
+        .screen {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+
+        .screen.hidden {
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+            position: absolute;
+        }
+
+        .loader-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
         /* Стили для слайдера */
-        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%; background: #d4d4d4; cursor: pointer; margin-top: -8px; }
-        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: #4a4a4a; border-radius: 5px; }
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #d4d4d4;
+            cursor: pointer;
+            margin-top: -8px;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #4a4a4a;
+            border-radius: 5px;
+        }
+
+        /* --- НОВЫЕ СТИЛИ ДЛЯ СВАЙПА --- */
+        .book-item-wrapper {
+            position: relative;
+            overflow: hidden;
+            /* Убираем фон и скругление отсюда */
+        }
+
+        .delete-action {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            width: 90px;
+            height: 92%;
+            transform: translateY(-50%) translateX(100%);
+            /* Скрыта за экраном */
+            transition: transform 0.3s ease;
+            background-color: #af2b1e;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            border-radius: 0.6rem;
+            /* Скругляем саму кнопку */
+        }
+
+        .book-item-content {
+            transition: transform 0.3s ease;
+            background-color: var(--ui-bg);
+            position: relative;
+            z-index: 1;
+            border-radius: 0.5rem;
+            /* Скругляем блок с книгой */
+        }
+
+        /* Конечное положение элементов при свайпе */
+        .book-item-wrapper.swiped .book-item-content {
+            transform: translateX(-110px);
+            /* Сдвигаем блок книги влево */
+        }
+
+        .book-item-wrapper.swiped .delete-action {
+            transform: translateY(-50%) translateX(-10px);
+            /* Показываем кнопку с отступом */
+        }
     </style>
 </head>
+
 <body class="overflow-hidden">
 
     <div id="app" class="h-screen w-screen flex flex-col">
@@ -78,24 +239,33 @@
         <!-- Экран Библиотеки -->
         <div id="library-screen" class="screen w-full h-full flex flex-col">
             <header id="library-header-top" class="px-4 py-6 text-center hidden">
-                 <div class="flex justify-center items-center gap-4">
-                    <label for="file-input-top" class="btn-custom-add text-white font-bold py-2 px-4 rounded-lg cursor-pointer transition-colors duration-300 inline-block">
+                <div class="flex justify-center items-center gap-4">
+                    <label for="file-input-top"
+                        class="btn-custom-add text-white font-bold py-2 px-4 rounded-lg cursor-pointer transition-colors duration-300 inline-block">
                         + Добавить
                     </label>
                     <input type="file" id="file-input-top" class="hidden" accept=".fb2,.fb2.zip">
-                    <button id="settings-btn" class="btn-custom-add text-white p-2 rounded-lg cursor-pointer transition-colors duration-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    <button id="settings-btn"
+                        class="btn-custom-add text-white p-2 rounded-lg cursor-pointer transition-colors duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path
+                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                            </path>
+                        </svg>
                     </button>
-                 </div>
+                </div>
             </header>
 
             <main id="book-list" class="flex-grow px-4 pb-4 overflow-y-auto flex flex-col gap-4">
                 <!-- Сюда будут добавляться книги -->
             </main>
-            
+
             <div id="empty-library-view" class="flex-grow flex flex-col justify-center items-center text-center p-4">
                 <p class="text-gray-500 mb-6">Ваша библиотека пуста.</p>
-                <label for="file-input-center" class="btn-custom-add text-white font-bold py-3 px-6 rounded-lg cursor-pointer transition-colors duration-300 text-lg">
+                <label for="file-input-center"
+                    class="btn-custom-add text-white font-bold py-3 px-6 rounded-lg cursor-pointer transition-colors duration-300 text-lg">
                     Добавить книгу
                 </label>
                 <input type="file" id="file-input-center" class="hidden" accept=".fb2,.fb2.zip">
@@ -105,17 +275,20 @@
         <!-- Экран Чтения -->
         <div id="reader-screen" class="screen hidden w-full h-full flex flex-col">
             <header class="p-2 border-b flex items-center justify-center relative flex-shrink-0 h-[56px]">
-                <button id="back-to-library-btn" class="back-button absolute left-2 top-1/2 -translate-y-1/2 font-bold py-2 px-4 rounded-lg hover:bg-zinc-800">❮ Назад</button>
+                <button id="back-to-library-btn"
+                    class="back-button absolute left-2 top-1/2 -translate-y-1/2 font-bold py-2 px-4 rounded-lg hover:bg-zinc-800">❮
+                    Назад</button>
                 <div class="text-center mx-auto px-24 overflow-hidden">
                     <h2 id="book-title" class="text-lg font-bold truncate">Название книги</h2>
                 </div>
             </header>
-            
+
             <div class="flex-grow relative">
                 <main id="book-content-wrapper">
                     <div id="book-content"></div>
                 </main>
-                <div id="page-overlay" class="absolute bottom-0 left-0 right-0 h-24 pointer-events-none flex justify-center items-end p-4">
+                <div id="page-overlay"
+                    class="absolute bottom-0 left-0 right-0 h-24 pointer-events-none flex justify-center items-end p-4">
                     <span id="page-info" class="text-sm text-gray-400">1 / 1</span>
                 </div>
             </div>
@@ -124,7 +297,9 @@
         <!-- Экран Настроек -->
         <div id="settings-screen" class="screen hidden w-full h-full flex flex-col">
             <header class="p-2 border-b flex items-center justify-center relative flex-shrink-0 h-[56px]">
-                <button id="back-to-library-from-settings-btn" class="back-button absolute left-2 top-1/2 -translate-y-1/2 font-bold py-2 px-4 rounded-lg hover:bg-zinc-800">❮ Назад</button>
+                <button id="back-to-library-from-settings-btn"
+                    class="back-button absolute left-2 top-1/2 -translate-y-1/2 font-bold py-2 px-4 rounded-lg hover:bg-zinc-800">❮
+                    Назад</button>
                 <div class="text-center mx-auto px-24 overflow-hidden">
                     <h1 class="text-xl font-bold truncate">Настройки</h1>
                 </div>
@@ -132,7 +307,8 @@
             <main class="p-4 flex-grow">
                 <div class="mb-6">
                     <h2 class="text-sm font-bold text-gray-400 mb-2">Цветовая схема</h2>
-                    <div id="theme-selector" class="settings-block grid grid-cols-2 sm:grid-cols-4 gap-2 rounded-lg p-2">
+                    <div id="theme-selector"
+                        class="settings-block grid grid-cols-2 sm:grid-cols-4 gap-2 rounded-lg p-2">
                         <!-- Опции тем -->
                     </div>
                 </div>
@@ -162,10 +338,26 @@
                 Version 0.1 (application for the test)
             </footer>
         </div>
-        
+
         <!-- Индикатор загрузки -->
         <div id="loader-container" class="loader-container hidden">
             <div class="loader"></div>
+        </div>
+    </div>
+
+    <!-- Модальное окно подтверждения -->
+    <div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-50">
+        <div class="rounded-lg p-6 w-11/12 max-w-sm text-center shadow-lg" style="background-color: #1e1e1e;">
+            <p id="confirm-modal-text" class="mb-6 text-white">Вы уверенны что хотите удалить данную книгу из
+                библиотеки?</p>
+            <div class="flex justify-center gap-4">
+                <button id="confirm-modal-yes"
+                    class="px-6 py-2 rounded-lg text-white font-semibold transition-colors hover:opacity-80"
+                    style="background-color: #2d2d2d;">Да</button>
+                <button id="confirm-modal-no"
+                    class="px-6 py-2 rounded-lg text-white font-semibold transition-colors hover:opacity-80"
+                    style="background-color: #2d2d2d;">Нет</button>
+            </div>
         </div>
     </div>
 
@@ -178,7 +370,9 @@
                 const tg = window.Telegram.WebApp;
                 tg.ready();
                 tg.expand();
-            } catch (e) { console.warn("Telegram Web App script not found."); }
+            } catch (e) {
+                console.warn("Telegram Web App script not found.");
+            }
 
             // --- UI Элементы ---
             const body = document.body;
@@ -204,12 +398,21 @@
             const fontWeightSlider = document.getElementById('font-weight-slider');
             const fontWeightValue = document.getElementById('font-weight-value');
             const fontSelector = document.getElementById('font-selector');
+            const confirmModal = document.getElementById('confirm-modal');
+            const confirmModalText = document.getElementById('confirm-modal-text');
+            const confirmModalYes = document.getElementById('confirm-modal-yes');
+            const confirmModalNo = document.getElementById('confirm-modal-no');
 
             // --- Состояние приложения ---
             let db;
             let currentBookId = null;
-            let longPressTimer;
-            let globalSettings = { readingTheme: 'theme-dark', fontSize: 18, fontWeight: 400, fontFamily: 'Arial' };
+            let bookIdToDelete = null; // Для модального окна
+            let globalSettings = {
+                readingTheme: 'theme-dark',
+                fontSize: 18,
+                fontWeight: 400,
+                fontFamily: 'Arial'
+            };
 
             // --- База данных (IndexedDB) ---
             const DB_NAME = 'FB2ReaderDB';
@@ -223,7 +426,10 @@
                     request.onupgradeneeded = (event) => {
                         const db = event.target.result;
                         if (!db.objectStoreNames.contains(STORE_NAME)) {
-                            db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+                            db.createObjectStore(STORE_NAME, {
+                                keyPath: 'id',
+                                autoIncrement: true
+                            });
                         }
                     };
                     request.onsuccess = (event) => {
@@ -237,24 +443,36 @@
             async function renderLibrary() {
                 const books = await getAllBooks();
                 bookList.innerHTML = '';
-                
+
                 const hasBooks = books.length > 0;
                 libraryHeaderTop.classList.toggle('hidden', !hasBooks);
                 emptyLibraryView.classList.toggle('hidden', hasBooks);
                 bookList.classList.toggle('hidden', !hasBooks);
 
                 if (hasBooks) {
-                    books.reverse(); 
+                    books.reverse();
                     books.forEach(book => {
-                        const progress = (book.scrollPosition && book.scrollHeight) ? (book.scrollPosition / (book.scrollHeight - bookContentWrapper.clientHeight)) * 100 : 0;
+                        const progress = (book.scrollPosition && book.scrollHeight) ? (book
+                            .scrollPosition / (book.scrollHeight - bookContentWrapper
+                                .clientHeight)) * 100 : 0;
+
+                        // Создаем обертку для свайпа
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'book-item-wrapper';
+
+                        // Создаем фон для свайпа с текстом "Удалить"
+                        const deleteActionBackground = document.createElement('div');
+                        deleteActionBackground.className = 'delete-action font-bold';
+                        deleteActionBackground.textContent = 'Удалить';
+
+                        // Создаем видимую часть с информацией о книге
                         const bookElement = document.createElement('div');
-                        bookElement.className = 'p-2 rounded-lg cursor-pointer flex items-center gap-4 relative overflow-hidden';
-                        
-                        const coverHtml = book.coverImage 
-                            ? `<img src="${book.coverImage}" alt="Обложка" class="w-24 h-36 flex-shrink-0 book-cover-img rounded">`
-                            : `<div class="w-24 h-36 flex-shrink-0 book-icon-bg rounded flex items-center justify-center">
-                                   <span class="text-gray-500 text-3xl">📖</span>
-                               </div>`;
+                        bookElement.className =
+                            'book-item-content p-2 flex items-center gap-4 relative overflow-hidden';
+
+                        const coverHtml = book.coverImage ?
+                            `<img src="${book.coverImage}" alt="Обложка" class="w-24 h-36 flex-shrink-0 book-cover-img rounded">` :
+                            `<div class="w-24 h-36 flex-shrink-0 book-icon-bg rounded flex items-center justify-center"><span class="text-gray-500 text-3xl">📖</span></div>`;
 
                         bookElement.innerHTML = `
                             ${coverHtml}
@@ -264,18 +482,114 @@
                             </div>
                             <div class="absolute bottom-0 left-0 h-1 bg-[#3f3f3f]" style="width: ${Math.min(100, progress).toFixed(2)}%"></div>
                         `;
-                        bookElement.addEventListener('click', () => openBook(book.id));
-                        
-                        bookElement.addEventListener('contextmenu', (e) => { e.preventDefault(); confirmDelete(book.id, book.title); });
-                        bookElement.addEventListener('touchstart', (e) => { longPressTimer = setTimeout(() => { e.preventDefault(); confirmDelete(book.id, book.title) }, 800); });
-                        bookElement.addEventListener('touchend', () => clearTimeout(longPressTimer));
-                        bookElement.addEventListener('touchcancel', () => clearTimeout(longPressTimer));
-                        
-                        bookList.appendChild(bookElement);
+
+                        // Собираем все вместе
+                        wrapper.appendChild(deleteActionBackground);
+                        wrapper.appendChild(bookElement);
+                        bookList.appendChild(wrapper);
+
+                        // --- ОБНОВЛЕННАЯ ЛОГИКА СВАЙПА (ДЛЯ МЫШИ И КАСАНИЙ) ---
+                        let isDragging = false;
+                        let startX = 0;
+                        let currentX = 0;
+                        let isSwiping = false;
+                        const threshold = -50; // Дистанция для срабатывания свайпа
+                        const deleteButton = wrapper.querySelector('.delete-action'); // Получаем кнопку сразу
+
+                        bookElement.addEventListener('click', () => {
+                            if (!isSwiping) {
+                                openBook(book.id);
+                            }
+                        }, true);
+
+                        bookElement.addEventListener('mousedown', swipeStart);
+                        bookElement.addEventListener('touchstart', swipeStart, {
+                            passive: true
+                        });
+
+
+                        function swipeStart(e) {
+                            const otherSwiped = document.querySelector(
+                                '.book-item-wrapper.swiped');
+                            if (otherSwiped && otherSwiped !== wrapper) {
+                                otherSwiped.querySelector('.book-item-content').style
+                                    .transform = 'translateX(0)';
+                                otherSwiped.classList.remove('swiped');
+                            }
+
+                            isDragging = true;
+                            isSwiping = false;
+                            bookElement.style.transition = 'none';
+                            deleteButton.style.transition = 'none'; // Отключаем анимацию и для кнопки
+
+                            if (e.type === 'mousedown') {
+                                e.preventDefault();
+                                document.body.classList.add('grabbing');
+                                startX = e.clientX;
+                                document.addEventListener('mousemove', swipeMove);
+                                document.addEventListener('mouseup', swipeEnd);
+                            } else { // touchstart
+                                startX = e.touches[0].clientX;
+                                document.addEventListener('touchmove', swipeMove, {
+                                    passive: true
+                                });
+                                document.addEventListener('touchend', swipeEnd);
+                            }
+                            currentX = startX;
+                        }
+
+                        function swipeMove(e) {
+                            if (!isDragging) return;
+                            currentX = e.type === 'touchmove' ? e.touches[0].clientX : e
+                                .clientX;
+                            let diff = currentX - startX;
+                            if (Math.abs(diff) > 10) isSwiping = true;
+
+                            // Ограничиваем свайп, чтобы не уехать слишком далеко
+                            diff = Math.max(-110, Math.min(0, diff));
+
+                            // Двигаем оба элемента одновременно
+                            bookElement.style.transform = `translateX(${diff}px)`;
+                            // Рассчитываем положение кнопки: от 90px до -10px, пропорционально движению блока
+                            const buttonTranslateX = 90 + (diff * (100 / 110));
+                            deleteButton.style.transform = `translateY(-50%) translateX(${buttonTranslateX}px)`;
+                        }
+
+                        function swipeEnd(e) {
+                            if (!isDragging) return;
+
+                            if (e.type === 'mouseup') {
+                                document.body.classList.remove('grabbing');
+                                document.removeEventListener('mousemove', swipeMove);
+                                document.removeEventListener('mouseup', swipeEnd);
+                            } else { // touchend
+                                document.removeEventListener('touchmove', swipeMove);
+                                document.removeEventListener('touchend', swipeEnd);
+                            }
+
+                            isDragging = false;
+
+                            // Возвращаем управление анимацией в CSS
+                            bookElement.style.transform = '';
+                            deleteButton.style.transform = ''; // Убираем инлайн-стиль и с кнопки
+                            bookElement.style.transition = 'transform 0.3s ease';
+                            deleteButton.style.transition = 'transform 0.3s ease'; // Возвращаем анимацию и кнопке
+
+                            let diff = currentX - startX;
+                            if (diff < threshold) {
+                                wrapper.classList.add('swiped');
+                                confirmDelete(book.id, book.title);
+                            } else {
+                                wrapper.classList.remove('swiped');
+                            }
+                            setTimeout(() => {
+                                if (diff > threshold) isSwiping = false;
+                            }, 100);
+                        }
                     });
                 }
             }
-            
+
             function getAllBooks() {
                 return new Promise((resolve, reject) => {
                     const transaction = db.transaction(STORE_NAME, 'readonly');
@@ -287,9 +601,11 @@
             }
 
             function confirmDelete(bookId, title) {
-                if (confirm(`Вы уверены, что хотите удалить книгу "${title}"?`)) {
-                    deleteBook(bookId);
-                }
+                bookIdToDelete = bookId;
+                confirmModalText.textContent =
+                    'Вы уверенны что хотите удалить данную книгу из библиотеки?';
+                confirmModal.classList.remove('hidden');
+                confirmModal.classList.add('flex');
             }
 
             async function deleteBook(bookId) {
@@ -297,7 +613,10 @@
                     const transaction = db.transaction(STORE_NAME, 'readwrite');
                     const store = transaction.objectStore(STORE_NAME);
                     const request = store.delete(bookId);
-                    request.onsuccess = async () => { await renderLibrary(); resolve(); };
+                    request.onsuccess = async () => {
+                        await renderLibrary();
+                        resolve();
+                    };
                     request.onerror = () => reject("Ошибка при удалении книги");
                 });
             }
@@ -306,20 +625,21 @@
             async function handleFileSelect(event) {
                 const file = event.target.files[0];
                 if (!file) return;
-                
+
                 showLoader(true);
                 try {
                     let content;
                     if (file.name.toLowerCase().endsWith('.zip')) {
                         const jszip = new JSZip();
                         const zip = await jszip.loadAsync(file);
-                        const fb2File = Object.values(zip.files).find(f => f.name.toLowerCase().endsWith('.fb2'));
+                        const fb2File = Object.values(zip.files).find(f => f.name.toLowerCase()
+                            .endsWith('.fb2'));
                         if (!fb2File) throw new Error('FB2 файл не найден в архиве.');
                         content = await fb2File.async('string');
                     } else {
                         content = await file.text();
                     }
-                    
+
                     const bookData = parseFB2(content);
                     await saveBook(bookData);
                     await renderLibrary();
@@ -332,7 +652,7 @@
                     fileInputCenter.value = '';
                 }
             }
-            
+
             fileInputTop.addEventListener('change', handleFileSelect);
             fileInputCenter.addEventListener('change', handleFileSelect);
 
@@ -362,18 +682,27 @@
                 let contentHTML = '';
                 if (bodyNode) {
                     bodyNode.querySelectorAll('p, subtitle, empty-line').forEach(node => {
-                        if (node.tagName === 'p') contentHTML += `<p class="mb-4">${node.textContent}</p>`;
-                        else if (node.tagName === 'subtitle') contentHTML += `<h3 class="text-xl font-bold mt-6 mb-4">${node.textContent}</h3>`;
+                        if (node.tagName === 'p') contentHTML +=
+                            `<p class="mb-4">${node.textContent}</p>`;
+                        else if (node.tagName === 'subtitle') contentHTML +=
+                            `<h3 class="text-xl font-bold mt-6 mb-4">${node.textContent}</h3>`;
                         else if (node.tagName === 'empty-line') contentHTML += '<br>';
                     });
                 } else {
                     contentHTML = "<p>Не удалось загрузить содержимое книги.</p>";
                 }
-                return { title, author, content: contentHTML, coverImage, scrollPosition: 0, scrollHeight: 0 };
+                return {
+                    title,
+                    author,
+                    content: contentHTML,
+                    coverImage,
+                    scrollPosition: 0,
+                    scrollHeight: 0
+                };
             }
 
             function saveBook(bookData) {
-                 return new Promise((resolve, reject) => {
+                return new Promise((resolve, reject) => {
                     const transaction = db.transaction(STORE_NAME, 'readwrite');
                     const store = transaction.objectStore(STORE_NAME);
                     const request = store.add(bookData);
@@ -391,13 +720,15 @@
                 currentBookId = bookId;
                 bookTitle.textContent = book.title;
                 bookContent.innerHTML = book.content;
-                
+
                 switchToScreen('reader');
-                
+
                 requestAnimationFrame(() => {
                     bookContentWrapper.scrollTop = book.scrollPosition || 0;
                     updateScrollUI();
-                    saveMetadata(currentBookId, { scrollHeight: bookContentWrapper.scrollHeight });
+                    saveMetadata(currentBookId, {
+                        scrollHeight: bookContentWrapper.scrollHeight
+                    });
                 });
             }
 
@@ -410,26 +741,26 @@
                     request.onerror = () => reject("Ошибка при получении книги по ID");
                 });
             }
-            
+
             async function saveMetadata(bookId, data) {
-                 if (!bookId) return;
-                 const transaction = db.transaction(STORE_NAME, 'readwrite');
-                 const store = transaction.objectStore(STORE_NAME);
-                 const request = store.get(bookId);
-                 request.onsuccess = () => {
-                     const book = request.result;
-                     if (book) {
-                         Object.assign(book, data);
-                         store.put(book);
-                     }
-                 };
+                if (!bookId) return;
+                const transaction = db.transaction(STORE_NAME, 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.get(bookId);
+                request.onsuccess = () => {
+                    const book = request.result;
+                    if (book) {
+                        Object.assign(book, data);
+                        store.put(book);
+                    }
+                };
             }
 
             function updateScrollUI() {
                 const scrollTop = bookContentWrapper.scrollTop;
                 const scrollHeight = bookContentWrapper.scrollHeight;
                 const clientHeight = bookContentWrapper.clientHeight;
-                
+
                 if (scrollHeight <= clientHeight) {
                     pageInfo.textContent = '1 / 1';
                     return;
@@ -448,7 +779,15 @@
             function loadGlobalSettings() {
                 const saved = localStorage.getItem('sphereReaderSettings');
                 if (saved) {
-                    globalSettings = { ...{ readingTheme: 'theme-dark', fontSize: 18, fontWeight: 400, fontFamily: 'Arial' }, ...JSON.parse(saved) };
+                    globalSettings = {
+                        ...{
+                            readingTheme: 'theme-dark',
+                            fontSize: 18,
+                            fontWeight: 400,
+                            fontFamily: 'Arial'
+                        },
+                        ...JSON.parse(saved)
+                    };
                 }
             }
 
@@ -457,13 +796,15 @@
                 readerScreen.classList.add(globalSettings.readingTheme);
                 try {
                     const themeColors = {
-                        'theme-light': '#ffffff', 'theme-dark': '#1e1e1e',
-                        'theme-sepia': '#fbf0d9', 'theme-console': '#000000'
+                        'theme-light': '#ffffff',
+                        'theme-dark': '#1e1e1e',
+                        'theme-sepia': '#fbf0d9',
+                        'theme-console': '#000000'
                     };
                     const color = themeColors[globalSettings.readingTheme] || '#1e1e1e';
                     tg.setHeaderColor(color);
                     tg.setBackgroundColor(color);
-                } catch (e) {}
+                } catch (e) { }
 
                 bookContent.style.fontSize = `${globalSettings.fontSize}px`;
                 bookContent.style.fontWeight = globalSettings.fontWeight;
@@ -472,13 +813,23 @@
 
             function renderSettings() {
                 themeSelector.innerHTML = '';
-                const themes = [
-                    { id: 'theme-light', name: 'Светлая' }, { id: 'theme-dark', name: 'Тёмная' },
-                    { id: 'theme-sepia', name: 'Сепия' }, { id: 'theme-console', name: 'Консоль' }
-                ];
+                const themes = [{
+                    id: 'theme-light',
+                    name: 'Светлая'
+                }, {
+                    id: 'theme-dark',
+                    name: 'Тёмная'
+                }, {
+                    id: 'theme-sepia',
+                    name: 'Сепия'
+                }, {
+                    id: 'theme-console',
+                    name: 'Консоль'
+                }];
                 themes.forEach(theme => {
                     const label = document.createElement('label');
-                    label.className = 'flex items-center justify-center p-2 rounded-md cursor-pointer text-center text-sm transition-colors';
+                    label.className =
+                        'flex items-center justify-center p-2 rounded-md cursor-pointer text-center text-sm transition-colors';
                     const input = document.createElement('input');
                     input.type = 'radio';
                     input.name = 'theme';
@@ -490,7 +841,7 @@
                     const span = document.createElement('span');
                     span.className = 'w-full py-2 rounded-md';
                     span.textContent = theme.name;
-                    
+
                     label.appendChild(input);
                     label.appendChild(span);
                     themeSelector.appendChild(label);
@@ -505,7 +856,8 @@
                 const fonts = ['Arial', 'Bookman', 'Courier New', 'Comic Sans MS'];
                 fonts.forEach(font => {
                     const label = document.createElement('label');
-                    label.className = 'flex items-center justify-center p-2 rounded-md cursor-pointer text-center text-sm transition-colors';
+                    label.className =
+                        'flex items-center justify-center p-2 rounded-md cursor-pointer text-center text-sm transition-colors';
                     const input = document.createElement('input');
                     input.type = 'radio';
                     input.name = 'font';
@@ -518,7 +870,7 @@
                     span.className = 'w-full py-2 rounded-md';
                     span.textContent = font;
                     span.style.fontFamily = font;
-                    
+
                     label.appendChild(input);
                     label.appendChild(span);
                     fontSelector.appendChild(label);
@@ -531,33 +883,41 @@
                 readerScreen.classList.add('hidden');
                 settingsScreen.classList.add('hidden');
 
-                try { tg.setHeaderColor('#1e1e1e'); tg.setBackgroundColor('#1e1e1e'); } catch(e) {}
+                try {
+                    tg.setHeaderColor('#1e1e1e');
+                    tg.setBackgroundColor('#1e1e1e');
+                } catch (e) { }
 
                 if (screenName === 'library') {
                     libraryScreen.classList.remove('hidden');
                     renderLibrary();
                 } else if (screenName === 'reader') {
                     readerScreen.classList.remove('hidden');
-                    applyReadingSettings(); 
+                    applyReadingSettings();
                 } else if (screenName === 'settings') {
                     settingsScreen.classList.remove('hidden');
                     renderSettings();
                 }
             }
 
-            function showLoader(show) { loader.classList.toggle('hidden', !show); }
-            
+            function showLoader(show) {
+                loader.classList.toggle('hidden', !show);
+            }
+
             // --- Обработчики событий ---
             backToLibraryBtn.addEventListener('click', () => switchToScreen('library'));
             settingsBtn.addEventListener('click', () => switchToScreen('settings'));
             backToLibraryFromSettingsBtn.addEventListener('click', () => switchToScreen('library'));
-            
+
             let scrollTimeout;
             bookContentWrapper.addEventListener('scroll', () => {
                 updateScrollUI();
                 clearTimeout(scrollTimeout);
                 scrollTimeout = setTimeout(() => {
-                    saveMetadata(currentBookId, { scrollPosition: bookContentWrapper.scrollTop, scrollHeight: bookContentWrapper.scrollHeight });
+                    saveMetadata(currentBookId, {
+                        scrollPosition: bookContentWrapper.scrollTop,
+                        scrollHeight: bookContentWrapper.scrollHeight
+                    });
                 }, 250);
             });
 
@@ -565,7 +925,6 @@
                 if (e.target.name === 'theme') {
                     globalSettings.readingTheme = e.target.value;
                     saveGlobalSettings();
-                    // ИСПРАВЛЕНИЕ: Применяем тему только к экрану чтения, если он видим
                     if (!readerScreen.classList.contains('hidden')) {
                         applyReadingSettings();
                     }
@@ -577,7 +936,7 @@
                 globalSettings.fontSize = parseInt(newSize, 10);
                 fontSizeValue.textContent = `${newSize}px`;
                 saveGlobalSettings();
-                 if (!readerScreen.classList.contains('hidden')) {
+                if (!readerScreen.classList.contains('hidden')) {
                     applyReadingSettings();
                 }
             });
@@ -587,7 +946,7 @@
                 globalSettings.fontWeight = parseInt(newWeight, 10);
                 fontWeightValue.textContent = newWeight;
                 saveGlobalSettings();
-                 if (!readerScreen.classList.contains('hidden')) {
+                if (!readerScreen.classList.contains('hidden')) {
                     applyReadingSettings();
                 }
             });
@@ -596,11 +955,33 @@
                 if (e.target.name === 'font') {
                     globalSettings.fontFamily = e.target.value;
                     saveGlobalSettings();
-                     if (!readerScreen.classList.contains('hidden')) {
+                    if (!readerScreen.classList.contains('hidden')) {
                         applyReadingSettings();
                     }
                 }
             });
+
+            // --- Обработчики для модального окна ---
+            confirmModalNo.addEventListener('click', () => {
+                const swipedWrapper = document.querySelector('.book-item-wrapper.swiped');
+                if (swipedWrapper) {
+                    // Убираем класс, чтобы CSS вернул всё на место
+                    swipedWrapper.classList.remove('swiped');
+                }
+                confirmModal.classList.add('hidden');
+                confirmModal.classList.remove('flex');
+                bookIdToDelete = null;
+            });
+
+            confirmModalYes.addEventListener('click', () => {
+                if (bookIdToDelete !== null) {
+                    deleteBook(bookIdToDelete);
+                    bookIdToDelete = null;
+                }
+                confirmModal.classList.add('hidden');
+                confirmModal.classList.remove('flex');
+            });
+
 
             // --- Запуск приложения ---
             async function main() {
@@ -621,4 +1002,5 @@
         });
     </script>
 </body>
+
 </html>
