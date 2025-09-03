@@ -107,8 +107,7 @@
 
         #book-content {
             line-height: 1.8;
-            text-align: justify;
-            padding: 1rem 2.5rem 5rem;
+            padding: 1rem 1.5rem 5rem; /* Уменьшаем боковые отступы для мобильных */
             font-size: 18px;
         }
 
@@ -184,68 +183,7 @@
             border-radius: 5px;
         }
 
-        /* --- СТИЛИ ДЛЯ ТЕКСТА КНИГИ --- */
-        #reader-screen #book-content {
-            text-align: left;
-        }
-        /* --- СТИЛИ ДЛЯ ТЕКСТА КНИГИ (С ПОВЫШЕННЫМ ПРИОРИТЕТОМ) --- */
-        #reader-screen #book-content {
-            text-align: left !important;
-        }
-
-        #reader-screen #book-content p {
-            margin-bottom: 1em !important;
-            text-indent: 0 !important;
-        }
-
-        #reader-screen #book-content .empty-line-break {
-            height: 1em !important;
-        }
-
-        #reader-screen #book-content em {
-            font-style: italic !important;
-        }
-
-        #reader-screen #book-content strong {
-            font-weight: bold !important;
-        }
-
-        /* --- Новые стили для иерархии заголовков --- */
-        #reader-screen #book-content h2,
-        #reader-screen #book-content h3,
-        #reader-screen #book-content h4,
-        #reader-screen #book-content h5,
-        #reader-screen #book-content h6 {
-            text-align: center !important;
-            font-weight: 600 !important;
-            text-indent: 0 !important;
-        }
-
-        #reader-screen #book-content h2 {
-            font-size: 1.4em !important;
-            margin: 4em 0 2em 0 !important;
-        }
-
-        #reader-screen #book-content h3 {
-            font-size: 1.2em !important;
-            margin: 3em 0 2em 0 !important;
-        }
-
-        #reader-screen #book-content h4 {
-            font-size: 1.1em !important;
-            font-weight: 600 !important;
-            margin: 2.5em 0 1.5em 0 !important;
-        }
-
-        /* Новый стиль для цитат */
-        #reader-screen #book-content .quote-block {
-            font-style: italic !important;
-            margin: 1em 2em !important;
-            color: var(--meta-color) !important;
-        }
-
-
-        /* --- НОВЫЕ СТИЛИ ДЛЯ СВАЙПА --- */
+        /* --- СТИЛИ ДЛЯ СВАЙПА --- */
         .book-item-wrapper {
             position: relative;
             overflow: hidden;
@@ -753,30 +691,52 @@
                         if (node.nodeType !== Node.ELEMENT_NODE) return;
 
                         const tagName = node.tagName.toLowerCase();
+                        
+                        // Определяем стили в зависимости от тега
+                        let style = '';
+                        let tag = 'div'; // Тег по умолчанию, если это не p или заголовок
+                        let content = '';
+
                         switch (tagName) {
                             case 'title':
-                                const headingTag = `h${Math.min(6, level + 2)}`;
-                                html += `<${headingTag}>${processFormatting(node)}</${headingTag}>`;
+                                const headingLevel = Math.min(6, level + 2);
+                                tag = `h${headingLevel}`;
+                                const fontSizes = ['1.4em', '1.2em', '1.1em'];
+                                const margins = ['4em 0 2em 0', '3em 0 2em 0', '2.5em 0 1.5em 0'];
+                                style = `text-align: center; font-weight: 600; font-size: ${fontSizes[headingLevel-2] || '1em'}; margin: ${margins[headingLevel-2] || '1em 0'};`;
+                                content = processFormatting(node);
                                 break;
                             case 'p':
-                                html += `<p>${processFormatting(node) || '&nbsp;'}</p>`;
+                                tag = 'p';
+                                style = `margin-bottom: 1em; text-indent: 0;`;
+                                content = processFormatting(node) || '&nbsp;';
                                 break;
                             case 'empty-line':
-                                html += '<div class="empty-line-break"></div>';
+                                tag = 'div';
+                                style = 'height: 1em;';
                                 break;
                             case 'section':
                                 html += processNodeChildren(node, level + 1);
-                                break;
+                                return; // Выходим, чтобы не создавать лишний div
                             case 'subtitle':
-                                html += `<h3>${processFormatting(node)}</h3>`;
+                                tag = 'h3';
+                                style = 'text-align: center; font-weight: 600; font-size: 1.2em; margin: 3em 0 2em 0;';
+                                content = processFormatting(node);
                                 break;
                             case 'cite':
-                                html += `<div class="quote-block">${processFormatting(node)}</div>`;
+                                tag = 'div';
+                                style = `font-style: italic; margin: 1em 2em; color: var(--meta-color);`;
+                                content = processFormatting(node);
                                 break;
                             default:
                                 html += processNodeChildren(node, level);
-                                break;
+                                return; // Выходим
                         }
+
+                        if (tag) {
+                           html += `<${tag} style="${style}">${content}</${tag}>`;
+                        }
+
                     });
                     return html;
                 }
@@ -1136,5 +1096,4 @@
 </body>
 
 </html>
-
 
