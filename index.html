@@ -184,6 +184,65 @@
             border-radius: 5px;
         }
 
+        /* --- СТИЛИ ДЛЯ ТЕКСТА КНИГИ --- */
+        #book-content {
+            /*-webkit-hyphens: auto; -ms-hyphens: auto; hyphens: auto; */
+            /* Убираем автоматические переносы */
+            text-align: left;
+            /* Выравнивание по левому краю */
+        }
+
+        #book-content p {
+            margin-bottom: 1em;
+            /* Увеличиваем отступ между параграфами */
+            /* text-indent: 1.5em; */
+            /* Убираем отступ первой строки */
+        }
+
+        /* Убираем правило для первого параграфа, оно больше не нужно */
+        /*
+        #book-content p:first-child,
+        #book-content h3+p {
+            text-indent: 0;
+        }
+        */
+
+        #book-content h3.chapter-title {
+            text-align: center;
+            /* text-transform: uppercase; */
+            /* Убираем принудительное преобразование в заглавные буквы */
+            font-weight: 600;
+            font-size: 1.25em;
+            /* Относительный размер */
+            margin: 3em 0 2em 0;
+            text-indent: 0;
+            letter-spacing: 0.1em;
+            /* Небольшое разрежение букв */
+        }
+
+        #book-content .empty-line-break {
+            height: 1em;
+            /* Отступ равный одной строке */
+        }
+
+        #book-content em {
+            font-style: italic;
+        }
+
+        #book-content strong {
+            font-weight: bold;
+        }
+
+        /* Новый стиль для цитат */
+        #book-content .quote-block {
+            font-style: italic;
+            margin: 1em 2em;
+            /* Отступы по вертикали и горизонтали */
+            color: var(--meta-color);
+            /* Сделаем цвет текста цитаты немного приглушенным */
+        }
+
+
         /* --- НОВЫЕ СТИЛИ ДЛЯ СВАЙПА --- */
         .book-item-wrapper {
             position: relative;
@@ -509,6 +568,11 @@
 
 
                         function swipeStart(e) {
+                            // ИЗМЕНЕНИЕ: Проверяем, что это левая кнопка мыши
+                            if (e.type === 'mousedown' && e.button !== 0) {
+                                return; // Игнорируем все клики, кроме левого
+                            }
+
                             const otherSwiped = document.querySelector(
                                 '.book-item-wrapper.swiped');
                             if (otherSwiped && otherSwiped !== wrapper) {
@@ -656,6 +720,82 @@
             fileInputTop.addEventListener('change', handleFileSelect);
             fileInputCenter.addEventListener('change', handleFileSelect);
 
+            /**
+             * Рекурсивно обрабатывает узлы тела FB2-файла для создания HTML-разметки.
+             * Эта функция правильно обрабатывает вложенные секции и заголовки.
+             * @param {Node} bodyNode - Корневой узел для парсинга (обычно <body>).
+             * @returns {string} - Итоговая строка с HTML.
+             */
+            function parseFB2Body(bodyNode) {
+                if (!bodyNode) return "<p>Не удалось загрузить содержимое книги.</p>";
+
+                // Внутренняя функция для обработки тегов форматирования (курсив, жирный)
+                function processFormatting(node) {
+                    if (!node || !node.childNodes) return '';
+                    let html = '';
+                    node.childNodes.forEach(child => {
+                        if (child.nodeType === Node.TEXT_NODE) {
+                            html += child.textContent;
+                        } else if (child.nodeType === Node.ELEMENT_NODE) {
+                            const tagName = child.tagName.toLowerCase();
+                            const innerHTML = processFormatting(child);
+                            switch (tagName) {
+                                case 'emphasis':
+                                    html += `<em>${innerHTML}</em>`;
+                                    break;
+                                case 'strong':
+                                    html += `<strong>${innerHTML}</strong>`;
+                                    break;
+                                default:
+                                    // Для других вложенных тегов просто рекурсивно обрабатываем их содержимое
+                                    html += innerHTML;
+                            }
+                        }
+                    });
+                    return html;
+                }
+
+                // Внутренняя функция для обработки основных структурных тегов
+                function processNodeChildren(parentNode) {
+                    let html = '';
+                    parentNode.childNodes.forEach(node => {
+                        if (node.nodeType !== Node.ELEMENT_NODE) return;
+
+                        const tagName = node.tagName.toLowerCase();
+                        switch (tagName) {
+                            case 'title':
+                                html += `<h3 class="chapter-title">${processFormatting(node)}</h3>`;
+                                break;
+                            case 'p':
+                                html += `<p>${processFormatting(node) || '&nbsp;'}</p>`;
+                                break;
+                            case 'empty-line':
+                                html += '<div class="empty-line-break"></div>';
+                                break;
+                            case 'section':
+                                // Рекурсивно обрабатываем дочерние узлы секции
+                                html += processNodeChildren(node);
+                                break;
+                            case 'subtitle':
+                                html += `<h3 class="chapter-title">${processFormatting(node)}</h3>`;
+                                break;
+                            case 'cite': // Новый обработчик для цитат
+                                html += `<div class="quote-block">${processFormatting(node)}</div>`;
+                                break;
+                            default:
+                                // ОБНОВЛЕНИЕ: Обрабатываем любой другой тег, рекурсивно обрабатывая его дочерние узлы.
+                                // Это предотвращает потерю текста из-за неизвестных тегов.
+                                html += processNodeChildren(node);
+                                break;
+                        }
+                    });
+                    return html;
+                }
+
+                return processNodeChildren(bodyNode);
+            }
+
+
             function parseFB2(xmlString) {
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(xmlString, "application/xml");
@@ -671,7 +811,8 @@
                     if (imageId) {
                         const binaryImage = doc.querySelector(`binary[id="${imageId}"]`);
                         if (binaryImage) {
-                            const contentType = binaryImage.getAttribute('content-type') || 'image/jpeg';
+                            const contentType = binaryImage.getAttribute('content-type') ||
+                                'image/jpeg';
                             const base64Data = binaryImage.textContent;
                             coverImage = `data:${contentType};base64,${base64Data}`;
                         }
@@ -679,18 +820,8 @@
                 }
 
                 const bodyNode = doc.querySelector('body');
-                let contentHTML = '';
-                if (bodyNode) {
-                    bodyNode.querySelectorAll('p, subtitle, empty-line').forEach(node => {
-                        if (node.tagName === 'p') contentHTML +=
-                            `<p class="mb-4">${node.textContent}</p>`;
-                        else if (node.tagName === 'subtitle') contentHTML +=
-                            `<h3 class="text-xl font-bold mt-6 mb-4">${node.textContent}</h3>`;
-                        else if (node.tagName === 'empty-line') contentHTML += '<br>';
-                    });
-                } else {
-                    contentHTML = "<p>Не удалось загрузить содержимое книги.</p>";
-                }
+                const contentHTML = parseFB2Body(bodyNode);
+
                 return {
                     title,
                     author,
@@ -804,7 +935,7 @@
                     const color = themeColors[globalSettings.readingTheme] || '#1e1e1e';
                     tg.setHeaderColor(color);
                     tg.setBackgroundColor(color);
-                } catch (e) { }
+                } catch (e) {}
 
                 bookContent.style.fontSize = `${globalSettings.fontSize}px`;
                 bookContent.style.fontWeight = globalSettings.fontWeight;
@@ -886,7 +1017,7 @@
                 try {
                     tg.setHeaderColor('#1e1e1e');
                     tg.setBackgroundColor('#1e1e1e');
-                } catch (e) { }
+                } catch (e) {}
 
                 if (screenName === 'library') {
                     libraryScreen.classList.remove('hidden');
@@ -1004,3 +1135,4 @@
 </body>
 
 </html>
+
