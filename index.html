@@ -185,29 +185,21 @@
         }
 
         /* --- СТИЛИ ДЛЯ ТЕКСТА КНИГИ --- */
-        #book-content {
+        #reader-screen #book-content {
             /*-webkit-hyphens: auto; -ms-hyphens: auto; hyphens: auto; */
             /* Убираем автоматические переносы */
             text-align: left;
             /* Выравнивание по левому краю */
         }
 
-        #book-content p {
+        #reader-screen #book-content p {
             margin-bottom: 1em;
             /* Увеличиваем отступ между параграфами */
             /* text-indent: 1.5em; */
             /* Убираем отступ первой строки */
         }
 
-        /* Убираем правило для первого параграфа, оно больше не нужно */
-        /*
-        #book-content p:first-child,
-        #book-content h3+p {
-            text-indent: 0;
-        }
-        */
-
-        #book-content h3.chapter-title {
+        #reader-screen #book-content h3.chapter-title {
             text-align: center;
             /* text-transform: uppercase; */
             /* Убираем принудительное преобразование в заглавные буквы */
@@ -220,21 +212,21 @@
             /* Небольшое разрежение букв */
         }
 
-        #book-content .empty-line-break {
+        #reader-screen #book-content .empty-line-break {
             height: 1em;
             /* Отступ равный одной строке */
         }
 
-        #book-content em {
+        #reader-screen #book-content em {
             font-style: italic;
         }
 
-        #book-content strong {
+        #reader-screen #book-content strong {
             font-weight: bold;
         }
 
         /* Новый стиль для цитат */
-        #book-content .quote-block {
+        #reader-screen #book-content .quote-block {
             font-style: italic;
             margin: 1em 2em;
             /* Отступы по вертикали и горизонтали */
@@ -819,8 +811,21 @@
                     }
                 }
 
+                // ОБНОВЛЕНИЕ: Сначала обрабатываем описание, потом тело книги.
+                const descriptionNode = doc.querySelector('description');
                 const bodyNode = doc.querySelector('body');
-                const contentHTML = parseFB2Body(bodyNode);
+                let contentHTML = '';
+
+                if (descriptionNode) {
+                    contentHTML += parseFB2Body(descriptionNode);
+                }
+                if (bodyNode) {
+                    contentHTML += parseFB2Body(bodyNode);
+                }
+
+                if (!contentHTML) {
+                    contentHTML = "<p>Не удалось загрузить содержимое книги.</p>";
+                }
 
                 return {
                     title,
@@ -1135,4 +1140,5 @@
 </body>
 
 </html>
+
 
