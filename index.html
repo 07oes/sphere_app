@@ -118,25 +118,36 @@
             text-indent: 0;
             text-align: left;
         }
-        #reader-screen #book-content h2, 
-        #reader-screen #book-content h3, 
-        #reader-screen #book-content h4, 
-        #reader-screen #book-content h5, 
+
+        #reader-screen #book-content h2,
+        #reader-screen #book-content h3,
+        #reader-screen #book-content h4,
+        #reader-screen #book-content h5,
         #reader-screen #book-content h6 {
             text-align: center;
             font-weight: 600;
             line-height: 1.4;
             margin: 2em 0 1.5em 0;
         }
-        #reader-screen #book-content h2 { font-size: 1.4em; }
-        #reader-screen #book-content h3 { font-size: 1.2em; }
-        #reader-screen #book-content h4 { font-size: 1.1em; }
+
+        #reader-screen #book-content h2 {
+            font-size: 1.4em;
+        }
+
+        #reader-screen #book-content h3 {
+            font-size: 1.2em;
+        }
+
+        #reader-screen #book-content h4 {
+            font-size: 1.1em;
+        }
 
         #reader-screen #book-content .quote-block {
             font-style: italic;
             margin: 1em 2em;
             color: var(--meta-color);
         }
+
         #reader-screen #book-content .empty-line-break {
             height: 1em;
         }
@@ -720,8 +731,8 @@
                     let html = '';
                     parentNode.childNodes.forEach(node => {
                         if (node.nodeType === Node.TEXT_NODE && node.textContent.trim().length > 0) {
-                             html += `<p>${node.textContent}</p>`;
-                             return;
+                            html += `<p>${node.textContent}</p>`;
+                            return;
                         }
 
                         if (node.nodeType !== Node.ELEMENT_NODE) return;
@@ -911,7 +922,7 @@
                     const color = themeColors[globalSettings.readingTheme] || '#1e1e1e';
                     tg.setHeaderColor(color);
                     tg.setBackgroundColor(color);
-                } catch (e) {}
+                } catch (e) { }
 
                 bookContent.style.fontSize = `${globalSettings.fontSize}px`;
                 bookContent.style.fontWeight = globalSettings.fontWeight;
@@ -993,7 +1004,7 @@
                 try {
                     tg.setHeaderColor('#1e1e1e');
                     tg.setBackgroundColor('#1e1e1e');
-                } catch (e) {}
+                } catch (e) { }
 
                 if (screenName === 'library') {
                     libraryScreen.classList.remove('hidden');
@@ -1111,4 +1122,3 @@
 </body>
 
 </html>
-
