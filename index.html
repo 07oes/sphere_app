@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>FB2 Reader</title>
     <!-- Подключение Tailwind CSS -->
-    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <!-- Подключение Telegram Web App script -->
-    <script src="[https://telegram.org/js/telegram-web-app.js](https://telegram.org/js/telegram-web-app.js)"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         /* --- СТАНДАРТНАЯ ТЕМА (ТЕМНАЯ) --- */
         body {
@@ -111,17 +111,34 @@
             /* Уменьшаем боковые отступы для мобильных */
             font-size: 18px;
         }
-        
-        /* --- УПРОЩЕННЫЕ СТИЛИ ДЛЯ ТЕКСТА КНИГИ --- */
-        #book-content h2, 
-        #book-content h3, 
-        #book-content h4, 
-        #book-content h5, 
-        #book-content h6 {
-            text-align: center !important;
-            margin-top: 2em !important;
-            margin-bottom: 1.5em !important;
-            font-weight: 600 !important;
+
+        /* --- СТИЛИ ДЛЯ ТЕКСТА КНИГИ --- */
+        #reader-screen #book-content p {
+            margin-bottom: 1em;
+            text-indent: 0;
+            text-align: left;
+        }
+        #reader-screen #book-content h2, 
+        #reader-screen #book-content h3, 
+        #reader-screen #book-content h4, 
+        #reader-screen #book-content h5, 
+        #reader-screen #book-content h6 {
+            text-align: center;
+            font-weight: 600;
+            line-height: 1.4;
+            margin: 2em 0 1.5em 0;
+        }
+        #reader-screen #book-content h2 { font-size: 1.4em; }
+        #reader-screen #book-content h3 { font-size: 1.2em; }
+        #reader-screen #book-content h4 { font-size: 1.1em; }
+
+        #reader-screen #book-content .quote-block {
+            font-style: italic;
+            margin: 1em 2em;
+            color: var(--meta-color);
+        }
+        #reader-screen #book-content .empty-line-break {
+            height: 1em;
         }
 
 
@@ -253,7 +270,7 @@
                     <input type="file" id="file-input-top" class="hidden" accept=".fb2,.fb2.zip">
                     <button id="settings-btn"
                         class="btn-custom-add text-white p-2 rounded-lg cursor-pointer transition-colors duration-300">
-                        <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="3"></circle>
                             <path
@@ -368,7 +385,7 @@
     </div>
 
     <!-- Подключение JSZip для работы с .fb2.zip -->
-    <script src="[https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js](https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js)"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // --- Инициализация Telegram Web App ---
