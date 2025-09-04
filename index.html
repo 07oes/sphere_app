@@ -194,6 +194,16 @@
             height: 1em;
         }
 
+        /* --- СТИЛИ ДЛЯ ИЗОБРАЖЕНИЙ В ТЕКСТЕ --- */
+        #reader-screen #book-content img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 2em auto;
+            border-radius: 0.25rem;
+            background-color: #444; /* Фон на случай, если изображение прозрачное */
+        }
+
 
         #page-overlay {
             background: linear-gradient(to top, var(--bg-color) 10%, transparent);
@@ -322,13 +332,10 @@
                     </label>
                     <input type="file" id="file-input-top" class="hidden" accept=".fb2,.fb2.zip">
                     <button id="settings-btn"
-                        class="btn-custom-add text-white p-2 rounded-lg cursor-pointer transition-colors duration-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        class="btn-custom-add text-white py-2 px-2 rounded-lg cursor-pointer transition-colors duration-300 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="3"></circle>
-                            <path
-                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
-                            </path>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
                         </svg>
                     </button>
                 </div>
@@ -740,9 +747,10 @@
             /**
              * Упрощенный парсер, который создает HTML-структуру, а стили применяются через CSS.
              * @param {Node} rootNode - Корневой узел для парсинга.
+             * @param {Document} doc - XML-документ для поиска бинарных данных.
              * @returns {string} - Итоговая строка с HTML.
              */
-            function parseFB2Body(rootNode) {
+            function parseFB2Body(rootNode, doc) {
                 if (!rootNode) return "";
 
                 function processFormatting(node) {
@@ -781,6 +789,12 @@
 
                         const tagName = node.tagName.toLowerCase();
 
+                        // Игнорируем ненужные для отображения теги метаданных
+                        const ignoredTags = ['genre', 'author', 'book-title', 'lang', 'src-lang', 'translator', 'sequence', 'document-info'];
+                        if (ignoredTags.includes(tagName)) {
+                            return; // Просто пропускаем этот тег
+                        }
+
                         switch (tagName) {
                             case 'title':
                                 const headingLevel = Math.min(6, level + 2);
@@ -797,6 +811,17 @@
                                 break;
                             case 'subtitle':
                                 html += `<h3>${processFormatting(node)}</h3>`;
+                                break;
+                            case 'image':
+                                const imageId = node.getAttribute('l:href')?.substring(1);
+                                if (imageId) {
+                                    const binaryImage = doc.querySelector(`binary[id="${imageId}"]`);
+                                    if (binaryImage) {
+                                        const contentType = binaryImage.getAttribute('content-type') || 'image/jpeg';
+                                        const base64Data = binaryImage.textContent;
+                                        html += `<img src="data:${contentType};base64,${base64Data}" alt="Иллюстрация из книги" />`;
+                                    }
+                                }
                                 break;
                             case 'cite':
                                 html += `<div class="quote-block">${processFormatting(node)}</div>`;
@@ -841,10 +866,10 @@
                 let contentHTML = '';
 
                 if (descriptionNode) {
-                    contentHTML += parseFB2Body(descriptionNode);
+                    contentHTML += parseFB2Body(descriptionNode, doc);
                 }
                 if (bodyNode) {
-                    contentHTML += parseFB2Body(bodyNode);
+                    contentHTML += parseFB2Body(bodyNode, doc);
                 }
 
                 if (!contentHTML) {
@@ -1164,6 +1189,4 @@
 </body>
 
 </html>
-
-
 
