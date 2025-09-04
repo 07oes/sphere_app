@@ -95,8 +95,15 @@
         }
 
         .back-button {
-            color: var(--link-color);
+            color: #ababab !important;
+            /* Новый цвет для кнопки "Назад" */
         }
+        
+        /* Новый стиль для заголовков в настройках */
+        #settings-screen .text-gray-400 {
+            color: #ababab !important;
+        }
+
 
         /* --- СТИЛИ ДЛЯ СКРОЛЛИНГА --- */
         #book-content-wrapper {
@@ -731,8 +738,8 @@
                     let html = '';
                     parentNode.childNodes.forEach(node => {
                         if (node.nodeType === Node.TEXT_NODE && node.textContent.trim().length > 0) {
-                            html += `<p>${node.textContent}</p>`;
-                            return;
+                             html += `<p>${node.textContent}</p>`;
+                             return;
                         }
 
                         if (node.nodeType !== Node.ELEMENT_NODE) return;
@@ -922,7 +929,7 @@
                     const color = themeColors[globalSettings.readingTheme] || '#1e1e1e';
                     tg.setHeaderColor(color);
                     tg.setBackgroundColor(color);
-                } catch (e) { }
+                } catch (e) {}
 
                 bookContent.style.fontSize = `${globalSettings.fontSize}px`;
                 bookContent.style.fontWeight = globalSettings.fontWeight;
@@ -1004,7 +1011,7 @@
                 try {
                     tg.setHeaderColor('#1e1e1e');
                     tg.setBackgroundColor('#1e1e1e');
-                } catch (e) { }
+                } catch (e) {}
 
                 if (screenName === 'library') {
                     libraryScreen.classList.remove('hidden');
@@ -1122,3 +1129,4 @@
 </body>
 
 </html>
+
