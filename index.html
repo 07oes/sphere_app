@@ -626,22 +626,12 @@
                         }, true);
 
                         bookElement.addEventListener('mousedown', swipeStart);
-                        bookElement.addEventListener('touchstart', swipeStart, {
-                            passive: true
-                        });
+                        bookElement.addEventListener('touchstart', swipeStart);
 
 
                         function swipeStart(e) {
                             if (e.type === 'mousedown' && e.button !== 0) return;
                             
-                            const rect = bookElement.getBoundingClientRect();
-                            const touchX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
-                            
-                            // ИЗМЕНЕНИЕ: Активируем свайп, только если касание в правой трети блока (примерно 33%)
-                            if (touchX < rect.left + (rect.width * 2 / 3)) {
-                                return;
-                            }
-
                             const otherSwiped = document.querySelector('.book-item-wrapper.swiped');
                             if (otherSwiped && otherSwiped !== wrapper) {
                                 otherSwiped.classList.remove('swiped');
@@ -651,8 +641,9 @@
                             isSwiping = false;
                             isVerticalScroll = false;
                             
-                            startX = touchX;
-                            startY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+                            const touch = e.type === 'touchstart' ? e.touches[0] : e;
+                            startX = touch.clientX;
+                            startY = touch.clientY;
 
                             bookElement.style.transition = 'none';
                             deleteButton.style.transition = 'none';
@@ -672,14 +663,15 @@
                         function swipeMove(e) {
                             if (!isDragging) return;
                             
-                            const currentY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
-                            currentX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+                            const touch = e.type === 'touchmove' ? e.touches[0] : e;
+                            currentX = touch.clientX;
+                            const currentY = touch.clientY;
                             
                             const diffX = currentX - startX;
                             const diffY = currentY - startY;
 
                             if (!isSwiping && !isVerticalScroll) {
-                                if (Math.abs(diffX) > 10) {
+                                if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 10) {
                                     isSwiping = true;
                                 } else if (Math.abs(diffY) > 10) {
                                     isVerticalScroll = true;
@@ -1267,6 +1259,4 @@
 </body>
 
 </html>
-
-
 
