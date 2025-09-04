@@ -34,7 +34,7 @@
             --bg-color: #ffffff;
             --text-color: #000000;
             --border-color: #e0e0e0;
-            --link-color: #007aff;
+            --link-color: #22c55e; /* Заменяем синий цвет на зеленый */
         }
 
         #reader-screen.theme-dark {
@@ -95,8 +95,43 @@
         }
 
         .back-button {
-            color: #ababab !important;
-            /* Новый цвет для кнопки "Назад" */
+            color: #757575 !important;
+            /* Стандартный цвет для кнопки "Назад" */
+        }
+
+        /* Стиль для ховера кнопки "Назад" в тёмной (стандартной) теме */
+        .back-button:hover {
+            background-color: #292929 !important;
+        }
+
+        /* Устанавливаем специальный цвет для кнопки в светлой теме */
+        #reader-screen.theme-light .back-button {
+            color: #5d5d5d !important;
+        }
+
+        /* Новый стиль для ховера кнопки "Назад" в светлой теме */
+        #reader-screen.theme-light .back-button:hover {
+            background-color: #eaeaea !important; /* Светло-серый фон при наведении */
+        }
+        
+        /* Устанавливаем специальный цвет для кнопки в теме сепия */
+        #reader-screen.theme-sepia .back-button {
+            color: #5d534c !important;
+        }
+
+        /* Новый стиль для ховера кнопки "Назад" в теме сепия */
+        #reader-screen.theme-sepia .back-button:hover {
+            background-color: #ddd4c1 !important;
+        }
+        
+        /* Устанавливаем специальный цвет для кнопки в теме консоль */
+        #reader-screen.theme-console .back-button {
+            color: #007b00 !important;
+        }
+
+        /* Новый стиль для ховера кнопки "Назад" в теме консоль */
+        #reader-screen.theme-console .back-button:hover {
+            background-color: #141a13 !important;
         }
         
         /* Новый стиль для заголовков в настройках */
@@ -317,7 +352,7 @@
         <div id="reader-screen" class="screen hidden w-full h-full flex flex-col">
             <header class="p-2 border-b flex items-center justify-center relative flex-shrink-0 h-[56px]">
                 <button id="back-to-library-btn"
-                    class="back-button absolute left-2 top-1/2 -translate-y-1/2 font-bold py-2 px-4 rounded-lg hover:bg-zinc-800">❮
+                    class="back-button absolute left-2 top-1/2 -translate-y-1/2 font-bold py-2 px-4 rounded-lg">❮
                     Назад</button>
                 <div class="text-center mx-auto px-24 overflow-hidden">
                     <h2 id="book-title" class="text-lg font-bold truncate">Название книги</h2>
@@ -339,7 +374,7 @@
         <div id="settings-screen" class="screen hidden w-full h-full flex flex-col">
             <header class="p-2 border-b flex items-center justify-center relative flex-shrink-0 h-[56px]">
                 <button id="back-to-library-from-settings-btn"
-                    class="back-button absolute left-2 top-1/2 -translate-y-1/2 font-bold py-2 px-4 rounded-lg hover:bg-zinc-800">❮
+                    class="back-button absolute left-2 top-1/2 -translate-y-1/2 font-bold py-2 px-4 rounded-lg">❮
                     Назад</button>
                 <div class="text-center mx-auto px-24 overflow-hidden">
                     <h1 class="text-xl font-bold truncate">Настройки</h1>
@@ -1129,4 +1164,6 @@
 </body>
 
 </html>
+
+
 
