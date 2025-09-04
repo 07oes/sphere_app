@@ -145,6 +145,12 @@
             height: calc(100vh - 57px);
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
+            transition: height 0.3s ease-in-out, margin-top 0.3s ease-in-out;
+        }
+
+        #reader-screen.ui-hidden #book-content-wrapper {
+            height: 100vh;
+            margin-top: -57px;
         }
 
         #book-content {
@@ -204,7 +210,6 @@
             background-color: #444; /* Фон на случай, если изображение прозрачное */
         }
 
-
         #page-overlay {
             background: linear-gradient(to top, var(--bg-color) 10%, transparent);
         }
@@ -218,6 +223,23 @@
             transform: scale(0.95);
             pointer-events: none;
             position: absolute;
+        }
+        
+        /* --- СТИЛИ ДЛЯ РЕЖИМА ЧИСТОГО ЧТЕНИЯ --- */
+        #reader-screen > header, #reader-screen #page-overlay {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+
+        #reader-screen.ui-hidden > header {
+            opacity: 0;
+            transform: translateY(-100%);
+            pointer-events: none;
+        }
+
+        #reader-screen.ui-hidden #page-overlay {
+            opacity: 0;
+            transform: translateY(100%);
+            pointer-events: none;
         }
 
         .loader-container {
@@ -1093,6 +1115,11 @@
             backToLibraryBtn.addEventListener('click', () => switchToScreen('library'));
             settingsBtn.addEventListener('click', () => switchToScreen('settings'));
             backToLibraryFromSettingsBtn.addEventListener('click', () => switchToScreen('library'));
+            
+            // --- Логика режима чистого чтения ---
+            bookContentWrapper.addEventListener('click', () => {
+                readerScreen.classList.toggle('ui-hidden');
+            });
 
             let scrollTimeout;
             bookContentWrapper.addEventListener('scroll', () => {
