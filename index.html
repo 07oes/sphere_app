@@ -671,6 +671,7 @@
                             const diffY = currentY - startY;
 
                             if (!isSwiping && !isVerticalScroll) {
+                                // Определяем направление жеста: горизонтальное или вертикальное
                                 if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 10) {
                                     isSwiping = true;
                                 } else if (Math.abs(diffY) > 10) {
@@ -1142,10 +1143,8 @@
             backToLibraryFromSettingsBtn.addEventListener('click', () => switchToScreen('library'));
             
             // --- Логика режима чистого чтения ---
-            bookContentWrapper.addEventListener('click', (e) => {
-                if(e.target === bookContentWrapper || e.target === bookContent) {
-                    readerScreen.classList.toggle('ui-hidden');
-                }
+            bookContent.addEventListener('click', () => {
+                readerScreen.classList.toggle('ui-hidden');
             });
 
             let scrollTimeout;
@@ -1259,4 +1258,5 @@
 </body>
 
 </html>
+
 
