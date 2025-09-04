@@ -614,10 +614,12 @@
                         let startX = 0;
                         let currentX = 0;
                         let isSwiping = false;
+                        let isVerticalScroll = false;
+                        let startY = 0;
                         const threshold = -50; // Дистанция для срабатывания свайпа
                         const deleteButton = wrapper.querySelector('.delete-action'); // Получаем кнопку сразу
 
-                        bookElement.addEventListener('click', () => {
+                        bookElement.addEventListener('click', (e) => {
                             if (!isSwiping) {
                                 openBook(book.id);
                             }
@@ -630,35 +632,38 @@
 
 
                         function swipeStart(e) {
-                            // ИЗМЕНЕНИЕ: Проверяем, что это левая кнопка мыши
-                            if (e.type === 'mousedown' && e.button !== 0) {
-                                return; // Игнорируем все клики, кроме левого
+                            if (e.type === 'mousedown' && e.button !== 0) return;
+                            
+                            const rect = bookElement.getBoundingClientRect();
+                            const touchX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+                            
+                            // ИЗМЕНЕНИЕ: Активируем свайп, только если касание в правой трети блока (примерно 33%)
+                            if (touchX < rect.left + (rect.width * 2 / 3)) {
+                                return;
                             }
 
-                            const otherSwiped = document.querySelector(
-                                '.book-item-wrapper.swiped');
+                            const otherSwiped = document.querySelector('.book-item-wrapper.swiped');
                             if (otherSwiped && otherSwiped !== wrapper) {
-                                otherSwiped.querySelector('.book-item-content').style
-                                    .transform = 'translateX(0)';
                                 otherSwiped.classList.remove('swiped');
                             }
 
                             isDragging = true;
                             isSwiping = false;
+                            isVerticalScroll = false;
+                            
+                            startX = touchX;
+                            startY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+
                             bookElement.style.transition = 'none';
-                            deleteButton.style.transition = 'none'; // Отключаем анимацию и для кнопки
+                            deleteButton.style.transition = 'none';
 
                             if (e.type === 'mousedown') {
                                 e.preventDefault();
                                 document.body.classList.add('grabbing');
-                                startX = e.clientX;
                                 document.addEventListener('mousemove', swipeMove);
                                 document.addEventListener('mouseup', swipeEnd);
                             } else { // touchstart
-                                startX = e.touches[0].clientX;
-                                document.addEventListener('touchmove', swipeMove, {
-                                    passive: true
-                                });
+                                document.addEventListener('touchmove', swipeMove, { passive: false });
                                 document.addEventListener('touchend', swipeEnd);
                             }
                             currentX = startX;
@@ -666,23 +671,38 @@
 
                         function swipeMove(e) {
                             if (!isDragging) return;
-                            currentX = e.type === 'touchmove' ? e.touches[0].clientX : e
-                                .clientX;
-                            let diff = currentX - startX;
-                            if (Math.abs(diff) > 10) isSwiping = true;
+                            
+                            const currentY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+                            currentX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+                            
+                            const diffX = currentX - startX;
+                            const diffY = currentY - startY;
 
-                            // Ограничиваем свайп, чтобы не уехать слишком далеко
-                            diff = Math.max(-110, Math.min(0, diff));
-
-                            // Двигаем оба элемента одновременно
-                            bookElement.style.transform = `translateX(${diff}px)`;
-                            // Рассчитываем положение кнопки: от 90px до -10px, пропорционально движению блока
-                            const buttonTranslateX = 90 + (diff * (100 / 110));
-                            deleteButton.style.transform = `translateY(-50%) translateX(${buttonTranslateX}px)`;
+                            if (!isSwiping && !isVerticalScroll) {
+                                if (Math.abs(diffX) > 10) {
+                                    isSwiping = true;
+                                } else if (Math.abs(diffY) > 10) {
+                                    isVerticalScroll = true;
+                                }
+                            }
+                            
+                            if (isVerticalScroll) {
+                                swipeEnd(e); // Прерываем свайп, если это вертикальная прокрутка
+                                return;
+                            }
+                            
+                            if (isSwiping) {
+                                e.preventDefault(); // Предотвращаем скролл страницы при горизонтальном свайпе
+                                const diff = Math.max(-110, Math.min(0, diffX));
+                                bookElement.style.transform = `translateX(${diff}px)`;
+                                const buttonTranslateX = 90 + (diff * (100 / 110));
+                                deleteButton.style.transform = `translateY(-50%) translateX(${buttonTranslateX}px)`;
+                            }
                         }
 
                         function swipeEnd(e) {
                             if (!isDragging) return;
+                            isDragging = false;
 
                             if (e.type === 'mouseup') {
                                 document.body.classList.remove('grabbing');
@@ -693,23 +713,22 @@
                                 document.removeEventListener('touchend', swipeEnd);
                             }
 
-                            isDragging = false;
-
-                            // Возвращаем управление анимацией в CSS
                             bookElement.style.transform = '';
-                            deleteButton.style.transform = ''; // Убираем инлайн-стиль и с кнопки
+                            deleteButton.style.transform = '';
                             bookElement.style.transition = 'transform 0.3s ease';
-                            deleteButton.style.transition = 'transform 0.3s ease'; // Возвращаем анимацию и кнопке
+                            deleteButton.style.transition = 'transform 0.3s ease';
 
                             let diff = currentX - startX;
-                            if (diff < threshold) {
+                            if (isSwiping && diff < threshold) {
                                 wrapper.classList.add('swiped');
-                                confirmDelete(book.id, book.title);
+                                confirmDelete(book.id, book.title); // Возвращаем вызов окна подтверждения
                             } else {
                                 wrapper.classList.remove('swiped');
                             }
+                            
+                            // Используем setTimeout, чтобы клик не сработал сразу после свайпа
                             setTimeout(() => {
-                                if (diff > threshold) isSwiping = false;
+                                isSwiping = false;
                             }, 100);
                         }
                     });
@@ -1131,8 +1150,10 @@
             backToLibraryFromSettingsBtn.addEventListener('click', () => switchToScreen('library'));
             
             // --- Логика режима чистого чтения ---
-            bookContentWrapper.addEventListener('click', () => {
-                readerScreen.classList.toggle('ui-hidden');
+            bookContentWrapper.addEventListener('click', (e) => {
+                if(e.target === bookContentWrapper || e.target === bookContent) {
+                    readerScreen.classList.toggle('ui-hidden');
+                }
             });
 
             let scrollTimeout;
@@ -1246,7 +1267,6 @@
 </body>
 
 </html>
-
 
 
 
