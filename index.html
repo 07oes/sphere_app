@@ -59,13 +59,33 @@
             --link-color: #00b500;
         }
 
+        /* --- НОВАЯ ТЕМА: ГРАДИЕНТ --- */
+        #reader-screen.theme-gradient {
+            --bg-color: #1d2b64; /* Fallback color */
+            --text-color: #e0e0e0;
+            --border-color: #3a3a7a;
+            --link-color: #4ade80;
+
+            background-image: linear-gradient(135deg, #1d2b64 0%, #4a0e4e 100%);
+            background-attachment: fixed; /* Градиент не скроллится с текстом */
+        }
+
+
         .screen {
             background-color: var(--bg-color);
             color: var(--text-color);
         }
 
+        /* Применяем градиент к экрану чтения, если он активен */
+        #reader-screen.theme-gradient {
+             background-color: transparent; /* Убираем сплошной цвет, чтобы был виден градиент body */
+        }
+
+
         header {
             border-color: var(--border-color) !important;
+            position: relative; /* Убеждаемся, что z-index будет работать */
+            z-index: 10;      /* Ставим шапку поверх остального контента */
         }
 
         .settings-block {
@@ -134,6 +154,16 @@
         /* Новый стиль для ховера кнопки "Назад" в теме консоль */
         #reader-screen.theme-console .back-button:hover {
             background-color: #141a13 !important;
+        }
+
+        /* Устанавливаем специальный цвет для кнопки в теме градиент */
+        #reader-screen.theme-gradient .back-button {
+            color: #ffffffaa !important;
+        }
+
+        /* Новый стиль для ховера кнопки "Назад" в теме градиент */
+        #reader-screen.theme-gradient .back-button:hover {
+            background-color: rgba(0, 0, 0, 0.2) !important;
         }
 
         /* Новый стиль для заголовков в настройках */
@@ -216,6 +246,10 @@
         #page-overlay {
             background: linear-gradient(to top, var(--bg-color) 10%, transparent);
         }
+        
+        #reader-screen.theme-gradient #page-overlay {
+             background: linear-gradient(to top, rgba(74, 14, 78, 0.8) 10%, transparent); /* Используем цвет из градиента с прозрачностью */
+        }
 
         .screen {
             transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
@@ -231,11 +265,10 @@
         /* --- СТИЛИ ДЛЯ РЕЖИМА ЧИСТОГО ЧТЕНИЯ --- */
         #reader-screen>header,
         #reader-screen #page-overlay {
-            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
         }
 
         #reader-screen.ui-hidden>header {
-            opacity: 0;
             transform: translateY(-100%);
             pointer-events: none;
         }
@@ -395,6 +428,11 @@
                 </div>
             </header>
 
+            <button id="fullscreen-btn" class="back-button absolute right-5 top-2 z-20 p-2 rounded-lg w-10 h-10 flex items-center justify-center">
+                <svg id="fullscreen-enter-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+                <svg id="fullscreen-exit-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path></svg>
+            </button>
+
             <div class="flex-grow relative">
                 <main id="book-content-wrapper">
                     <div id="book-content"></div>
@@ -436,12 +474,14 @@
                             <span>Жирный шрифт</span>
                             <span id="font-weight-value">400</span>
                         </div>
-                        <input type="range" id="font-weight-slider" min="100" max="900" step="100" class="w-full mt-2">
+                        <input type="range" id="font-weight-slider" min="100" max="900" step="100"
+                            class="w-full mt-2">
                         <div class="flex justify-between items-center mt-4">
                             <span>Междустрочный интервал</span>
                             <span id="line-height-value">180%</span>
                         </div>
-                        <input type="range" id="line-height-slider" min="100" max="200" step="10" class="w-full mt-2">
+                        <input type="range" id="line-height-slider" min="100" max="200" step="10"
+                            class="w-full mt-2">
                         <div class="mt-4">
                             <span class="mb-2 block">Выбор шрифта</span>
                             <div id="font-selector" class="grid grid-cols-2 gap-2">
@@ -528,6 +568,9 @@
             const confirmModalText = document.getElementById('confirm-modal-text');
             const confirmModalYes = document.getElementById('confirm-modal-yes');
             const confirmModalNo = document.getElementById('confirm-modal-no');
+            const fullscreenBtn = document.getElementById('fullscreen-btn');
+            const fullscreenEnterIcon = document.getElementById('fullscreen-enter-icon');
+            const fullscreenExitIcon = document.getElementById('fullscreen-exit-icon');
 
             // --- Состояние приложения ---
             const defaultSettings = {
@@ -1030,14 +1073,22 @@
             }
 
             function applyReadingSettings() {
-                readerScreen.className = 'screen w-full h-full flex flex-col';
+                // Сначала сбрасываем все классы тем, чтобы избежать их накопления
+                readerScreen.className = 'screen hidden w-full h-full flex flex-col'; // Сбрасываем и добавляем hidden
+                if (currentBookId) { // Если книга открыта, убираем hidden
+                    readerScreen.classList.remove('hidden');
+                }
+                // Добавляем актуальный класс темы
                 readerScreen.classList.add(globalSettings.readingTheme);
+
                 try {
+                    const tg = window.Telegram.WebApp;
                     const themeColors = {
                         'theme-light': '#ffffff',
                         'theme-dark': '#1e1e1e',
                         'theme-sepia': '#fbf0d9',
-                        'theme-console': '#000000'
+                        'theme-console': '#000000',
+                        'theme-gradient': '#1d2b64' // Цвет для шапки в теме градиента
                     };
                     const color = themeColors[globalSettings.readingTheme] || '#1e1e1e';
                     tg.setHeaderColor(color);
@@ -1049,6 +1100,7 @@
                 bookContent.style.fontFamily = globalSettings.fontFamily;
                 bookContent.style.lineHeight = `${globalSettings.lineHeight}%`;
             }
+
 
             function renderSettings() {
                 themeSelector.innerHTML = '';
@@ -1064,6 +1116,9 @@
                 }, {
                     id: 'theme-console',
                     name: 'Консоль'
+                }, {
+                    id: 'theme-gradient',
+                    name: 'Градиент'
                 }];
                 themes.forEach(theme => {
                     const label = document.createElement('label');
@@ -1125,36 +1180,41 @@
                 settingsScreen.classList.add('hidden');
 
                 try {
-                    tg.setHeaderColor('#1e1e1e');
-                    tg.setBackgroundColor('#1e1e1e');
+                    const tg = window.Telegram.WebApp;
+                    // Для всех экранов кроме чтения, возвращаем стандартный цвет
+                    if (screenName !== 'reader') {
+                        tg.setHeaderColor('#1e1e1e');
+                        tg.setBackgroundColor('#1e1e1e');
+                    }
                 } catch (e) { }
+
 
                 if (screenName === 'library') {
                     libraryScreen.classList.remove('hidden');
                     renderLibrary();
                 } else if (screenName === 'reader') {
                     readerScreen.classList.remove('hidden');
-                    applyReadingSettings();
+                    applyReadingSettings(); // Применяем настройки, включая цвет для Telegram
                 } else if (screenName === 'settings') {
                     settingsScreen.classList.remove('hidden');
                     renderSettings();
                 }
             }
 
+
             function showLoader(show) {
                 loader.classList.toggle('hidden', !show);
             }
 
             // --- Обработчики событий ---
-            backToLibraryBtn.addEventListener('click', () => switchToScreen('library'));
+            backToLibraryBtn.addEventListener('click', () => {
+                currentBookId = null; // Сбрасываем ID текущей книги при выходе в библиотеку
+                switchToScreen('library')
+            });
             settingsBtn.addEventListener('click', () => switchToScreen('settings'));
             backToLibraryFromSettingsBtn.addEventListener('click', () => switchToScreen('library'));
 
             // --- Логика режима чистого чтения ---
-            bookContent.addEventListener('click', () => {
-                readerScreen.classList.toggle('ui-hidden');
-            });
-
             let scrollTimeout;
             bookContentWrapper.addEventListener('scroll', () => {
                 updateScrollUI();
@@ -1171,18 +1231,20 @@
                 if (e.target.name === 'theme') {
                     globalSettings.readingTheme = e.target.value;
                     saveGlobalSettings();
-                    if (!readerScreen.classList.contains('hidden')) {
+                    // Применяем настройки только если экран чтения активен
+                    if (currentBookId) {
                         applyReadingSettings();
                     }
                 }
             });
+
 
             fontSizeSlider.addEventListener('input', (e) => {
                 const newSize = e.target.value;
                 globalSettings.fontSize = parseInt(newSize, 10);
                 fontSizeValue.textContent = `${newSize}px`;
                 saveGlobalSettings();
-                if (!readerScreen.classList.contains('hidden')) {
+                if (currentBookId) {
                     applyReadingSettings();
                 }
             });
@@ -1192,7 +1254,7 @@
                 globalSettings.fontWeight = parseInt(newWeight, 10);
                 fontWeightValue.textContent = newWeight;
                 saveGlobalSettings();
-                if (!readerScreen.classList.contains('hidden')) {
+                if (currentBookId) {
                     applyReadingSettings();
                 }
             });
@@ -1202,7 +1264,7 @@
                 globalSettings.lineHeight = parseInt(newHeight, 10);
                 lineHeightValue.textContent = `${newHeight}%`;
                 saveGlobalSettings();
-                if (!readerScreen.classList.contains('hidden')) {
+                if (currentBookId) {
                     applyReadingSettings();
                 }
             });
@@ -1211,7 +1273,7 @@
                 if (e.target.name === 'font') {
                     globalSettings.fontFamily = e.target.value;
                     saveGlobalSettings();
-                    if (!readerScreen.classList.contains('hidden')) {
+                    if (currentBookId) {
                         applyReadingSettings();
                     }
                 }
@@ -1221,7 +1283,39 @@
                 globalSettings = { ...defaultSettings };
                 saveGlobalSettings();
                 renderSettings();
+                if (currentBookId) {
+                   applyReadingSettings();
+                }
             });
+
+            // --- Fullscreen Logic ---
+            function toggleFullScreen() {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(err => {
+                        console.warn(`Fullscreen API might not be supported or is restricted: ${err.message}`);
+                    });
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    }
+                }
+            }
+
+            function updateFullscreenIcon() {
+                if (document.fullscreenElement) {
+                    fullscreenEnterIcon.classList.add('hidden');
+                    fullscreenExitIcon.classList.remove('hidden');
+                } else {
+                    fullscreenEnterIcon.classList.remove('hidden');
+                    fullscreenExitIcon.classList.add('hidden');
+                }
+            }
+
+            fullscreenBtn.addEventListener('click', () => {
+                readerScreen.classList.toggle('ui-hidden');
+                toggleFullScreen();
+            });
+            document.addEventListener('fullscreenchange', updateFullscreenIcon);
 
             // --- Обработчики для модального окна ---
             confirmModalNo.addEventListener('click', () => {
@@ -1266,3 +1360,5 @@
 </body>
 
 </html>
+
+
