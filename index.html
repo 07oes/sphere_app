@@ -174,20 +174,24 @@
         /* Стили для кнопки "чистого экрана" в активном состоянии */
         #reader-screen.ui-hidden #fullscreen-btn {
             transition: background-color 0.3s ease;
-            background-color: transparent !important; /* Убираем фон по умолчанию */
+            background-color: transparent !important;
+            /* Убираем фон по умолчанию */
         }
-        
+
         #reader-screen.ui-hidden #fullscreen-btn svg {
-             stroke: #3f3f3f !important; /* Цвет иконки по умолчанию */
-             transition: stroke 0.3s ease;
+            stroke: #3f3f3f !important;
+            /* Цвет иконки по умолчанию */
+            transition: stroke 0.3s ease;
         }
 
         #reader-screen.ui-hidden #fullscreen-btn:hover {
-            background-color: #292929 !important; /* Добавляем фон при наведении */
+            background-color: #292929 !important;
+            /* Добавляем фон при наведении */
         }
 
         #reader-screen.ui-hidden #fullscreen-btn:hover svg {
-            stroke: #757575 !important; /* Цвет иконки при наведении */
+            stroke: #757575 !important;
+            /* Цвет иконки при наведении */
         }
 
 
@@ -456,16 +460,10 @@
 
             <button id="fullscreen-btn"
                 class="back-button absolute right-5 top-2 z-20 p-2 rounded-lg w-10 h-10 flex items-center justify-center">
-                <svg id="fullscreen-enter-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                     stroke-linejoin="round">
                     <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3">
-                    </path>
-                </svg>
-                <svg id="fullscreen-exit-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" class="hidden">
-                    <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3">
                     </path>
                 </svg>
             </button>
@@ -606,8 +604,6 @@
             const confirmModalYes = document.getElementById('confirm-modal-yes');
             const confirmModalNo = document.getElementById('confirm-modal-no');
             const fullscreenBtn = document.getElementById('fullscreen-btn');
-            const fullscreenEnterIcon = document.getElementById('fullscreen-enter-icon');
-            const fullscreenExitIcon = document.getElementById('fullscreen-exit-icon');
 
             // --- Состояние приложения ---
             const defaultSettings = {
@@ -1338,21 +1334,10 @@
                 }
             }
 
-            function updateFullscreenIcon() {
-                if (document.fullscreenElement) {
-                    fullscreenEnterIcon.classList.add('hidden');
-                    fullscreenExitIcon.classList.remove('hidden');
-                } else {
-                    fullscreenEnterIcon.classList.remove('hidden');
-                    fullscreenExitIcon.classList.add('hidden');
-                }
-            }
-
             fullscreenBtn.addEventListener('click', () => {
                 readerScreen.classList.toggle('ui-hidden');
                 toggleFullScreen();
             });
-            document.addEventListener('fullscreenchange', updateFullscreenIcon);
 
             // --- Обработчики для модального окна ---
             confirmModalNo.addEventListener('click', () => {
