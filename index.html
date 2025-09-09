@@ -61,13 +61,15 @@
 
         /* --- НОВАЯ ТЕМА: ГРАДИЕНТ --- */
         #reader-screen.theme-gradient {
-            --bg-color: #1d2b64; /* Fallback color */
+            --bg-color: #1d2b64;
+            /* Fallback color */
             --text-color: #e0e0e0;
             --border-color: #3a3a7a;
             --link-color: #4ade80;
 
             background-image: linear-gradient(135deg, #1d2b64 0%, #4a0e4e 100%);
-            background-attachment: fixed; /* Градиент не скроллится с текстом */
+            background-attachment: fixed;
+            /* Градиент не скроллится с текстом */
         }
 
 
@@ -78,14 +80,17 @@
 
         /* Применяем градиент к экрану чтения, если он активен */
         #reader-screen.theme-gradient {
-             background-color: transparent; /* Убираем сплошной цвет, чтобы был виден градиент body */
+            background-color: transparent;
+            /* Убираем сплошной цвет, чтобы был виден градиент body */
         }
 
 
         header {
             border-color: var(--border-color) !important;
-            position: relative; /* Убеждаемся, что z-index будет работать */
-            z-index: 10;      /* Ставим шапку поверх остального контента */
+            position: relative;
+            /* Убеждаемся, что z-index будет работать */
+            z-index: 10;
+            /* Ставим шапку поверх остального контента */
         }
 
         .settings-block {
@@ -165,6 +170,26 @@
         #reader-screen.theme-gradient .back-button:hover {
             background-color: rgba(0, 0, 0, 0.2) !important;
         }
+
+        /* Стили для кнопки "чистого экрана" в активном состоянии */
+        #reader-screen.ui-hidden #fullscreen-btn {
+            transition: background-color 0.3s ease;
+            background-color: transparent !important; /* Убираем фон по умолчанию */
+        }
+        
+        #reader-screen.ui-hidden #fullscreen-btn svg {
+             stroke: #3f3f3f !important; /* Цвет иконки по умолчанию */
+             transition: stroke 0.3s ease;
+        }
+
+        #reader-screen.ui-hidden #fullscreen-btn:hover {
+            background-color: #292929 !important; /* Добавляем фон при наведении */
+        }
+
+        #reader-screen.ui-hidden #fullscreen-btn:hover svg {
+            stroke: #757575 !important; /* Цвет иконки при наведении */
+        }
+
 
         /* Новый стиль для заголовков в настройках */
         #settings-screen .text-gray-400 {
@@ -246,9 +271,10 @@
         #page-overlay {
             background: linear-gradient(to top, var(--bg-color) 10%, transparent);
         }
-        
+
         #reader-screen.theme-gradient #page-overlay {
-             background: linear-gradient(to top, rgba(74, 14, 78, 0.8) 10%, transparent); /* Используем цвет из градиента с прозрачностью */
+            background: linear-gradient(to top, rgba(74, 14, 78, 0.8) 10%, transparent);
+            /* Используем цвет из градиента с прозрачностью */
         }
 
         .screen {
@@ -428,9 +454,20 @@
                 </div>
             </header>
 
-            <button id="fullscreen-btn" class="back-button absolute right-5 top-2 z-20 p-2 rounded-lg w-10 h-10 flex items-center justify-center">
-                <svg id="fullscreen-enter-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
-                <svg id="fullscreen-exit-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path></svg>
+            <button id="fullscreen-btn"
+                class="back-button absolute right-5 top-2 z-20 p-2 rounded-lg w-10 h-10 flex items-center justify-center">
+                <svg id="fullscreen-enter-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3">
+                    </path>
+                </svg>
+                <svg id="fullscreen-exit-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="hidden">
+                    <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3">
+                    </path>
+                </svg>
             </button>
 
             <div class="flex-grow relative">
@@ -1284,7 +1321,7 @@
                 saveGlobalSettings();
                 renderSettings();
                 if (currentBookId) {
-                   applyReadingSettings();
+                    applyReadingSettings();
                 }
             });
 
@@ -1360,5 +1397,4 @@
 </body>
 
 </html>
-
 
