@@ -125,75 +125,57 @@
             /* Стандартный цвет для кнопки "Назад" */
         }
 
-        /* Стиль для ховера кнопки "Назад" в тёмной (стандартной) теме */
-        .back-button:hover {
-            background-color: #292929 !important;
+        /* --- ИНТЕРАКТИВНЫЕ СТИЛИ ДЛЯ КНОПОК --- */
+
+        /* СТИЛИ ДЛЯ НАЖАТИЯ (срабатывают на всех устройствах) */
+        .back-button:active { background-color: #292929 !important; }
+        #reader-screen.theme-light .back-button:active { background-color: #eaeaea !important; }
+        #reader-screen.theme-sepia .back-button:active { background-color: #ddd4c1 !important; }
+        #reader-screen.theme-console .back-button:active { background-color: #141a13 !important; }
+        #reader-screen.theme-gradient .back-button:active { background-color: rgba(0, 0, 0, 0.2) !important; }
+
+        /* СТИЛИ ДЛЯ НАВЕДЕНИЯ (срабатывают только на устройствах с мышью, чтобы избежать "залипания" на телефонах) */
+        @media (hover: hover) {
+            .back-button:hover { background-color: #292929 !important; }
+            #reader-screen.theme-light .back-button:hover { background-color: #eaeaea !important; }
+            #reader-screen.theme-sepia .back-button:hover { background-color: #ddd4c1 !important; }
+            #reader-screen.theme-console .back-button:hover { background-color: #141a13 !important; }
+            #reader-screen.theme-gradient .back-button:hover { background-color: rgba(0, 0, 0, 0.2) !important; }
         }
 
-        /* Устанавливаем специальный цвет для кнопки в светлой теме */
-        #reader-screen.theme-light .back-button {
-            color: #5d5d5d !important;
-        }
+        /* Устанавливаем специальный цвет иконки для кнопок в разных темах (когда интерфейс виден) */
+        #reader-screen.theme-light .back-button { color: #5d5d5d !important; }
+        #reader-screen.theme-sepia .back-button { color: #5d534c !important; }
+        #reader-screen.theme-console .back-button { color: #007b00 !important; }
+        #reader-screen.theme-gradient .back-button { color: #ffffffaa !important; }
 
-        /* Новый стиль для ховера кнопки "Назад" в светлой теме */
-        #reader-screen.theme-light .back-button:hover {
-            background-color: #eaeaea !important;
-            /* Светло-серый фон при наведении */
-        }
-
-        /* Устанавливаем специальный цвет для кнопки в теме сепия */
-        #reader-screen.theme-sepia .back-button {
-            color: #5d534c !important;
-        }
-
-        /* Новый стиль для ховера кнопки "Назад" в теме сепия */
-        #reader-screen.theme-sepia .back-button:hover {
-            background-color: #ddd4c1 !important;
-        }
-
-        /* Устанавливаем специальный цвет для кнопки в теме консоль */
-        #reader-screen.theme-console .back-button {
-            color: #007b00 !important;
-        }
-
-        /* Новый стиль для ховера кнопки "Назад" в теме консоль */
-        #reader-screen.theme-console .back-button:hover {
-            background-color: #141a13 !important;
-        }
-
-        /* Устанавливаем специальный цвет для кнопки в теме градиент */
-        #reader-screen.theme-gradient .back-button {
-            color: #ffffffaa !important;
-        }
-
-        /* Новый стиль для ховера кнопки "Назад" в теме градиент */
-        #reader-screen.theme-gradient .back-button:hover {
-            background-color: rgba(0, 0, 0, 0.2) !important;
-        }
-
-        /* Стили для кнопки "чистого экрана" в активном состоянии */
+        /* --- Специфичные стили для кнопки "чистого экрана" --- */
+        
+        /* Когда интерфейс СКРЫТ */
         #reader-screen.ui-hidden #fullscreen-btn {
-            transition: background-color 0.3s ease;
             background-color: transparent !important;
-            /* Убираем фон по умолчанию */
         }
-
         #reader-screen.ui-hidden #fullscreen-btn svg {
             stroke: #3f3f3f !important;
-            /* Цвет иконки по умолчанию */
-            transition: stroke 0.3s ease;
         }
 
+        /* Стиль при НАЖАТИИ (все устройства), когда интерфейс СКРЫТ */
         #reader-screen.ui-hidden #fullscreen-btn:active {
             background-color: #292929 !important;
-            /* Добавляем фон при нажатии */
         }
-
         #reader-screen.ui-hidden #fullscreen-btn:active svg {
             stroke: #757575 !important;
-            /* Цвет иконки при нажатии */
         }
 
+        /* Стиль при НАВЕДЕНИИ (ПК), когда интерфейс СКРЫТ */
+        @media (hover: hover) {
+            #reader-screen.ui-hidden #fullscreen-btn:hover {
+                background-color: #292929 !important;
+            }
+            #reader-screen.ui-hidden #fullscreen-btn:hover svg {
+                stroke: #757575 !important;
+            }
+        }
 
         /* Новый стиль для заголовков в настройках */
         #settings-screen .text-gray-400 {
