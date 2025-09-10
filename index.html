@@ -151,7 +151,25 @@
 
         /* --- Специфичные стили для кнопки "чистого экрана" --- */
         
-        /* Когда интерфейс СКРЫТ */
+        /* === КОГДА ИНТЕРФЕЙС ВИДЕН === */
+        /* Стиль при НАЖАТИИ (все устройства), когда интерфейс ВИДЕН */
+        #reader-screen:not(.ui-hidden) #fullscreen-btn:active { background-color: #292929 !important; }
+        #reader-screen.theme-light:not(.ui-hidden) #fullscreen-btn:active { background-color: #eaeaea !important; }
+        #reader-screen.theme-sepia:not(.ui-hidden) #fullscreen-btn:active { background-color: #ddd4c1 !important; }
+        #reader-screen.theme-console:not(.ui-hidden) #fullscreen-btn:active { background-color: #141a13 !important; }
+        #reader-screen.theme-gradient:not(.ui-hidden) #fullscreen-btn:active { background-color: rgba(0, 0, 0, 0.2) !important; }
+
+        /* Стиль при НАВЕДЕНИИ (ПК), когда интерфейс ВИДЕН */
+        @media (hover: hover) {
+            #reader-screen:not(.ui-hidden) #fullscreen-btn:hover { background-color: #292929 !important; }
+            #reader-screen.theme-light:not(.ui-hidden) #fullscreen-btn:hover { background-color: #eaeaea !important; }
+            #reader-screen.theme-sepia:not(.ui-hidden) #fullscreen-btn:hover { background-color: #ddd4c1 !important; }
+            #reader-screen.theme-console:not(.ui-hidden) #fullscreen-btn:hover { background-color: #141a13 !important; }
+            #reader-screen.theme-gradient:not(.ui-hidden) #fullscreen-btn:hover { background-color: rgba(0, 0, 0, 0.2) !important; }
+        }
+
+
+        /* === КОГДА ИНТЕРФЕЙС СКРЫТ === */
         #reader-screen.ui-hidden #fullscreen-btn {
             background-color: transparent !important;
         }
@@ -276,11 +294,14 @@
 
         /* --- СТИЛИ ДЛЯ РЕЖИМА ЧИСТОГО ЧТЕНИЯ --- */
         #reader-screen>header,
-        #reader-screen #page-overlay {
+        #reader-screen #page-overlay,
+        #reader-screen #toc-btn {
             transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
         }
 
-        #reader-screen.ui-hidden>header {
+        #reader-screen.ui-hidden>header,
+        #reader-screen.ui-hidden #toc-btn {
+            opacity: 0;
             transform: translateY(-100%);
             pointer-events: none;
         }
@@ -386,6 +407,49 @@
         .book-item-wrapper.swiped .delete-action {
             transform: translateY(-50%) translateX(-10px);
         }
+
+        /* --- СТИЛИ ДЛЯ ПАНЕЛИ СОДЕРЖАНИЯ --- */
+        #toc-panel.open {
+            pointer-events: auto; /* Разрешаем клики, когда панель открыта */
+        }
+        #toc-panel.open #toc-overlay {
+            opacity: 1; /* Плавно показываем затемнение */
+        }
+        #toc-panel.open > div:last-child {
+            transform: translateX(0); /* Выдвигаем саму панель */
+        }
+        
+        #toc-list a {
+            display: block;
+            padding: 0.75rem 0.5rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            text-align: left;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        #toc-list a:active {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        #reader-screen.theme-light #toc-list a:active,
+        #reader-screen.theme-sepia #toc-list a:active {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        @media (hover: hover) {
+            #toc-list a:hover {
+                background-color: rgba(255, 255, 255, 0.05);
+            }
+        
+            #reader-screen.theme-light #toc-list a:hover,
+            #reader-screen.theme-sepia #toc-list a:hover {
+                background-color: rgba(0, 0, 0, 0.05);
+            }
+        }
     </style>
 </head>
 
@@ -439,6 +503,10 @@
                     <h2 id="book-title" class="text-lg font-bold truncate">Название книги</h2>
                 </div>
             </header>
+            
+            <button id="toc-btn" class="back-button absolute right-20 top-2 z-20 p-2 rounded-lg w-10 h-10 flex items-center justify-center" style="display: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+            </button>
 
             <button id="fullscreen-btn"
                 class="back-button absolute right-5 top-2 z-20 p-2 rounded-lg w-10 h-10 flex items-center justify-center">
@@ -449,6 +517,19 @@
                     </path>
                 </svg>
             </button>
+            
+            <div id="toc-panel" class="absolute top-0 left-0 h-full w-full pointer-events-none z-30">
+                <div id="toc-overlay" class="absolute top-0 left-0 h-full w-full bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 ease-in-out"></div>
+                <div class="h-full w-full max-w-xs flex flex-col shadow-lg pointer-events-auto relative transform translate-x-full transition-transform duration-300 ease-in-out ml-auto z-10" style="background-color: var(--ui-bg);">
+                    <header class="p-2 border-b flex items-center justify-center relative flex-shrink-0 h-[56px]">
+                         <button id="toc-close-btn" class="back-button p-2 rounded-lg w-10 h-10 flex items-center justify-center absolute left-2 top-1/2 -translate-y-1/2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        </button>
+                        <h2 class="text-lg font-bold px-2">Содержание</h2>
+                    </header>
+                    <nav id="toc-list" class="flex-grow overflow-y-auto p-2"></nav>
+                </div>
+            </div>
 
             <div class="flex-grow relative">
                 <main id="book-content-wrapper">
@@ -515,7 +596,7 @@
                 </div>
             </main>
             <footer class="p-4 text-center text-xs" style="color: #4a4a4a;">
-                Version 0.2 (application for the test)
+                Version 0.3 (application for the test)
             </footer>
         </div>
 
@@ -586,6 +667,11 @@
             const confirmModalYes = document.getElementById('confirm-modal-yes');
             const confirmModalNo = document.getElementById('confirm-modal-no');
             const fullscreenBtn = document.getElementById('fullscreen-btn');
+            const tocBtn = document.getElementById('toc-btn');
+            const tocPanel = document.getElementById('toc-panel');
+            const tocCloseBtn = document.getElementById('toc-close-btn');
+            const tocList = document.getElementById('toc-list');
+            const tocOverlay = document.getElementById('toc-overlay');
 
             // --- Состояние приложения ---
             const defaultSettings = {
@@ -600,6 +686,7 @@
             let currentBookId = null;
             let bookIdToDelete = null; // Для модального окна
             let globalSettings = { ...defaultSettings };
+            let currentBookToc = [];
 
             // --- База данных (IndexedDB) ---
             const DB_NAME = 'FB2ReaderDB';
@@ -860,13 +947,8 @@
             fileInputTop.addEventListener('change', handleFileSelect);
             fileInputCenter.addEventListener('change', handleFileSelect);
 
-            /**
-             * Упрощенный парсер, который создает HTML-структуру, а стили применяются через CSS.
-             * @param {Node} rootNode - Корневой узел для парсинга.
-             * @param {Document} doc - XML-документ для поиска бинарных данных.
-             * @returns {string} - Итоговая строка с HTML.
-             */
-            function parseFB2Body(rootNode, doc) {
+            
+            function parseFB2Body(rootNode, doc, tocArray) {
                 if (!rootNode) return "";
 
                 function processFormatting(node) {
@@ -897,24 +979,33 @@
                     let html = '';
                     parentNode.childNodes.forEach(node => {
                         if (node.nodeType === Node.TEXT_NODE && node.textContent.trim().length > 0) {
-                            html += `<p>${node.textContent}</p>`;
-                            return;
+                             html += `<p>${node.textContent}</p>`;
+                             return;
                         }
 
                         if (node.nodeType !== Node.ELEMENT_NODE) return;
 
                         const tagName = node.tagName.toLowerCase();
-
-                        // Игнорируем ненужные для отображения теги метаданных
                         const ignoredTags = ['genre', 'author', 'book-title', 'lang', 'src-lang', 'translator', 'sequence', 'document-info'];
                         if (ignoredTags.includes(tagName)) {
-                            return; // Просто пропускаем этот тег
+                            return;
                         }
 
                         switch (tagName) {
                             case 'title':
-                                const headingLevel = Math.min(6, level + 2);
-                                html += `<h${headingLevel}>${processFormatting(node)}</h${headingLevel}>`;
+                                const parentTagName = parentNode.tagName ? parentNode.tagName.toLowerCase() : '';
+                                if (parentTagName === 'section') {
+                                    const sectionTitle = processFormatting(node).trim();
+                                    if (sectionTitle) {
+                                        const sectionId = `section-${tocArray.length}`;
+                                        tocArray.push({ title: sectionTitle, id: sectionId, level: level -1 }); 
+                                        const headingLevel = Math.min(6, level + 1); 
+                                        html += `<h${headingLevel} id="${sectionId}">${sectionTitle}</h${headingLevel}>`;
+                                    }
+                                } else {
+                                    const headingLevel = Math.min(6, level + 2);
+                                    html += `<h${headingLevel}>${processFormatting(node)}</h${headingLevel}>`;
+                                }
                                 break;
                             case 'p':
                                 html += `<p>${processFormatting(node) || '&nbsp;'}</p>`;
@@ -980,12 +1071,13 @@
                 const descriptionNode = doc.querySelector('description');
                 const bodyNode = doc.querySelector('body');
                 let contentHTML = '';
+                const toc = [];
 
                 if (descriptionNode) {
-                    contentHTML += parseFB2Body(descriptionNode, doc);
+                    contentHTML += parseFB2Body(descriptionNode, doc, toc);
                 }
                 if (bodyNode) {
-                    contentHTML += parseFB2Body(bodyNode, doc);
+                    contentHTML += parseFB2Body(bodyNode, doc, toc);
                 }
 
                 if (!contentHTML) {
@@ -998,7 +1090,8 @@
                     content: contentHTML,
                     coverImage,
                     scrollPosition: 0,
-                    scrollHeight: 0
+                    scrollHeight: 0,
+                    toc
                 };
             }
 
@@ -1021,6 +1114,9 @@
                 currentBookId = bookId;
                 bookTitle.textContent = book.title;
                 bookContent.innerHTML = book.content;
+                currentBookToc = book.toc || [];
+                tocBtn.style.display = currentBookToc.length > 0 ? 'flex' : 'none';
+
 
                 switchToScreen('reader');
 
@@ -1320,6 +1416,47 @@
                 readerScreen.classList.toggle('ui-hidden');
                 toggleFullScreen();
             });
+            
+            // --- Table of Contents Logic ---
+            function renderToc() {
+                tocList.innerHTML = '';
+                if (!currentBookToc || currentBookToc.length === 0) return;
+
+                currentBookToc.forEach(item => {
+                    const link = document.createElement('a');
+                    link.dataset.id = item.id;
+                    link.textContent = item.title;
+                    link.style.paddingLeft = `${0.75 + item.level * 1}rem`;
+                    tocList.appendChild(link);
+                });
+            }
+
+            tocBtn.addEventListener('click', () => {
+                renderToc();
+                tocPanel.classList.add('open');
+            });
+
+            function closeTocPanel() {
+                tocPanel.classList.remove('open');
+            }
+
+            tocCloseBtn.addEventListener('click', closeTocPanel);
+            tocOverlay.addEventListener('click', closeTocPanel);
+
+            tocList.addEventListener('click', (e) => {
+                if (e.target.tagName === 'A') {
+                    const sectionId = e.target.dataset.id;
+                    const targetElement = document.getElementById(sectionId);
+                    if (targetElement) {
+                        // Даем немного времени анимации закрытия панели, потом скроллим
+                        setTimeout(() => {
+                           targetElement.scrollIntoView({ behavior: 'smooth' });
+                        }, 300);
+                    }
+                    closeTocPanel();
+                }
+            });
+
 
             // --- Обработчики для модального окна ---
             confirmModalNo.addEventListener('click', () => {
