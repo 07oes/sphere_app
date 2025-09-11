@@ -120,19 +120,22 @@
             color: #ffffff;
         }
 
-        /* --- НОВЫЕ СТИЛИ ДЛЯ ВИЗУАЛЬНОГО ВЫБОРА ТЕМ --- */
-        #theme-selector .theme-swatch {
+        /* --- НОВЫЕ СТИЛИ ДЛЯ ВИЗУАЛЬНОГО ВЫБОРА --- */
+        #theme-selector .theme-swatch,
+        #progress-bar-color-selector .theme-swatch {
             transition: all 0.2s ease-in-out;
             border-width: 2px;
         }
 
-        #theme-selector input:checked + .theme-swatch {
+        #theme-selector input:checked + .theme-swatch,
+        #progress-bar-color-selector input:checked + .theme-swatch {
             border-color: #0a84ff; /* Яркая рамка для выделения */
             transform: scale(1.1);
         }
 
-        #theme-selector input:checked + .theme-swatch svg {
-            display: block; /* Показываем галочку у выбранной темы */
+        #theme-selector input:checked + .theme-swatch svg,
+        #progress-bar-color-selector input:checked + .theme-swatch svg {
+            display: block; /* Показываем галочку */
         }
 
 
@@ -1600,6 +1603,7 @@
 </body>
 
 </html>
+
 
 
 
