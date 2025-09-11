@@ -128,44 +128,111 @@
         /* --- ИНТЕРАКТИВНЫЕ СТИЛИ ДЛЯ КНОПОК --- */
 
         /* СТИЛИ ДЛЯ НАЖАТИЯ (срабатывают на всех устройствах) */
-        .back-button:active { background-color: #292929 !important; }
-        #reader-screen.theme-light .back-button:active { background-color: #eaeaea !important; }
-        #reader-screen.theme-sepia .back-button:active { background-color: #ddd4c1 !important; }
-        #reader-screen.theme-console .back-button:active { background-color: #141a13 !important; }
-        #reader-screen.theme-gradient .back-button:active { background-color: rgba(0, 0, 0, 0.2) !important; }
+        .back-button:active {
+            background-color: #292929 !important;
+        }
+
+        #reader-screen.theme-light .back-button:active {
+            background-color: #eaeaea !important;
+        }
+
+        #reader-screen.theme-sepia .back-button:active {
+            background-color: #ddd4c1 !important;
+        }
+
+        #reader-screen.theme-console .back-button:active {
+            background-color: #141a13 !important;
+        }
+
+        #reader-screen.theme-gradient .back-button:active {
+            background-color: rgba(0, 0, 0, 0.2) !important;
+        }
 
         /* СТИЛИ ДЛЯ НАВЕДЕНИЯ (срабатывают только на устройствах с мышью, чтобы избежать "залипания" на телефонах) */
         @media (hover: hover) {
-            .back-button:hover { background-color: #292929 !important; }
-            #reader-screen.theme-light .back-button:hover { background-color: #eaeaea !important; }
-            #reader-screen.theme-sepia .back-button:hover { background-color: #ddd4c1 !important; }
-            #reader-screen.theme-console .back-button:hover { background-color: #141a13 !important; }
-            #reader-screen.theme-gradient .back-button:hover { background-color: rgba(0, 0, 0, 0.2) !important; }
+            .back-button:hover {
+                background-color: #292929 !important;
+            }
+
+            #reader-screen.theme-light .back-button:hover {
+                background-color: #eaeaea !important;
+            }
+
+            #reader-screen.theme-sepia .back-button:hover {
+                background-color: #ddd4c1 !important;
+            }
+
+            #reader-screen.theme-console .back-button:hover {
+                background-color: #141a13 !important;
+            }
+
+            #reader-screen.theme-gradient .back-button:hover {
+                background-color: rgba(0, 0, 0, 0.2) !important;
+            }
         }
 
         /* Устанавливаем специальный цвет иконки для кнопок в разных темах (когда интерфейс виден) */
-        #reader-screen.theme-light .back-button { color: #5d5d5d !important; }
-        #reader-screen.theme-sepia .back-button { color: #5d534c !important; }
-        #reader-screen.theme-console .back-button { color: #007b00 !important; }
-        #reader-screen.theme-gradient .back-button { color: #ffffffaa !important; }
+        #reader-screen.theme-light .back-button {
+            color: #5d5d5d !important;
+        }
+
+        #reader-screen.theme-sepia .back-button {
+            color: #5d534c !important;
+        }
+
+        #reader-screen.theme-console .back-button {
+            color: #007b00 !important;
+        }
+
+        #reader-screen.theme-gradient .back-button {
+            color: #ffffffaa !important;
+        }
 
         /* --- Специфичные стили для кнопки "чистого экрана" --- */
-        
+
         /* === КОГДА ИНТЕРФЕЙС ВИДЕН === */
         /* Стиль при НАЖАТИИ (все устройства), когда интерфейс ВИДЕН */
-        #reader-screen:not(.ui-hidden) #fullscreen-btn:active { background-color: #292929 !important; }
-        #reader-screen.theme-light:not(.ui-hidden) #fullscreen-btn:active { background-color: #eaeaea !important; }
-        #reader-screen.theme-sepia:not(.ui-hidden) #fullscreen-btn:active { background-color: #ddd4c1 !important; }
-        #reader-screen.theme-console:not(.ui-hidden) #fullscreen-btn:active { background-color: #141a13 !important; }
-        #reader-screen.theme-gradient:not(.ui-hidden) #fullscreen-btn:active { background-color: rgba(0, 0, 0, 0.2) !important; }
+        #reader-screen:not(.ui-hidden) #fullscreen-btn:active {
+            background-color: #292929 !important;
+        }
+
+        #reader-screen.theme-light:not(.ui-hidden) #fullscreen-btn:active {
+            background-color: #eaeaea !important;
+        }
+
+        #reader-screen.theme-sepia:not(.ui-hidden) #fullscreen-btn:active {
+            background-color: #ddd4c1 !important;
+        }
+
+        #reader-screen.theme-console:not(.ui-hidden) #fullscreen-btn:active {
+            background-color: #141a13 !important;
+        }
+
+        #reader-screen.theme-gradient:not(.ui-hidden) #fullscreen-btn:active {
+            background-color: rgba(0, 0, 0, 0.2) !important;
+        }
 
         /* Стиль при НАВЕДЕНИИ (ПК), когда интерфейс ВИДЕН */
         @media (hover: hover) {
-            #reader-screen:not(.ui-hidden) #fullscreen-btn:hover { background-color: #292929 !important; }
-            #reader-screen.theme-light:not(.ui-hidden) #fullscreen-btn:hover { background-color: #eaeaea !important; }
-            #reader-screen.theme-sepia:not(.ui-hidden) #fullscreen-btn:hover { background-color: #ddd4c1 !important; }
-            #reader-screen.theme-console:not(.ui-hidden) #fullscreen-btn:hover { background-color: #141a13 !important; }
-            #reader-screen.theme-gradient:not(.ui-hidden) #fullscreen-btn:hover { background-color: rgba(0, 0, 0, 0.2) !important; }
+            #reader-screen:not(.ui-hidden) #fullscreen-btn:hover {
+                background-color: #292929 !important;
+            }
+
+            #reader-screen.theme-light:not(.ui-hidden) #fullscreen-btn:hover {
+                background-color: #eaeaea !important;
+            }
+
+            #reader-screen.theme-sepia:not(.ui-hidden) #fullscreen-btn:hover {
+                background-color: #ddd4c1 !important;
+            }
+
+            #reader-screen.theme-console:not(.ui-hidden) #fullscreen-btn:hover {
+                background-color: #141a13 !important;
+            }
+
+            #reader-screen.theme-gradient:not(.ui-hidden) #fullscreen-btn:hover {
+                background-color: rgba(0, 0, 0, 0.2) !important;
+            }
         }
 
 
@@ -173,6 +240,7 @@
         #reader-screen.ui-hidden #fullscreen-btn {
             background-color: transparent !important;
         }
+
         #reader-screen.ui-hidden #fullscreen-btn svg {
             stroke: #3f3f3f !important;
         }
@@ -181,6 +249,7 @@
         #reader-screen.ui-hidden #fullscreen-btn:active {
             background-color: #292929 !important;
         }
+
         #reader-screen.ui-hidden #fullscreen-btn:active svg {
             stroke: #757575 !important;
         }
@@ -190,6 +259,7 @@
             #reader-screen.ui-hidden #fullscreen-btn:hover {
                 background-color: #292929 !important;
             }
+
             #reader-screen.ui-hidden #fullscreen-btn:hover svg {
                 stroke: #757575 !important;
             }
@@ -410,15 +480,20 @@
 
         /* --- СТИЛИ ДЛЯ ПАНЕЛИ СОДЕРЖАНИЯ --- */
         #toc-panel.open {
-            pointer-events: auto; /* Разрешаем клики, когда панель открыта */
+            pointer-events: auto;
+            /* Разрешаем клики, когда панель открыта */
         }
+
         #toc-panel.open #toc-overlay {
-            opacity: 1; /* Плавно показываем затемнение */
+            opacity: 1;
+            /* Плавно показываем затемнение */
         }
-        #toc-panel.open > div:last-child {
-            transform: translateX(0); /* Выдвигаем саму панель */
+
+        #toc-panel.open>div:last-child {
+            transform: translateX(0);
+            /* Выдвигаем саму панель */
         }
-        
+
         #toc-list a {
             display: block;
             padding: 0.75rem 0.5rem;
@@ -430,7 +505,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        
+
         #toc-list a:active {
             background-color: rgba(255, 255, 255, 0.1);
         }
@@ -444,7 +519,7 @@
             #toc-list a:hover {
                 background-color: rgba(255, 255, 255, 0.05);
             }
-        
+
             #reader-screen.theme-light #toc-list a:hover,
             #reader-screen.theme-sepia #toc-list a:hover {
                 background-color: rgba(0, 0, 0, 0.05);
@@ -499,31 +574,50 @@
                 <button id="back-to-library-btn"
                     class="back-button absolute left-2 top-1/2 -translate-y-1/2 font-bold py-2 px-4 rounded-lg">❮
                     Назад</button>
-                <div class="text-center mx-auto pl-28 pr-24 overflow-hidden">
+                <div class="text-center mx-auto pl-28 pr-28 overflow-hidden">
                     <h2 id="book-title" class="text-lg font-bold truncate">Название книги</h2>
                 </div>
             </header>
-            
-            <button id="toc-btn" class="back-button absolute right-20 top-2 z-20 p-2 rounded-lg w-10 h-10 flex items-center justify-center" style="display: none;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+
+            <button id="toc-btn"
+                class="back-button absolute right-20 top-2 z-20 p-2 rounded-lg w-10 h-10 flex items-center justify-center"
+                style="display: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="8" y1="6" x2="21" y2="6"></line>
+                    <line x1="8" y1="12" x2="21" y2="12"></line>
+                    <line x1="8" y1="18" x2="21" y2="18"></line>
+                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                </svg>
             </button>
 
             <button id="fullscreen-btn"
                 class="back-button absolute right-5 top-2 z-20 p-2 rounded-lg w-10 h-10 flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3">
                     </path>
                 </svg>
             </button>
-            
+
             <div id="toc-panel" class="absolute top-0 left-0 h-full w-full pointer-events-none z-30">
-                <div id="toc-overlay" class="absolute top-0 left-0 h-full w-full bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 ease-in-out"></div>
-                <div class="h-full w-full max-w-xs flex flex-col shadow-lg pointer-events-auto relative transform translate-x-full transition-transform duration-300 ease-in-out ml-auto z-10" style="background-color: var(--ui-bg);">
+                <div id="toc-overlay"
+                    class="absolute top-0 left-0 h-full w-full bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 ease-in-out">
+                </div>
+                <div class="h-full w-full max-w-xs flex flex-col shadow-lg pointer-events-auto relative transform translate-x-full transition-transform duration-300 ease-in-out ml-auto z-10"
+                    style="background-color: var(--ui-bg);">
                     <header class="p-2 border-b flex items-center justify-center relative flex-shrink-0 h-[56px]">
-                         <button id="toc-close-btn" class="back-button p-2 rounded-lg w-10 h-10 flex items-center justify-center absolute left-2 top-1/2 -translate-y-1/2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        <button id="toc-close-btn"
+                            class="back-button p-2 rounded-lg w-10 h-10 flex items-center justify-center absolute left-2 top-1/2 -translate-y-1/2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
                         </button>
                         <h2 class="text-lg font-bold px-2">Содержание</h2>
                     </header>
@@ -572,14 +666,12 @@
                             <span>Жирный шрифт</span>
                             <span id="font-weight-value">400</span>
                         </div>
-                        <input type="range" id="font-weight-slider" min="100" max="900" step="100"
-                            class="w-full mt-2">
+                        <input type="range" id="font-weight-slider" min="100" max="900" step="100" class="w-full mt-2">
                         <div class="flex justify-between items-center mt-4">
                             <span>Междустрочный интервал</span>
                             <span id="line-height-value">180%</span>
                         </div>
-                        <input type="range" id="line-height-slider" min="100" max="200" step="10"
-                            class="w-full mt-2">
+                        <input type="range" id="line-height-slider" min="100" max="200" step="10" class="w-full mt-2">
                         <div class="mt-4">
                             <span class="mb-2 block">Выбор шрифта</span>
                             <div id="font-selector" class="grid grid-cols-2 gap-2">
@@ -947,7 +1039,7 @@
             fileInputTop.addEventListener('change', handleFileSelect);
             fileInputCenter.addEventListener('change', handleFileSelect);
 
-            
+
             function parseFB2Body(rootNode, doc, tocArray) {
                 if (!rootNode) return "";
 
@@ -979,8 +1071,8 @@
                     let html = '';
                     parentNode.childNodes.forEach(node => {
                         if (node.nodeType === Node.TEXT_NODE && node.textContent.trim().length > 0) {
-                             html += `<p>${node.textContent}</p>`;
-                             return;
+                            html += `<p>${node.textContent}</p>`;
+                            return;
                         }
 
                         if (node.nodeType !== Node.ELEMENT_NODE) return;
@@ -998,8 +1090,8 @@
                                     const sectionTitle = processFormatting(node).trim();
                                     if (sectionTitle) {
                                         const sectionId = `section-${tocArray.length}`;
-                                        tocArray.push({ title: sectionTitle, id: sectionId, level: level -1 }); 
-                                        const headingLevel = Math.min(6, level + 1); 
+                                        tocArray.push({ title: sectionTitle, id: sectionId, level: level - 1 });
+                                        const headingLevel = Math.min(6, level + 1);
                                         html += `<h${headingLevel} id="${sectionId}">${sectionTitle}</h${headingLevel}>`;
                                     }
                                 } else {
@@ -1416,7 +1508,7 @@
                 readerScreen.classList.toggle('ui-hidden');
                 toggleFullScreen();
             });
-            
+
             // --- Table of Contents Logic ---
             function renderToc() {
                 tocList.innerHTML = '';
@@ -1450,7 +1542,7 @@
                     if (targetElement) {
                         // Даем немного времени анимации закрытия панели, потом скроллим
                         setTimeout(() => {
-                           targetElement.scrollIntoView({ behavior: 'smooth' });
+                            targetElement.scrollIntoView({ behavior: 'smooth' });
                         }, 300);
                     }
                     closeTocPanel();
@@ -1501,4 +1593,3 @@
 </body>
 
 </html>
-
