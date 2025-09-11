@@ -29,13 +29,113 @@
             cursor: grabbing;
         }
 
+        /* --- СВЕТЛАЯ ТЕМА ДЛЯ БИБЛИОТЕКИ --- */
+        #library-screen.theme-light {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --ui-bg: #e6e6e6;
+            --border-color: #e0e0e0;
+            --meta-color: #717171;
+        }
+        /* Кнопки в шапке */
+        #library-screen.theme-light .btn-custom-add {
+            background-color: #e6e6e6 !important;
+            color: #000000;
+        }
+        #library-screen.theme-light .btn-custom-add:hover {
+            background-color: #d3d3d3 !important;
+        }
+        #library-screen.theme-light .btn-custom-add svg {
+            stroke: #000000;
+        }
+        /* Элементы книги в списке */
+        #library-screen.theme-light .book-item-content h3 {
+            color: var(--text-color);
+        }
+        #library-screen.theme-light .book-item-content p {
+            color: #3b3b3b;
+        }
+        /* Иконка-заглушка для обложки */
+        #library-screen.theme-light .book-icon-bg {
+            background-color: #c7c7c7 !important;
+        }
+        #library-screen.theme-light .book-icon-bg span {
+            color: #f0f0f0;
+        }
+        /* Пустая библиотека */
+        #library-screen.theme-light #empty-library-view p {
+            color: var(--meta-color);
+        }
+
+        /* --- СВЕТЛАЯ ТЕМА ДЛЯ НАСТРОЕК --- */
+        #settings-screen.theme-light {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --ui-bg: #e6e6e6; 
+            --border-color: #e6e6e6;
+        }
+        #settings-screen.theme-light .settings-block {
+            background-color: var(--ui-bg) !important;
+        }
+        /* Устанавливаем цвет для текста внутри блоков */
+        #settings-screen.theme-light span {
+            color: #3b3b3b;
+        }
+        /* Отдельно стилизуем кнопку "Назад", чтобы не затрагивать заголовок */
+        #settings-screen.theme-light .back-button.font-bold {
+            color: #3b3b3b;
+        }
+        /* Устанавливаем черный цвет для главного заголовка "Настройки" */
+        #settings-screen.theme-light header h1 {
+            color: #000000;
+        }
+        #settings-screen.theme-light h2.text-gray-400 {
+             color: #717171 !important;
+        }
+        #settings-screen.theme-light input[type=range]::-webkit-slider-runnable-track {
+            background: #d3d3d3;
+        }
+        #settings-screen.theme-light input[type=range]::-webkit-slider-thumb {
+            background: #717171;
+        }
+        #settings-screen.theme-light #reset-settings-btn {
+            background-color: #e6e6e6 !important;
+            color: #717171 !important;
+        }
+        #settings-screen.theme-light #reset-settings-btn:hover {
+            background-color: #d3d3d3 !important;
+            color: #3b3b3b !important;
+        }
+
+        /* --- СВЕТЛАЯ ТЕМА ДЛЯ МОДАЛЬНОГО ОКНА --- */
+        #confirm-modal.theme-light > div {
+            background-color: #ffffff !important;
+        }
+        #confirm-modal.theme-light p {
+            color: #000000 !important;
+        }
+        #confirm-modal.theme-light button {
+            background-color: #e6e6e6 !important;
+            color: #3b3b3b !important;
+        }
+        #confirm-modal.theme-light button:hover {
+            background-color: #d3d3d3 !important;
+            color: #000000 !important;
+        }
+
+
         /* --- ТЕМЫ ДЛЯ ЭКРАНА ЧТЕНИЯ --- */
         #reader-screen.theme-light {
             --bg-color: #ffffff;
             --text-color: #000000;
             --border-color: #e0e0e0;
             --link-color: #22c55e;
+            --ui-bg: #ffffff; /* Фон для панели содержания в светлой теме */
             /* Заменяем синий цвет на зеленый */
+        }
+
+        #reader-screen.theme-light #page-info {
+            color: #717171;
         }
 
         #reader-screen.theme-dark {
@@ -116,7 +216,7 @@
 
         #theme-selector input:checked+span,
         #font-selector input:checked+span {
-            background-color: #4a4a4a;
+            background-color: #717171;
             color: #ffffff;
         }
 
@@ -148,6 +248,7 @@
 
         /* СТИЛИ ДЛЯ НАЖАТИЯ (срабатывают на всех устройствах) */
         .back-button:active { background-color: #292929 !important; }
+        #settings-screen.theme-light .back-button:active { background-color: #d3d3d3 !important; }
         #reader-screen.theme-light .back-button:active { background-color: #eaeaea !important; }
         #reader-screen.theme-sepia .back-button:active { background-color: #ddd4c1 !important; }
         #reader-screen.theme-console .back-button:active { background-color: #141a13 !important; }
@@ -156,6 +257,7 @@
         /* СТИЛИ ДЛЯ НАВЕДЕНИЯ (срабатывают только на устройствах с мышью, чтобы избежать "залипания" на телефонах) */
         @media (hover: hover) {
             .back-button:hover { background-color: #292929 !important; }
+            #settings-screen.theme-light .back-button:hover { background-color: #e6e6e6 !important; }
             #reader-screen.theme-light .back-button:hover { background-color: #eaeaea !important; }
             #reader-screen.theme-sepia .back-button:hover { background-color: #ddd4c1 !important; }
             #reader-screen.theme-console .back-button:hover { background-color: #141a13 !important; }
@@ -170,7 +272,7 @@
 
         /* --- Специфичные стили для кнопки "чистого экрана" --- */
         
-        /* === КОГДА ИНТЕРФЕЙС ВИДЕН === */
+        /* === КОГДА ИНТЕРАФЕЙС ВИДЕН === */
         /* Стиль при НАЖАТИИ (все устройства), когда интерфейс ВИДЕН */
         #reader-screen:not(.ui-hidden) #fullscreen-btn:active { background-color: #292929 !important; }
         #reader-screen.theme-light:not(.ui-hidden) #fullscreen-btn:active { background-color: #eaeaea !important; }
@@ -195,6 +297,9 @@
         #reader-screen.ui-hidden #fullscreen-btn svg {
             stroke: #3f3f3f !important;
         }
+         #reader-screen.theme-light.ui-hidden #fullscreen-btn svg {
+            stroke: #b0b0b0 !important; /* Светло-серый цвет для иконки на белом фоне */
+        }
 
         /* Стиль при НАЖАТИИ (все устройства), когда интерфейс СКРЫТ */
         #reader-screen.ui-hidden #fullscreen-btn:active {
@@ -202,6 +307,12 @@
         }
         #reader-screen.ui-hidden #fullscreen-btn:active svg {
             stroke: #757575 !important;
+        }
+        #reader-screen.theme-light.ui-hidden #fullscreen-btn:active {
+            background-color: #d3d3d3 !important; /* Цвет нажатия темнее чем при наведении */
+        }
+         #reader-screen.theme-light.ui-hidden #fullscreen-btn:active svg {
+            stroke: #3b3b3b !important;
         }
 
         /* Стиль при НАВЕДЕНИИ (ПК), когда интерфейс СКРЫТ */
@@ -212,11 +323,17 @@
             #reader-screen.ui-hidden #fullscreen-btn:hover svg {
                 stroke: #757575 !important;
             }
+            #reader-screen.theme-light.ui-hidden #fullscreen-btn:hover {
+                background-color: #e6e6e6 !important;
+            }
+            #reader-screen.theme-light.ui-hidden #fullscreen-btn:hover svg {
+                stroke: #5d5d5d !important;
+            }
         }
 
         /* Новый стиль для заголовков в настройках */
         #settings-screen .text-gray-400 {
-            color: #ababab !important;
+            color: #717171 !important;
         }
 
 
@@ -751,6 +868,7 @@
                 emptyLibraryView.classList.toggle('hidden', hasBooks);
                 bookList.classList.toggle('hidden', !hasBooks);
 
+                const isLightTheme = libraryScreen.classList.contains('theme-light');
                 if (hasBooks) {
                     books.reverse();
                     books.forEach(book => {
@@ -776,13 +894,19 @@
                             `<img src="${book.coverImage}" alt="Обложка" class="w-24 h-36 flex-shrink-0 book-cover-img rounded">` :
                             `<div class="w-24 h-36 flex-shrink-0 book-icon-bg rounded flex items-center justify-center"><span class="text-gray-500 text-3xl">📖</span></div>`;
 
+                        
+                        let finalProgressBarColor = globalSettings.progressBarColor;
+                        if (isLightTheme && finalProgressBarColor === '#3f3f3f') {
+                            finalProgressBarColor = '#c9c9c9';
+                        }
+
                         bookElement.innerHTML = `
                             ${coverHtml}
                             <div class="flex-grow self-start overflow-hidden">
                                 <h3 class="font-bold text-lg mb-1 truncate">${book.title}</h3>
                                 <p class="text-sm text-gray-400 truncate">${book.author || 'Неизвестный автор'}</p>
                             </div>
-                            <div class="absolute bottom-0 left-0 h-1" style="background-color: ${globalSettings.progressBarColor}; width: ${Math.min(100, progress).toFixed(2)}%"></div>
+                            <div class="absolute bottom-0 left-0 h-1" style="background-color: ${finalProgressBarColor}; width: ${Math.min(100, progress).toFixed(2)}%"></div>
                         `;
 
                         // Собираем все вместе
@@ -923,6 +1047,13 @@
                 bookIdToDelete = bookId;
                 confirmModalText.textContent =
                     'Вы уверенны что хотите удалить данную книгу из библиотеки?';
+                
+                if (libraryScreen.classList.contains('theme-light')) {
+                    confirmModal.classList.add('theme-light');
+                } else {
+                    confirmModal.classList.remove('theme-light');
+                }
+
                 confirmModal.classList.remove('hidden');
                 confirmModal.classList.add('flex');
             }
@@ -1211,33 +1342,61 @@
                 }
             }
 
-            function applyReadingSettings() {
-                // Сначала сбрасываем все классы тем, чтобы избежать их накопления
-                readerScreen.className = 'screen hidden w-full h-full flex flex-col'; // Сбрасываем и добавляем hidden
-                if (currentBookId) { // Если книга открыта, убираем hidden
-                    readerScreen.classList.remove('hidden');
+            function applyThemeToApp() {
+                // --- Шаг 1: Применяем классы к HTML-элементам ---
+                
+                // Тема для экрана БИБЛИОТЕКИ
+                if (globalSettings.readingTheme === 'theme-light') {
+                    libraryScreen.classList.add('theme-light');
+                } else {
+                    libraryScreen.classList.remove('theme-light');
                 }
-                // Добавляем актуальный класс темы
+
+                // Тема для экрана НАСТРОЕК
+                if (globalSettings.readingTheme === 'theme-light') {
+                    settingsScreen.classList.add('theme-light');
+                } else {
+                    settingsScreen.classList.remove('theme-light');
+                }
+
+                // Тема для экрана ЧТЕНИЯ (управляется отдельным классом на самом элементе)
+                readerScreen.className = readerScreen.className.replace(/theme-\w+/g, '').trim();
                 readerScreen.classList.add(globalSettings.readingTheme);
 
+                // --- Шаг 2: Применяем стили к контенту внутри читалки ---
+                bookContent.style.fontSize = `${globalSettings.fontSize}px`;
+                bookContent.style.fontWeight = `${globalSettings.fontWeight}`;
+                bookContent.style.fontFamily = `"${globalSettings.fontFamily}"`;
+                bookContent.style.lineHeight = `${globalSettings.lineHeight}%`;
+
+
+                // --- Шаг 3: Устанавливаем цвета для Telegram UI ---
                 try {
                     const tg = window.Telegram.WebApp;
-                    const themeColors = {
-                        'theme-light': '#ffffff',
-                        'theme-dark': '#1e1e1e',
-                        'theme-sepia': '#fbf0d9',
-                        'theme-console': '#000000',
-                        'theme-gradient': '#1d2b64' // Цвет для шапки в теме градиента
-                    };
-                    const color = themeColors[globalSettings.readingTheme] || '#1e1e1e';
+                    const isReaderVisible = !readerScreen.classList.contains('hidden');
+                    const isSettingsVisible = !settingsScreen.classList.contains('hidden');
+                    let color;
+
+                    if (isReaderVisible) {
+                        const themeColors = {
+                            'theme-light': '#ffffff',
+                            'theme-dark': '#1e1e1e',
+                            'theme-sepia': '#fbf0d9',
+                            'theme-console': '#000000',
+                            'theme-gradient': '#1d2b64'
+                        };
+                        color = themeColors[globalSettings.readingTheme] || '#1e1e1e';
+                    } else if (isSettingsVisible) {
+                         // Для экрана настроек
+                        color = (globalSettings.readingTheme === 'theme-light') ? '#ffffff' : '#1e1e1e';
+                    } else {
+                        // Библиотека
+                        color = (globalSettings.readingTheme === 'theme-light') ? '#ffffff' : '#1e1e1e';
+                    }
+                    
                     tg.setHeaderColor(color);
                     tg.setBackgroundColor(color);
-                } catch (e) { }
-
-                bookContent.style.fontSize = `${globalSettings.fontSize}px`;
-                bookContent.style.fontWeight = globalSettings.fontWeight;
-                bookContent.style.fontFamily = globalSettings.fontFamily;
-                bookContent.style.lineHeight = `${globalSettings.lineHeight}%`;
+                } catch (e) { /* Игнорируем ошибку, если API недоступен */ }
             }
 
 
@@ -1310,6 +1469,7 @@
                     { name: 'Голубой', value: '#3b82f6' }
                 ];
 
+                const isLightTheme = settingsScreen.classList.contains('theme-light');
                 colors.forEach(color => {
                     const label = document.createElement('label');
                     label.className = 'flex flex-col items-center justify-center cursor-pointer';
@@ -1325,7 +1485,14 @@
 
                     const swatch = document.createElement('span');
                     swatch.className = 'theme-swatch w-12 h-12 rounded-full flex items-center justify-center';
-                    swatch.style.background = color.value;
+
+                    
+                    let finalSwatchColor = color.value;
+                    if (isLightTheme && finalSwatchColor === '#3f3f3f') {
+                        finalSwatchColor = '#c9c9c9';
+                    }
+
+                    swatch.style.background = finalSwatchColor;
                     swatch.style.borderColor = 'transparent';
 
                     const checkmarkColor = '#ffffff';
@@ -1384,26 +1551,16 @@
                 readerScreen.classList.add('hidden');
                 settingsScreen.classList.add('hidden');
 
-                try {
-                    const tg = window.Telegram.WebApp;
-                    // Для всех экранов кроме чтения, возвращаем стандартный цвет
-                    if (screenName !== 'reader') {
-                        tg.setHeaderColor('#1e1e1e');
-                        tg.setBackgroundColor('#1e1e1e');
-                    }
-                } catch (e) { }
-
-
                 if (screenName === 'library') {
                     libraryScreen.classList.remove('hidden');
                     renderLibrary();
                 } else if (screenName === 'reader') {
                     readerScreen.classList.remove('hidden');
-                    applyReadingSettings(); // Применяем настройки, включая цвет для Telegram
                 } else if (screenName === 'settings') {
                     settingsScreen.classList.remove('hidden');
                     renderSettings();
                 }
+                applyThemeToApp(); // Применяем тему после переключения экрана
             }
 
 
@@ -1436,10 +1593,7 @@
                 if (e.target.name === 'theme') {
                     globalSettings.readingTheme = e.target.value;
                     saveGlobalSettings();
-                    // Применяем настройки только если экран чтения активен
-                    if (currentBookId) {
-                        applyReadingSettings();
-                    }
+                    applyThemeToApp();
                 }
             });
 
@@ -1457,9 +1611,7 @@
                 globalSettings.fontSize = parseInt(newSize, 10);
                 fontSizeValue.textContent = `${newSize}px`;
                 saveGlobalSettings();
-                if (currentBookId) {
-                    applyReadingSettings();
-                }
+                applyThemeToApp();
             });
 
             fontWeightSlider.addEventListener('input', (e) => {
@@ -1467,9 +1619,7 @@
                 globalSettings.fontWeight = parseInt(newWeight, 10);
                 fontWeightValue.textContent = newWeight;
                 saveGlobalSettings();
-                if (currentBookId) {
-                    applyReadingSettings();
-                }
+                applyThemeToApp();
             });
 
             lineHeightSlider.addEventListener('input', (e) => {
@@ -1477,18 +1627,14 @@
                 globalSettings.lineHeight = parseInt(newHeight, 10);
                 lineHeightValue.textContent = `${newHeight}%`;
                 saveGlobalSettings();
-                if (currentBookId) {
-                    applyReadingSettings();
-                }
+                applyThemeToApp();
             });
 
             fontSelector.addEventListener('change', (e) => {
                 if (e.target.name === 'font') {
                     globalSettings.fontFamily = e.target.value;
                     saveGlobalSettings();
-                    if (currentBookId) {
-                        applyReadingSettings();
-                    }
+                    applyThemeToApp();
                 }
             });
 
@@ -1496,9 +1642,7 @@
                 globalSettings = { ...defaultSettings };
                 saveGlobalSettings();
                 renderSettings();
-                if (currentBookId) {
-                    applyReadingSettings();
-                }
+                applyThemeToApp();
             });
 
             // --- Fullscreen Logic ---
@@ -1569,6 +1713,7 @@
                 }
                 confirmModal.classList.add('hidden');
                 confirmModal.classList.remove('flex');
+                confirmModal.classList.remove('theme-light');
                 bookIdToDelete = null;
             });
 
@@ -1579,6 +1724,7 @@
                 }
                 confirmModal.classList.add('hidden');
                 confirmModal.classList.remove('flex');
+                confirmModal.classList.remove('theme-light');
             });
 
 
@@ -1589,6 +1735,7 @@
                     loadGlobalSettings();
                     await initDB();
                     await renderLibrary();
+                    applyThemeToApp(); // Первоначальное применение темы
                 } catch (error) {
                     console.error("Ошибка инициализации:", error);
                     alert("Произошла ошибка при запуске приложения.");
@@ -1603,11 +1750,5 @@
 </body>
 
 </html>
-
-
-
-
-
-
 
 
