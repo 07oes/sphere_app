@@ -120,6 +120,22 @@
             color: #ffffff;
         }
 
+        /* --- НОВЫЕ СТИЛИ ДЛЯ ВИЗУАЛЬНОГО ВЫБОРА ТЕМ --- */
+        #theme-selector .theme-swatch {
+            transition: all 0.2s ease-in-out;
+            border-width: 2px;
+        }
+
+        #theme-selector input:checked + .theme-swatch {
+            border-color: #0a84ff; /* Яркая рамка для выделения */
+            transform: scale(1.1);
+        }
+
+        #theme-selector input:checked + .theme-swatch svg {
+            display: block; /* Показываем галочку у выбранной темы */
+        }
+
+
         .back-button {
             color: #757575 !important;
             /* Стандартный цвет для кнопки "Назад" */
@@ -555,9 +571,16 @@
             <main class="p-4 flex-grow overflow-y-auto">
                 <div class="mb-6">
                     <h2 class="text-sm font-bold text-gray-400 mb-2">Цветовая схема</h2>
-                    <div id="theme-selector"
-                        class="settings-block grid grid-cols-2 sm:grid-cols-4 gap-2 rounded-lg p-2">
-                        <!-- Опции тем -->
+                    <div class="settings-block rounded-lg p-4">
+                        <span class="block mb-2">Тема</span>
+                        <div id="theme-selector"
+                            class="grid grid-cols-3 sm:grid-cols-5 gap-3 justify-items-center mb-4">
+                            <!-- Опции тем будут рендериться здесь -->
+                        </div>
+                        <span class="block mt-8 mb-2">Прогресс</span>
+                        <div id="progress-bar-color-selector" class="grid grid-cols-4 sm:grid-cols-5 gap-3 justify-items-center">
+                            <!-- Опции цвета прогресс-бара -->
+                        </div>
                     </div>
                 </div>
                 <div class="mb-6">
@@ -672,6 +695,7 @@
             const tocCloseBtn = document.getElementById('toc-close-btn');
             const tocList = document.getElementById('toc-list');
             const tocOverlay = document.getElementById('toc-overlay');
+            const progressBarColorSelector = document.getElementById('progress-bar-color-selector');
 
             // --- Состояние приложения ---
             const defaultSettings = {
@@ -679,7 +703,8 @@
                 fontSize: 18,
                 fontWeight: 400,
                 fontFamily: 'Arial',
-                lineHeight: 180
+                lineHeight: 180,
+                progressBarColor: '#3f3f3f' // Стандартный серый
             };
 
             let db;
@@ -754,7 +779,7 @@
                                 <h3 class="font-bold text-lg mb-1 truncate">${book.title}</h3>
                                 <p class="text-sm text-gray-400 truncate">${book.author || 'Неизвестный автор'}</p>
                             </div>
-                            <div class="absolute bottom-0 left-0 h-1 bg-[#3f3f3f]" style="width: ${Math.min(100, progress).toFixed(2)}%"></div>
+                            <div class="absolute bottom-0 left-0 h-1" style="background-color: ${globalSettings.progressBarColor}; width: ${Math.min(100, progress).toFixed(2)}%"></div>
                         `;
 
                         // Собираем все вместе
@@ -1217,24 +1242,30 @@
                 themeSelector.innerHTML = '';
                 const themes = [{
                     id: 'theme-light',
-                    name: 'Светлая'
+                    name: 'Светлая',
+                    color: '#ffffff'
                 }, {
                     id: 'theme-dark',
-                    name: 'Тёмная'
+                    name: 'Тёмная',
+                    color: '#1e1e1e'
                 }, {
                     id: 'theme-sepia',
-                    name: 'Сепия'
+                    name: 'Сепия',
+                    color: '#fbf0d9'
                 }, {
                     id: 'theme-console',
-                    name: 'Консоль'
+                    name: 'Консоль',
+                    color: '#000000'
                 }, {
                     id: 'theme-gradient',
-                    name: 'Градиент'
+                    name: 'Градиент',
+                    color: 'linear-gradient(135deg, #1d2b64 0%, #4a0e4e 100%)'
                 }];
+
                 themes.forEach(theme => {
                     const label = document.createElement('label');
-                    label.className =
-                        'flex items-center justify-center p-2 rounded-md cursor-pointer text-center text-sm transition-colors';
+                    label.className = 'flex flex-col items-center justify-center cursor-pointer';
+                
                     const input = document.createElement('input');
                     input.type = 'radio';
                     input.name = 'theme';
@@ -1243,14 +1274,74 @@
                     if (globalSettings.readingTheme === theme.id) {
                         input.checked = true;
                     }
-                    const span = document.createElement('span');
-                    span.className = 'w-full py-2 rounded-md';
-                    span.textContent = theme.name;
-
+                
+                    const swatch = document.createElement('span');
+                    swatch.className = 'theme-swatch w-12 h-12 rounded-full flex items-center justify-center';
+                    swatch.style.background = theme.color;
+                    // Для светлой темы добавим рамку, чтобы кружок не сливался с фоном
+                    swatch.style.borderColor = (theme.id === 'theme-light') ? '#e0e0e0' : 'transparent';
+                
+                    const checkmarkColor = (theme.id === 'theme-light' || theme.id === 'theme-sepia') ? '#000000' : '#ffffff';
+                    swatch.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${checkmarkColor}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="hidden">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    `;
+                
+                    const nameSpan = document.createElement('span');
+                    nameSpan.className = 'mt-2 text-xs text-gray-400';
+                    nameSpan.textContent = theme.name;
+                
                     label.appendChild(input);
-                    label.appendChild(span);
+                    label.appendChild(swatch);
+                    label.appendChild(nameSpan);
                     themeSelector.appendChild(label);
                 });
+
+                progressBarColorSelector.innerHTML = '';
+                const colors = [
+                    { name: 'Серый', value: '#3f3f3f' },
+                    { name: 'Красный', value: '#ef4444' },
+                    { name: 'Жёлтый', value: '#eab308' },
+                    { name: 'Зелёный', value: '#22c55e' },
+                    { name: 'Голубой', value: '#3b82f6' }
+                ];
+
+                colors.forEach(color => {
+                    const label = document.createElement('label');
+                    label.className = 'flex flex-col items-center justify-center cursor-pointer';
+
+                    const input = document.createElement('input');
+                    input.type = 'radio';
+                    input.name = 'progress-color';
+                    input.value = color.value;
+                    input.className = 'hidden';
+                    if (globalSettings.progressBarColor === color.value) {
+                        input.checked = true;
+                    }
+
+                    const swatch = document.createElement('span');
+                    swatch.className = 'theme-swatch w-12 h-12 rounded-full flex items-center justify-center';
+                    swatch.style.background = color.value;
+                    swatch.style.borderColor = 'transparent';
+
+                    const checkmarkColor = '#ffffff';
+                    swatch.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${checkmarkColor}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="hidden">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    `;
+                
+                    const nameSpan = document.createElement('span');
+                    nameSpan.className = 'mt-2 text-xs text-gray-400';
+                    nameSpan.textContent = color.name;
+                
+                    label.appendChild(input);
+                    label.appendChild(swatch);
+                    label.appendChild(nameSpan);
+                    progressBarColorSelector.appendChild(label);
+                });
+
 
                 fontSizeSlider.value = globalSettings.fontSize;
                 fontSizeValue.textContent = `${globalSettings.fontSize}px`;
@@ -1346,6 +1437,14 @@
                     if (currentBookId) {
                         applyReadingSettings();
                     }
+                }
+            });
+
+            progressBarColorSelector.addEventListener('change', (e) => {
+                if (e.target.name === 'progress-color') {
+                    globalSettings.progressBarColor = e.target.value;
+                    saveGlobalSettings();
+                    renderLibrary();
                 }
             });
 
@@ -1501,4 +1600,10 @@
 </body>
 
 </html>
+
+
+
+
+
+
 
