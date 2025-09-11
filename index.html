@@ -272,7 +272,7 @@
 
         /* --- Специфичные стили для кнопки "чистого экрана" --- */
         
-        /* === КОГДА ИНТЕРАФЕЙС ВИДЕН === */
+        /* === КОГДА ИНТЕРФЕЙС ВИДЕН === */
         /* Стиль при НАЖАТИИ (все устройства), когда интерфейс ВИДЕН */
         #reader-screen:not(.ui-hidden) #fullscreen-btn:active { background-color: #292929 !important; }
         #reader-screen.theme-light:not(.ui-hidden) #fullscreen-btn:active { background-color: #eaeaea !important; }
@@ -585,6 +585,32 @@
             #reader-screen.theme-sepia #toc-list a:hover {
                 background-color: rgba(0, 0, 0, 0.05);
             }
+        }
+
+        /* --- СТИЛИ ДЛЯ СКРОЛЛБАРОВ В СВЕТЛОЙ ТЕМЕ --- */
+        #library-screen.theme-light ::-webkit-scrollbar,
+        #settings-screen.theme-light ::-webkit-scrollbar,
+        #reader-screen.theme-light ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #library-screen.theme-light ::-webkit-scrollbar-track,
+        #settings-screen.theme-light ::-webkit-scrollbar-track,
+        #reader-screen.theme-light ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        #library-screen.theme-light ::-webkit-scrollbar-thumb,
+        #settings-screen.theme-light ::-webkit-scrollbar-thumb,
+        #reader-screen.theme-light ::-webkit-scrollbar-thumb {
+            background-color: #c9c9c9;
+            border-radius: 4px;
+        }
+
+        #library-screen.theme-light ::-webkit-scrollbar-thumb:hover,
+        #settings-screen.theme-light ::-webkit-scrollbar-thumb:hover,
+        #reader-screen.theme-light ::-webkit-scrollbar-thumb:hover {
+            background-color: #a8a8a8;
         }
     </style>
 </head>
@@ -1749,6 +1775,5 @@
     </script>
 </body>
 
-</html>
-
+</html>" portion of the "Mini App Runner" Canvas.
 
