@@ -690,11 +690,6 @@
             background: linear-gradient(to top, var(--bg-color) 10%, transparent);
         }
 
-        #reader-screen.theme-gradient #page-overlay {
-            background: linear-gradient(to top, rgba(74, 14, 78, 0.8) 10%, transparent);
-            /* Используем цвет из градиента с прозрачностью */
-        }
-
         .screen {
             transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
         }
@@ -977,7 +972,7 @@
                 <button id="back-to-library-btn"
                     class="back-button absolute left-2 top-1/2 -translate-y-1/2 font-bold py-2 px-4 rounded-lg">❮
                     Назад</button>
-                <div class="text-center mx-auto px-24 overflow-hidden">
+                <div class="text-center mx-auto px-28 overflow-hidden">
                     <h2 id="book-title" class="text-lg font-bold truncate">Название книги</h2>
                 </div>
             </header>
@@ -1026,7 +1021,7 @@
                 <button id="back-to-library-from-settings-btn"
                     class="back-button absolute left-2 top-1/2 -translate-y-1/2 font-bold py-2 px-4 rounded-lg">❮
                     Назад</button>
-                <div class="text-center mx-auto px-24 overflow-hidden">
+                <div class="text-center mx-auto px-28 overflow-hidden">
                     <h1 class="text-xl font-bold truncate">Настройки</h1>
                 </div>
             </header>
@@ -1816,7 +1811,7 @@
                     }
 
                     let checkmarkColor = '#ffffff';
-                    if (theme.id === 'theme-light') {
+                    if (theme.id === 'theme-light' ) {
                         checkmarkColor = '#000000';
                     } else if (theme.id === 'theme-sepia') {
                         checkmarkColor = '#9b816a';
