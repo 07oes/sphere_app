@@ -996,8 +996,8 @@
                 <div class="h-full w-full max-w-xs flex flex-col shadow-lg pointer-events-auto relative transform translate-x-full transition-transform duration-300 ease-in-out ml-auto z-10" style="background-color: var(--ui-bg);">
                     <header class="p-2 border-b flex items-center justify-center relative flex-shrink-0 h-[56px]">
                          <button id="toc-close-btn" class="back-button p-2 rounded-lg w-10 h-10 flex items-center justify-center absolute left-2 top-1/2 -translate-y-1/2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                        </button>
+                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                         </button>
                         <h2 class="text-lg font-bold px-2">Содержание</h2>
                     </header>
                     <nav id="toc-list" class="flex-grow overflow-y-auto p-2"></nav>
@@ -1089,8 +1089,7 @@
     <!-- Модальное окно подтверждения -->
     <div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-50">
         <div class="rounded-lg p-6 w-11/12 max-w-sm text-center shadow-lg" style="background-color: #1e1e1e;">
-            <p id="confirm-modal-text" class="mb-6 text-white">Вы уверенны что хотите удалить данную книгу из
-                библиотеки?</p>
+            <p id="confirm-modal-text" class="mb-6 text-white">Вы уверены?</p>
             <div class="flex justify-center gap-4">
                 <button id="confirm-modal-yes"
                     class="px-6 py-2 rounded-lg text-white font-semibold"
@@ -1166,7 +1165,7 @@
 
             let db;
             let currentBookId = null;
-            let bookIdToDelete = null; // Для модального окна
+            let onConfirmAction = null; // NEW: Callback for the confirmation modal
             let globalSettings = { ...defaultSettings };
             let currentBookToc = [];
 
@@ -1215,16 +1214,13 @@
                             .scrollPosition / (book.scrollHeight - bookContentWrapper
                                 .clientHeight)) * 100 : 0;
 
-                        // Создаем обертку для свайпа
                         const wrapper = document.createElement('div');
                         wrapper.className = 'book-item-wrapper flex-shrink-0';
 
-                        // Создаем фон для свайпа с текстом "Удалить"
                         const deleteActionBackground = document.createElement('div');
                         deleteActionBackground.className = 'delete-action font-bold';
                         deleteActionBackground.textContent = 'Удалить';
 
-                        // Создаем видимую часть с информацией о книге
                         const bookElement = document.createElement('div');
                         bookElement.className =
                             'book-item-content p-2 flex items-center gap-4 relative overflow-hidden';
@@ -1252,20 +1248,18 @@
                             <div class="absolute bottom-0 left-0 h-1" style="background-color: ${finalProgressBarColor}; width: ${Math.min(100, progress).toFixed(2)}%"></div>
                         `;
 
-                        // Собираем все вместе
                         wrapper.appendChild(deleteActionBackground);
                         wrapper.appendChild(bookElement);
                         bookList.appendChild(wrapper);
 
-                        // --- ОБНОВЛЕННАЯ ЛОГИКА СВАЙПА (ДЛЯ МЫШИ И КАСАНИЙ) ---
                         let isDragging = false;
                         let startX = 0;
                         let currentX = 0;
                         let isSwiping = false;
                         let isVerticalScroll = false;
                         let startY = 0;
-                        const threshold = -50; // Дистанция для срабатывания свайпа
-                        const deleteButton = wrapper.querySelector('.delete-action'); // Получаем кнопку сразу
+                        const threshold = -50;
+                        const deleteButton = wrapper.querySelector('.delete-action');
 
                         bookElement.addEventListener('click', (e) => {
                             if (!isSwiping) {
@@ -1301,7 +1295,7 @@
                                 document.body.classList.add('grabbing');
                                 document.addEventListener('mousemove', swipeMove);
                                 document.addEventListener('mouseup', swipeEnd);
-                            } else { // touchstart
+                            } else {
                                 document.addEventListener('touchmove', swipeMove, { passive: false });
                                 document.addEventListener('touchend', swipeEnd);
                             }
@@ -1319,7 +1313,6 @@
                             const diffY = currentY - startY;
 
                             if (!isSwiping && !isVerticalScroll) {
-                                // Определяем направление жеста: горизонтальное или вертикальное
                                 if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 10) {
                                     isSwiping = true;
                                 } else if (Math.abs(diffY) > 10) {
@@ -1328,12 +1321,12 @@
                             }
 
                             if (isVerticalScroll) {
-                                swipeEnd(e); // Прерываем свайп, если это вертикальная прокрутка
+                                swipeEnd(e);
                                 return;
                             }
 
                             if (isSwiping) {
-                                e.preventDefault(); // Предотвращаем скролл страницы при горизонтальном свайпе
+                                e.preventDefault();
                                 const diff = Math.max(-110, Math.min(0, diffX));
                                 bookElement.style.transform = `translateX(${diff}px)`;
                                 const buttonTranslateX = 90 + (diff * (100 / 110));
@@ -1349,7 +1342,7 @@
                                 document.body.classList.remove('grabbing');
                                 document.removeEventListener('mousemove', swipeMove);
                                 document.removeEventListener('mouseup', swipeEnd);
-                            } else { // touchend
+                            } else {
                                 document.removeEventListener('touchmove', swipeMove);
                                 document.removeEventListener('touchend', swipeEnd);
                             }
@@ -1362,12 +1355,11 @@
                             let diff = currentX - startX;
                             if (isSwiping && diff < threshold) {
                                 wrapper.classList.add('swiped');
-                                confirmDelete(book.id, book.title); // Возвращаем вызов окна подтверждения
+                                confirmDelete(book.id);
                             } else {
                                 wrapper.classList.remove('swiped');
                             }
 
-                            // Используем setTimeout, чтобы клик не сработал сразу после свайпа
                             setTimeout(() => {
                                 isSwiping = false;
                             }, 100);
@@ -1386,22 +1378,11 @@
                 });
             }
 
-            function confirmDelete(bookId, title) {
-                bookIdToDelete = bookId;
-                confirmModalText.textContent =
-                    'Вы уверенны что хотите удалить данную книгу из библиотеки?';
-
-                confirmModal.classList.remove('theme-light', 'theme-sepia', 'theme-console');
-                if (libraryScreen.classList.contains('theme-light')) {
-                    confirmModal.classList.add('theme-light');
-                } else if (libraryScreen.classList.contains('theme-sepia')) {
-                    confirmModal.classList.add('theme-sepia');
-                } else if (libraryScreen.classList.contains('theme-console')) {
-                    confirmModal.classList.add('theme-console');
-                }
-
-                confirmModal.classList.remove('hidden');
-                confirmModal.classList.add('flex');
+            function confirmDelete(bookId) {
+                showConfirmationModal(
+                    'Вы уверенны что хотите удалить данную книгу из библиотеки?',
+                    () => deleteBook(bookId)
+                );
             }
 
             async function deleteBook(bookId) {
@@ -1689,9 +1670,6 @@
             }
 
             function applyThemeToApp() {
-                // --- Шаг 1: Применяем классы к HTML-элементам ---
-
-                // Тема для экрана БИБЛИОТЕКИ
                 libraryScreen.classList.remove('theme-light', 'theme-sepia', 'theme-console');
                 if (globalSettings.readingTheme === 'theme-light') {
                     libraryScreen.classList.add('theme-light');
@@ -1701,7 +1679,6 @@
                     libraryScreen.classList.add('theme-console');
                 }
 
-                // Тема для экрана НАСТРОЕК
                 settingsScreen.classList.remove('theme-light', 'theme-sepia', 'theme-console');
                 if (globalSettings.readingTheme === 'theme-light') {
                     settingsScreen.classList.add('theme-light');
@@ -1711,18 +1688,14 @@
                     settingsScreen.classList.add('theme-console');
                 }
 
-                // Тема для экрана ЧТЕНИЯ (управляется отдельным классом на самом элементе)
                 readerScreen.className = readerScreen.className.replace(/theme-\w+/g, '').trim();
                 readerScreen.classList.add(globalSettings.readingTheme);
 
-                // --- Шаг 2: Применяем стили к контенту внутри читалки ---
                 bookContent.style.fontSize = `${globalSettings.fontSize}px`;
                 bookContent.style.fontWeight = `${globalSettings.fontWeight}`;
                 bookContent.style.fontFamily = `"${globalSettings.fontFamily}"`;
                 bookContent.style.lineHeight = `${globalSettings.lineHeight}%`;
 
-
-                // --- Шаг 3: Устанавливаем цвета для Telegram UI ---
                 try {
                     const tg = window.Telegram.WebApp;
                     const isReaderVisible = !readerScreen.classList.contains('hidden');
@@ -1738,7 +1711,6 @@
                         };
                         color = themeColors[globalSettings.readingTheme] || '#1e1e1e';
                     } else if (isSettingsVisible) {
-                        // Для экрана настроек
                         if (globalSettings.readingTheme === 'theme-light') {
                             color = '#ffffff';
                         } else if (globalSettings.readingTheme === 'theme-sepia') {
@@ -1749,7 +1721,6 @@
                             color = '#1e1e1e';
                         }
                     } else {
-                        // Библиотека
                         if (globalSettings.readingTheme === 'theme-light') {
                             color = '#ffffff';
                         } else if (globalSettings.readingTheme === 'theme-sepia') {
@@ -1803,7 +1774,6 @@
                     const swatch = document.createElement('span');
                     swatch.className = 'theme-swatch w-12 h-12 rounded-full flex items-center justify-center';
                     swatch.style.background = theme.color;
-                    // Для светлой темы добавим рамку, чтобы кружок не сливался с фоном
                     if (theme.id === 'theme-light') {
                         swatch.style.borderColor = '#e0e0e0';
                     } else {
@@ -1956,16 +1926,36 @@
             function showLoader(show) {
                 loader.classList.toggle('hidden', !show);
             }
+            
+            // --- Модальное окно ---
+            function showConfirmationModal(text, onConfirm) {
+                confirmModalText.textContent = text;
+                onConfirmAction = onConfirm; // Сохраняем действие
+                
+                // Применяем тему к модальному окну в зависимости от активного экрана
+                const activeScreen = document.querySelector('.screen:not(.hidden)');
+                confirmModal.classList.remove('theme-light', 'theme-sepia', 'theme-console');
+                if (activeScreen.classList.contains('theme-light')) {
+                    confirmModal.classList.add('theme-light');
+                } else if (activeScreen.classList.contains('theme-sepia')) {
+                    confirmModal.classList.add('theme-sepia');
+                } else if (activeScreen.classList.contains('theme-console')) {
+                    confirmModal.classList.add('theme-console');
+                }
+
+                confirmModal.classList.remove('hidden');
+                confirmModal.classList.add('flex');
+            }
+
 
             // --- Обработчики событий ---
             backToLibraryBtn.addEventListener('click', () => {
-                currentBookId = null; // Сбрасываем ID текущей книги при выходе в библиотеку
+                currentBookId = null; 
                 switchToScreen('library')
             });
             settingsBtn.addEventListener('click', () => switchToScreen('settings'));
             backToLibraryFromSettingsBtn.addEventListener('click', () => switchToScreen('library'));
 
-            // --- Логика режима чистого чтения ---
             let scrollTimeout;
             bookContentWrapper.addEventListener('scroll', () => {
                 updateScrollUI();
@@ -2028,10 +2018,15 @@
             });
 
             resetSettingsBtn.addEventListener('click', () => {
-                globalSettings = { ...defaultSettings };
-                saveGlobalSettings();
-                renderSettings();
-                applyThemeToApp();
+                showConfirmationModal(
+                    'Вы уверенны что хотите сбросить настройки?',
+                    () => {
+                        globalSettings = { ...defaultSettings };
+                        saveGlobalSettings();
+                        renderSettings();
+                        applyThemeToApp();
+                    }
+                );
             });
 
             // --- Fullscreen Logic ---
@@ -2083,7 +2078,6 @@
                     const sectionId = e.target.dataset.id;
                     const targetElement = document.getElementById(sectionId);
                     if (targetElement) {
-                        // Даем немного времени анимации закрытия панели, потом скроллим
                         setTimeout(() => {
                             targetElement.scrollIntoView({ behavior: 'smooth' });
                         }, 300);
@@ -2097,23 +2091,20 @@
             confirmModalNo.addEventListener('click', () => {
                 const swipedWrapper = document.querySelector('.book-item-wrapper.swiped');
                 if (swipedWrapper) {
-                    // Убираем класс, чтобы CSS вернул всё на место
                     swipedWrapper.classList.remove('swiped');
                 }
                 confirmModal.classList.add('hidden');
                 confirmModal.classList.remove('flex');
-                confirmModal.classList.remove('theme-light', 'theme-sepia', 'theme-console');
-                bookIdToDelete = null;
+                onConfirmAction = null;
             });
 
             confirmModalYes.addEventListener('click', () => {
-                if (bookIdToDelete !== null) {
-                    deleteBook(bookIdToDelete);
-                    bookIdToDelete = null;
+                if (typeof onConfirmAction === 'function') {
+                    onConfirmAction();
                 }
                 confirmModal.classList.add('hidden');
                 confirmModal.classList.remove('flex');
-                confirmModal.classList.remove('theme-light', 'theme-sepia', 'theme-console');
+                onConfirmAction = null;
             });
 
 
@@ -2124,7 +2115,7 @@
                     loadGlobalSettings();
                     await initDB();
                     await renderLibrary();
-                    applyThemeToApp(); // Первоначальное применение темы
+                    applyThemeToApp(); 
                 } catch (error) {
                     console.error("Ошибка инициализации:", error);
                     alert("Произошла ошибка при запуске приложения.");
@@ -2139,4 +2130,3 @@
 </body>
 
 </html>
-
