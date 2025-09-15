@@ -1968,7 +1968,7 @@
                     });
 
                     elements['book-list'].addEventListener('mousedown', e => this._handleSwipe(e));
-                    elements['book-list'].addEventListener('touchstart', e => this._handleSwipe(e), { passive: true });
+                    elements['book-list'].addEventListener('touchstart', e => this._handleSwipe(e), { passive: false });
 
 
                     // Settings
