@@ -1855,7 +1855,8 @@
                         wrapper.className = 'highlight';
                         range.surroundContents(wrapper);
                     } catch(e) {
-                        // Fallback for complex ranges
+                        console.warn("surroundContents failed, using fallback. Error:", e);
+                        // Fallback for complex ranges that cross element boundaries
                         const nodes = this.getNodesInRange(range);
                         nodes.forEach(node => {
                             const nodeRange = document.createRange();
@@ -1863,8 +1864,8 @@
                 
                             if (range.intersectsNode(node)) {
                                 const intersection = document.createRange();
+                                // Clamp the intersection to the node's boundaries
                                 intersection.selectNode(node);
-                
                                 if (range.startContainer === node) {
                                     intersection.setStart(node, range.startOffset);
                                 }
@@ -1874,12 +1875,15 @@
                                 
                                 const fallbackWrapper = document.createElement('span');
                                 fallbackWrapper.className = 'highlight';
-                                intersection.surroundContents(fallbackWrapper);
+                                try {
+                                    intersection.surroundContents(fallbackWrapper);
+                                } catch (e2) {
+                                    console.error("Fallback highlight failed for node", node, e2);
+                                }
                             }
                         });
                     }
                 },
-
 
                 findParentWithDataId(node) {
                     let current = node;
