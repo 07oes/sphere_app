@@ -2124,21 +2124,42 @@
                     const bookItemContent = wrapper.querySelector('.book-item-content');
                     const deleteAction = wrapper.querySelector('.delete-action');
                     const threshold = 50;
-                    let startX = (startEvent.type === 'touchstart' ? startEvent.touches[0] : startEvent).clientX;
-                    let currentX = startX;
+                    
+                    let isDragging = true;
                     let isSwiping = false;
+                    let isVerticalScroll = false;
                     wrapper.dataset.isSwipe = 'false';
+                
+                    const touchStart = startEvent.type === 'touchstart' ? startEvent.touches[0] : startEvent;
+                    let startX = touchStart.clientX;
+                    let startY = touchStart.clientY;
+                    let currentX = startX;
                 
                     bookItemContent.style.transition = 'none';
                     deleteAction.style.transition = 'none';
                 
                     const swipeMove = (moveEvent) => {
-                        currentX = (moveEvent.type === 'touchmove' ? moveEvent.touches[0] : moveEvent).clientX;
-                        const diffX = currentX - startX;
+                        if (!isDragging) return;
+                        
+                        const touchMove = moveEvent.type === 'touchmove' ? moveEvent.touches[0] : moveEvent;
+                        currentX = touchMove.clientX;
+                        const currentY = touchMove.clientY;
                 
-                        if (!isSwiping && Math.abs(diffX) > 10) {
-                            isSwiping = true;
-                            wrapper.dataset.isSwipe = 'true';
+                        const diffX = currentX - startX;
+                        const diffY = currentY - startY;
+                
+                        if (!isSwiping && !isVerticalScroll) {
+                            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 10) {
+                                isSwiping = true;
+                                wrapper.dataset.isSwipe = 'true';
+                            } else if (Math.abs(diffY) > 10) {
+                                isVerticalScroll = true;
+                            }
+                        }
+                
+                        if (isVerticalScroll) {
+                            swipeEnd(); // End the swipe gesture if it's a vertical scroll
+                            return;
                         }
                 
                         if (isSwiping) {
@@ -2151,22 +2172,27 @@
                     };
                 
                     const swipeEnd = () => {
+                        if (!isDragging) return;
+                        isDragging = false;
+                
                         document.removeEventListener('mousemove', swipeMove);
                         document.removeEventListener('mouseup', swipeEnd);
                         document.removeEventListener('touchmove', swipeMove);
                         document.removeEventListener('touchend', swipeEnd);
-
+                
                         UIManager.elements.body.classList.remove('grabbing');
                         bookItemContent.style.transform = '';
                         deleteAction.style.transform = '';
                         bookItemContent.style.transition = 'transform 0.3s ease';
                         deleteAction.style.transition = 'transform 0.3s ease';
                 
-                        const diff = currentX - startX;
-                        if (isSwiping && diff < -threshold) {
-                            wrapper.classList.add('swiped');
-                        } else {
-                            wrapper.classList.remove('swiped');
+                        if (isSwiping) {
+                            const diff = currentX - startX;
+                            if (diff < -threshold) {
+                                wrapper.classList.add('swiped');
+                            } else {
+                                wrapper.classList.remove('swiped');
+                            }
                         }
                     };
 
