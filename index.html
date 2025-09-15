@@ -934,18 +934,14 @@
 
         /* --- СТИЛИ ДЛЯ ВЫДЕЛЕНИЯ --- */
         .highlight {
-            background-color: rgba(255, 221, 87, 0.4);
-            /* Default for Dark Theme */
+            background-color: rgba(255, 221, 87, 0.4); /* Default for Dark Theme */
         }
-
         #reader-screen.theme-light .highlight {
             background-color: rgba(255, 221, 87, 0.7);
         }
-
         #reader-screen.theme-sepia .highlight {
             background-color: rgba(255, 170, 0, 0.5);
         }
-
         #reader-screen.theme-console .highlight {
             background-color: rgba(0, 255, 0, 0.25);
             color: #9f0;
@@ -1335,7 +1331,7 @@
                     const readerScreen = this.elements['reader-screen'];
 
                     body.className = `overflow-hidden`;
-
+                    
                     ['library-screen', 'settings-screen', 'reader-screen'].forEach(screenId => {
                         const screenEl = this.elements[screenId];
                         screenEl.className = screenEl.className.replace(/theme-\w+/g, '').trim() + ' screen';
@@ -1343,7 +1339,7 @@
                             screenEl.classList.add(readingTheme);
                         }
                     });
-                    readerScreen.classList.add(readingTheme);
+                     readerScreen.classList.add(readingTheme);
 
                     bookContent.style.fontSize = `${fontSize}px`;
                     bookContent.style.fontWeight = `${fontWeight}`;
@@ -1352,21 +1348,21 @@
 
                     this.updateTelegramTheme();
                 },
-
+                
                 updateTelegramTheme() {
-                    try {
+                     try {
                         const tg = window.Telegram.WebApp;
                         const { readingTheme } = AppState.settings;
-
+                        
                         const themeColors = {
                             'theme-light': '#ffffff',
                             'theme-dark': '#1e1e1e',
                             'theme-sepia': '#fbf0d9',
                             'theme-console': '#000000',
                         };
-
+                        
                         const color = themeColors[readingTheme] || '#1e1e1e';
-
+                        
                         tg.setHeaderColor(color);
                         tg.setBackgroundColor(color);
                     } catch (e) { /* Ignore if TG script is not available */ }
@@ -1376,15 +1372,15 @@
                     const bookList = this.elements['book-list'];
                     const header = this.elements['library-header-top'];
                     const emptyView = this.elements['empty-library-view'];
-
+                    
                     bookList.innerHTML = '';
                     const hasBooks = books.length > 0;
 
                     header.classList.toggle('hidden', !hasBooks);
                     emptyView.classList.toggle('hidden', hasBooks);
                     bookList.classList.toggle('hidden', !hasBooks);
-
-                    if (!hasBooks) return;
+                    
+                    if(!hasBooks) return;
 
                     books.forEach(book => {
                         const progress = (book.scrollPosition && book.scrollHeight) ? (book.scrollPosition / (book.scrollHeight - this.elements['book-content-wrapper'].clientHeight)) * 100 : 0;
@@ -1395,7 +1391,7 @@
                         const coverHtml = book.coverImage ?
                             `<img src="${book.coverImage}" alt="Обложка" class="w-24 h-36 flex-shrink-0 book-cover-img rounded">` :
                             `<div class="w-24 h-36 flex-shrink-0 book-icon-bg rounded flex items-center justify-center"><span class="text-gray-500 text-3xl">📖</span></div>`;
-
+                        
                         let finalProgressBarColor = AppState.settings.progressBarColor;
 
                         wrapper.innerHTML = `
@@ -1412,7 +1408,7 @@
                         bookList.appendChild(wrapper);
                     });
                 },
-
+                
                 renderSettings() {
                     const {
                         'theme-selector': themeSelector,
@@ -1453,7 +1449,7 @@
                         { name: 'Жёлтый', value: '#eab308' }, { name: 'Зелёный', value: '#22c55e' },
                         { name: 'Голубой', value: '#3b82f6' }
                     ];
-                    progressBarColorSelector.innerHTML = colors.map(color => `
+                     progressBarColorSelector.innerHTML = colors.map(color => `
                          <label class="flex flex-col items-center justify-center cursor-pointer">
                             <input type="radio" name="progress-color" value="${color.value}" class="hidden" ${progressBarColor === color.value ? 'checked' : ''}>
                              <span class="theme-swatch w-12 h-12 rounded-full flex items-center justify-center" style="background: ${color.value}; border-color: transparent;">
@@ -1482,7 +1478,7 @@
                         </label>
                     `).join('');
                 },
-
+                
                 showConfirmationModal(text, onConfirm) {
                     this.elements['confirm-modal-text'].textContent = text;
                     AppState.onConfirmAction = onConfirm;
@@ -1499,7 +1495,7 @@
                     AppState.onConfirmAction = null;
                 }
             };
-
+            
             // --- МОДУЛЬ РАБОТЫ С БД ---
             const DBManager = {
                 init() {
@@ -1518,7 +1514,7 @@
                         };
                     });
                 },
-
+                
                 getAllBooks() {
                     return new Promise((resolve, reject) => {
                         const transaction = AppState.db.transaction('books', 'readonly');
@@ -1530,7 +1526,7 @@
                 },
 
                 getBookById(id) {
-                    return new Promise((resolve, reject) => {
+                     return new Promise((resolve, reject) => {
                         const transaction = AppState.db.transaction('books', 'readonly');
                         const store = transaction.objectStore('books');
                         const request = store.get(id);
@@ -1548,7 +1544,7 @@
                         request.onerror = () => reject("Ошибка при сохранении книги");
                     });
                 },
-
+                
                 deleteBook(bookId) {
                     return new Promise((resolve, reject) => {
                         const transaction = AppState.db.transaction('books', 'readwrite');
@@ -1560,18 +1556,18 @@
                 },
 
                 saveMetadata(bookId, data) {
-                    if (!bookId) return;
-                    return this.getBookById(bookId).then(book => {
-                        if (book) {
-                            Object.assign(book, data);
-                            const transaction = AppState.db.transaction('books', 'readwrite');
-                            const store = transaction.objectStore('books');
-                            store.put(book);
-                        }
-                    });
+                     if (!bookId) return;
+                     return this.getBookById(bookId).then(book => {
+                         if(book) {
+                             Object.assign(book, data);
+                             const transaction = AppState.db.transaction('books', 'readwrite');
+                             const store = transaction.objectStore('books');
+                             store.put(book);
+                         }
+                     });
                 }
             };
-
+            
             // --- МОДУЛЬ ПАРСЕРА FB2 ---
             const FB2Parser = {
                 async parseFile(file) {
@@ -1591,7 +1587,7 @@
                 parse(xmlString) {
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(xmlString, "application/xml");
-
+                    
                     const title = doc.querySelector('book-title')?.textContent || 'Без названия';
                     const authorFirstName = doc.querySelector('author first-name')?.textContent || '';
                     const authorLastName = doc.querySelector('author last-name')?.textContent || '';
@@ -1608,7 +1604,7 @@
                             }
                         }
                     }
-
+                    
                     const bodyNode = doc.querySelector('body');
                     let contentHTML = '';
                     const toc = [];
@@ -1616,7 +1612,7 @@
                     if (bodyNode) {
                         contentHTML = this._parseBody(bodyNode, doc, toc);
                     }
-
+    
                     if (!contentHTML) contentHTML = "<p>Не удалось загрузить содержимое книги.</p>";
 
                     return { title, author, content: contentHTML, coverImage, toc, notes: [], scrollPosition: 0, scrollHeight: 0 };
@@ -1651,7 +1647,7 @@
                             if (node.nodeType !== Node.ELEMENT_NODE) return;
 
                             const tagName = node.tagName.toLowerCase();
-                            switch (tagName) {
+                             switch (tagName) {
                                 case 'title':
                                     const parentTagName = parentNode.tagName ? parentNode.tagName.toLowerCase() : '';
                                     if (parentTagName === 'section') {
@@ -1697,7 +1693,7 @@
                     return processNodeChildren(rootNode, 0);
                 }
             };
-
+            
             // --- МОДУЛЬ УПРАВЛЕНИЯ ЗАМЕТКАМИ ---
             const NoteManager = {
                 async createNote() {
@@ -1712,13 +1708,12 @@
                     const range = AppState.currentSelection;
                     let startElement = this.findParentWithDataId(range.startContainer);
                     let endElement = this.findParentWithDataId(range.endContainer);
-
+                    
                     if (!startElement || !endElement) {
                         const nodesInRange = this.getNodesInRange(range);
-                        if (nodesInRange.length > 0) {
+                        if(nodesInRange.length > 0) {
                             if (!startElement) startElement = this.findParentWithDataId(nodesInRange[0]);
                             if (!endElement) endElement = this.findParentWithDataId(nodesInRange[nodesInRange.length - 1]);
-                            // Adust range to snap to text nodes
                             range.setStart(nodesInRange[0], 0);
                             const lastNode = nodesInRange[nodesInRange.length - 1];
                             range.setEnd(lastNode, lastNode.length);
@@ -1761,7 +1756,7 @@
                 },
 
                 async deleteNote(noteId) {
-                    if (!AppState.currentBookId || !noteId) return;
+                     if (!AppState.currentBookId || !noteId) return;
                     const book = await DBManager.getBookById(AppState.currentBookId);
                     if (!book || !book.notes) return;
                     book.notes = book.notes.filter(note => note.id !== noteId);
@@ -1775,7 +1770,7 @@
                     UIManager.elements['note-popup'].classList.add('hidden');
                     AppState.currentSelection = null;
                 },
-
+                
                 getNodePath(ancestor, descendant) {
                     const path = [];
                     let current = descendant;
@@ -1813,7 +1808,7 @@
                     });
 
                     if (!book || !book.notes) return;
-
+                    
                     book.notes.forEach(note => {
                         const startNodeContainer = bookContent.querySelector(`[data-el-id='${note.startElId}']`);
                         const endNodeContainer = bookContent.querySelector(`[data-el-id='${note.endElId}']`);
@@ -1825,7 +1820,7 @@
                             console.warn("Could not find nodes for note:", note.id);
                             return;
                         }
-
+                        
                         try {
                             const range = document.createRange();
                             range.setStart(startNode, Math.min(note.startOffset, startNode.length || 0));
@@ -1836,7 +1831,7 @@
                         }
                     });
                 },
-
+                
                 getNodesInRange(range) {
                     const nodes = [];
                     const walker = document.createTreeWalker(
@@ -1855,33 +1850,40 @@
 
                 highlightRange(range) {
                     if (range.collapsed) return;
-                    const { startContainer, startOffset, endContainer, endOffset } = range;
 
-                    // Handle the end of the range first to not invalidate start offsets
-                    if (endContainer.nodeType === Node.TEXT_NODE && endOffset < endContainer.length) {
-                        endContainer.splitText(endOffset);
+                    // A robust method to wrap a range that spans multiple nodes.
+                    // It creates a document fragment, clones the selected content into it,
+                    // wraps the content within the fragment, and then replaces the original content.
+                    try {
+                        const wrapper = document.createElement('span');
+                        wrapper.className = 'highlight';
+                        
+                        // Clone the content of the range
+                        const content = range.extractContents();
+                        
+                        // Function to wrap all text nodes in the fragment
+                        const wrapTextNodes = (element) => {
+                            const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
+                            const nodes = [];
+                            while(walker.nextNode()) {
+                                if(walker.currentNode.textContent.trim() !== '') {
+                                    nodes.push(walker.currentNode);
+                                }
+                            }
+                            nodes.forEach(node => {
+                                const highlightSpan = document.createElement('span');
+                                highlightSpan.className = 'highlight';
+                                node.parentNode.insertBefore(highlightSpan, node);
+                                highlightSpan.appendChild(node);
+                            });
+                        };
+
+                        wrapTextNodes(content);
+                        range.insertNode(content);
+
+                    } catch(e) {
+                        console.error("Highlighting failed:", e);
                     }
-
-                    let effectiveStartNode = startContainer;
-                    if (startContainer.nodeType === Node.TEXT_NODE && startOffset > 0) {
-                        effectiveStartNode = startContainer.splitText(startOffset);
-                    }
-
-                    // Create a new range that perfectly selects the nodes to be highlighted
-                    const highlightRange = document.createRange();
-                    highlightRange.setStart(effectiveStartNode, 0);
-                    highlightRange.setEnd(endContainer, endContainer.nodeType === Node.TEXT_NODE ? endContainer.length : endContainer.childNodes.length);
-
-                    const nodesToWrap = this.getNodesInRange(highlightRange);
-
-                    nodesToWrap.forEach(node => {
-                        if (node.parentNode && node.textContent.trim() !== '') {
-                            const wrapper = document.createElement('span');
-                            wrapper.className = 'highlight';
-                            node.parentNode.insertBefore(wrapper, node);
-                            wrapper.appendChild(node);
-                        }
-                    });
                 },
 
 
@@ -1893,7 +1895,7 @@
                     }
                     return null;
                 },
-
+                
                 async renderNotes() {
                     const book = await DBManager.getBookById(AppState.currentBookId);
                     const notesList = UIManager.elements['notes-list'];
@@ -1913,7 +1915,7 @@
                     });
                 }
             };
-
+            
             // --- ГЛАВНЫЙ МОДУЛЬ ПРИЛОЖЕНИЯ ---
             const App = {
                 init() {
@@ -1926,7 +1928,7 @@
                     } catch (e) {
                         console.warn("Telegram Web App script not found.");
                     }
-
+                    
                     this.addEventListeners();
 
                     UIManager.showLoader(true);
@@ -1937,7 +1939,7 @@
                             alert("Произошла ошибка при запуске приложения.");
                         })
                         .finally(() => UIManager.showLoader(false));
-
+                    
                     UIManager.applyThemeToApp();
                 },
 
@@ -1946,7 +1948,7 @@
                     // File inputs
                     elements['file-input-top'].addEventListener('change', e => this.handleFileSelect(e));
                     elements['file-input-center'].addEventListener('change', e => this.handleFileSelect(e));
-
+                    
                     // Navigation
                     elements['back-to-library-btn'].addEventListener('click', () => this.closeBook());
                     elements['settings-btn'].addEventListener('click', () => UIManager.switchToScreen('settings-screen'));
@@ -1958,7 +1960,7 @@
                         const deleteBtn = e.target.closest('.delete-action');
 
                         if (deleteBtn) {
-                            UIManager.showConfirmationModal('Вы уверенны что хотите удалить данную книгу?', () => this.deleteBook(parseInt(wrapper.dataset.bookId, 10)));
+                            UIManager.showConfirmationModal( 'Вы уверенны что хотите удалить данную книгу?', () => this.deleteBook(parseInt(wrapper.dataset.bookId, 10)) );
                         } else if (wrapper && !wrapper.classList.contains('swiping')) {
                             this.openBook(parseInt(wrapper.dataset.bookId, 10));
                         }
@@ -1966,18 +1968,18 @@
 
                     // Settings
                     elements['theme-selector'].addEventListener('change', e => {
-                        if (e.target.name === 'theme') {
-                            AppState.settings.readingTheme = e.target.value;
-                            AppState.saveSettings();
-                            UIManager.applyThemeToApp();
-                            UIManager.renderSettings();
+                        if(e.target.name === 'theme') {
+                           AppState.settings.readingTheme = e.target.value;
+                           AppState.saveSettings();
+                           UIManager.applyThemeToApp();
+                           UIManager.renderSettings();
                         }
                     });
-                    elements['progress-bar-color-selector'].addEventListener('change', e => {
-                        if (e.target.name === 'progress-color') {
-                            AppState.settings.progressBarColor = e.target.value;
-                            AppState.saveSettings();
-                            this.renderLibrary();
+                     elements['progress-bar-color-selector'].addEventListener('change', e => {
+                        if(e.target.name === 'progress-color') {
+                           AppState.settings.progressBarColor = e.target.value;
+                           AppState.saveSettings();
+                           this.renderLibrary();
                         }
                     });
                     elements['font-size-slider'].addEventListener('input', e => { AppState.settings.fontSize = parseInt(e.target.value, 10); UIManager.elements['font-size-value'].textContent = `${e.target.value}px`; AppState.saveSettings(); UIManager.applyThemeToApp(); });
@@ -1989,10 +1991,10 @@
                     // Modal
                     elements['confirm-modal-yes'].addEventListener('click', () => { if (typeof AppState.onConfirmAction === 'function') AppState.onConfirmAction(); UIManager.hideConfirmationModal(); });
                     elements['confirm-modal-no'].addEventListener('click', () => UIManager.hideConfirmationModal());
-
+                    
                     // Reader UI
                     elements['fullscreen-btn'].addEventListener('click', () => elements['reader-screen'].classList.toggle('ui-hidden'));
-
+                    
                     let scrollTimeout;
                     elements['book-content-wrapper'].addEventListener('scroll', () => {
                         UIManager.elements['note-popup'].classList.add('hidden');
@@ -2000,24 +2002,24 @@
                         clearTimeout(scrollTimeout);
                         scrollTimeout = setTimeout(() => { DBManager.saveMetadata(AppState.currentBookId, { scrollPosition: elements['book-content-wrapper'].scrollTop, scrollHeight: elements['book-content-wrapper'].scrollHeight }); }, 250);
                     });
-
+                    
                     // TOC and Notes Panel
                     elements['toc-btn'].addEventListener('click', () => this.openSidePanel('toc'));
                     elements['open-notes-btn'].addEventListener('click', () => this.openSidePanel('notes'));
                     elements['toc-close-btn'].addEventListener('click', () => this.closeSidePanel());
                     elements['toc-overlay'].addEventListener('click', () => this.closeSidePanel());
                     elements['toc-list'].addEventListener('click', e => {
-                        if (e.target.tagName === 'A') {
+                         if (e.target.tagName === 'A') {
                             const targetElement = document.getElementById(e.target.dataset.id);
                             if (targetElement) setTimeout(() => targetElement.scrollIntoView({ behavior: 'smooth' }), 300);
                             this.closeSidePanel();
-                        }
+                         }
                     });
-                    elements['notes-list'].addEventListener('click', e => {
+                     elements['notes-list'].addEventListener('click', e => {
                         const deleteButton = e.target.closest('.delete-note-btn');
                         const targetItem = e.target.closest('.note-item');
                         if (deleteButton) {
-                            UIManager.showConfirmationModal('Вы уверены что хотите удалить эту заметку?', () => NoteManager.deleteNote(parseInt(targetItem.dataset.noteId, 10)));
+                             UIManager.showConfirmationModal('Вы уверены что хотите удалить эту заметку?', () => NoteManager.deleteNote(parseInt(targetItem.dataset.noteId, 10)) );
                         } else if (targetItem) {
                             const targetElement = elements['book-content'].querySelector(`[data-el-id='${targetItem.dataset.targetId}']`);
                             if (targetElement) setTimeout(() => targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
@@ -2030,7 +2032,7 @@
                     document.addEventListener('touchend', () => this.handleSelection());
                     elements['create-note-btn'].addEventListener('click', () => NoteManager.createNote());
                 },
-
+                
                 async renderLibrary() {
                     const books = await DBManager.getAllBooks();
                     UIManager.renderLibrary(books);
@@ -2053,7 +2055,7 @@
                         event.target.value = '';
                     }
                 },
-
+                
                 async openBook(bookId) {
                     const book = await DBManager.getBookById(bookId);
                     if (!book) return;
@@ -2063,7 +2065,7 @@
                     const bookContentEl = UIManager.elements['book-content'];
                     const wrapperEl = UIManager.elements['book-content-wrapper'];
                     const tocBtnEl = UIManager.elements['toc-btn'];
-
+                    
                     bookTitleEl.textContent = book.title;
                     bookContentEl.innerHTML = book.content;
                     tocBtnEl.style.display = book.toc && book.toc.length > 0 ? 'flex' : 'none';
@@ -2087,7 +2089,7 @@
                     await DBManager.deleteBook(bookId);
                     await this.renderLibrary();
                 },
-
+                
                 updateScrollUI() {
                     const wrapper = UIManager.elements['book-content-wrapper'];
                     const pageInfo = UIManager.elements['page-info'];
@@ -2100,27 +2102,27 @@
                     const currentPage = Math.round(scrollTop / clientHeight) + 1;
                     pageInfo.textContent = `${currentPage} / ${totalPages}`;
                 },
-
+                
                 async openSidePanel(type) {
-                    const titleEl = UIManager.elements['side-panel-title'];
-                    const notesListEl = UIManager.elements['notes-list'];
-                    const tocListEl = UIManager.elements['toc-list'];
-                    const panelEl = UIManager.elements['toc-panel'];
-                    if (type === 'toc') {
-                        titleEl.textContent = 'Содержание';
-                        notesListEl.classList.add('hidden');
-                        tocListEl.classList.remove('hidden');
-                        const book = await DBManager.getBookById(AppState.currentBookId);
-                        tocListEl.innerHTML = (!book.toc || book.toc.length === 0)
+                     const titleEl = UIManager.elements['side-panel-title'];
+                     const notesListEl = UIManager.elements['notes-list'];
+                     const tocListEl = UIManager.elements['toc-list'];
+                     const panelEl = UIManager.elements['toc-panel'];
+                     if(type === 'toc') {
+                         titleEl.textContent = 'Содержание';
+                         notesListEl.classList.add('hidden');
+                         tocListEl.classList.remove('hidden');
+                         const book = await DBManager.getBookById(AppState.currentBookId);
+                         tocListEl.innerHTML = (!book.toc || book.toc.length === 0) 
                             ? '<p class="text-gray-400 p-4 text-center">Нет содержания.</p>'
                             : book.toc.map(item => `<a data-id="${item.id}" style="padding-left: ${0.75 + item.level * 1}rem">${item.title}</a>`).join('');
-                    } else if (type === 'notes') {
-                        titleEl.textContent = 'Заметки';
-                        tocListEl.classList.add('hidden');
-                        notesListEl.classList.remove('hidden');
-                        NoteManager.renderNotes();
-                    }
-                    panelEl.classList.add('open');
+                     } else if (type === 'notes') {
+                         titleEl.textContent = 'Заметки';
+                         tocListEl.classList.add('hidden');
+                         notesListEl.classList.remove('hidden');
+                         NoteManager.renderNotes();
+                     }
+                     panelEl.classList.add('open');
                 },
 
                 closeSidePanel() {
@@ -2153,16 +2155,17 @@
                             notePopupEl.style.transform = 'translateX(-50%)';
                             notePopupEl.classList.remove('hidden');
                         } else {
-                            notePopupEl.classList.add('hidden');
-                            AppState.currentSelection = null;
+                           notePopupEl.classList.add('hidden');
+                           AppState.currentSelection = null;
                         }
                     }, 10);
                 }
             };
-
+            
             App.init();
         });
     </script>
 </body>
 
 </html>
+
