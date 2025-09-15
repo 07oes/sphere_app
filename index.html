@@ -1850,39 +1850,33 @@
 
                 highlightRange(range) {
                     if (range.collapsed) return;
-
-                    // A robust method to wrap a range that spans multiple nodes.
-                    // It creates a document fragment, clones the selected content into it,
-                    // wraps the content within the fragment, and then replaces the original content.
                     try {
                         const wrapper = document.createElement('span');
                         wrapper.className = 'highlight';
-                        
-                        // Clone the content of the range
-                        const content = range.extractContents();
-                        
-                        // Function to wrap all text nodes in the fragment
-                        const wrapTextNodes = (element) => {
-                            const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
-                            const nodes = [];
-                            while(walker.nextNode()) {
-                                if(walker.currentNode.textContent.trim() !== '') {
-                                    nodes.push(walker.currentNode);
-                                }
-                            }
-                            nodes.forEach(node => {
-                                const highlightSpan = document.createElement('span');
-                                highlightSpan.className = 'highlight';
-                                node.parentNode.insertBefore(highlightSpan, node);
-                                highlightSpan.appendChild(node);
-                            });
-                        };
-
-                        wrapTextNodes(content);
-                        range.insertNode(content);
-
+                        range.surroundContents(wrapper);
                     } catch(e) {
-                        console.error("Highlighting failed:", e);
+                        // Fallback for complex ranges
+                        const nodes = this.getNodesInRange(range);
+                        nodes.forEach(node => {
+                            const nodeRange = document.createRange();
+                            nodeRange.selectNodeContents(node);
+                
+                            if (range.intersectsNode(node)) {
+                                const intersection = document.createRange();
+                                intersection.selectNode(node);
+                
+                                if (range.startContainer === node) {
+                                    intersection.setStart(node, range.startOffset);
+                                }
+                                if (range.endContainer === node) {
+                                    intersection.setEnd(node, range.endOffset);
+                                }
+                                
+                                const fallbackWrapper = document.createElement('span');
+                                fallbackWrapper.className = 'highlight';
+                                intersection.surroundContents(fallbackWrapper);
+                            }
+                        });
                     }
                 },
 
@@ -1957,14 +1951,25 @@
                     // Book list interaction (delegated)
                     elements['book-list'].addEventListener('click', e => {
                         const wrapper = e.target.closest('.book-item-wrapper');
+                        if (!wrapper) return;
+
                         const deleteBtn = e.target.closest('.delete-action');
+                        
+                        if (wrapper.dataset.isSwipe === 'true') {
+                            wrapper.dataset.isSwipe = 'false';
+                            return;
+                        }
 
                         if (deleteBtn) {
                             UIManager.showConfirmationModal( 'Вы уверенны что хотите удалить данную книгу?', () => this.deleteBook(parseInt(wrapper.dataset.bookId, 10)) );
-                        } else if (wrapper && !wrapper.classList.contains('swiping')) {
+                        } else {
                             this.openBook(parseInt(wrapper.dataset.bookId, 10));
                         }
                     });
+
+                    elements['book-list'].addEventListener('mousedown', e => this._handleSwipe(e));
+                    elements['book-list'].addEventListener('touchstart', e => this._handleSwipe(e), { passive: true });
+
 
                     // Settings
                     elements['theme-selector'].addEventListener('change', e => {
@@ -2103,6 +2108,74 @@
                     pageInfo.textContent = `${currentPage} / ${totalPages}`;
                 },
                 
+                _handleSwipe(startEvent) {
+                    const wrapper = startEvent.target.closest('.book-item-wrapper');
+                    if (!wrapper || (startEvent.type === 'mousedown' && startEvent.button !== 0)) return;
+                
+                    const otherSwiped = document.querySelector('.book-item-wrapper.swiped');
+                    if (otherSwiped && otherSwiped !== wrapper) {
+                        otherSwiped.classList.remove('swiped');
+                    }
+                    
+                    const bookItemContent = wrapper.querySelector('.book-item-content');
+                    const deleteAction = wrapper.querySelector('.delete-action');
+                    const threshold = 50;
+                    let startX = (startEvent.type === 'touchstart' ? startEvent.touches[0] : startEvent).clientX;
+                    let currentX = startX;
+                    let isSwiping = false;
+                    wrapper.dataset.isSwipe = 'false';
+                
+                    bookItemContent.style.transition = 'none';
+                    deleteAction.style.transition = 'none';
+                
+                    const swipeMove = (moveEvent) => {
+                        currentX = (moveEvent.type === 'touchmove' ? moveEvent.touches[0] : moveEvent).clientX;
+                        const diffX = currentX - startX;
+                
+                        if (!isSwiping && Math.abs(diffX) > 10) {
+                            isSwiping = true;
+                            wrapper.dataset.isSwipe = 'true';
+                        }
+                
+                        if (isSwiping) {
+                            if (moveEvent.cancelable) moveEvent.preventDefault();
+                            const diff = Math.max(-110, Math.min(0, diffX));
+                            bookItemContent.style.transform = `translateX(${diff}px)`;
+                            const buttonTranslateX = 90 + (diff * (100 / 110));
+                            deleteAction.style.transform = `translateY(-50%) translateX(${buttonTranslateX}px)`;
+                        }
+                    };
+                
+                    const swipeEnd = () => {
+                        document.removeEventListener('mousemove', swipeMove);
+                        document.removeEventListener('mouseup', swipeEnd);
+                        document.removeEventListener('touchmove', swipeMove);
+                        document.removeEventListener('touchend', swipeEnd);
+
+                        UIManager.elements.body.classList.remove('grabbing');
+                        bookItemContent.style.transform = '';
+                        deleteAction.style.transform = '';
+                        bookItemContent.style.transition = 'transform 0.3s ease';
+                        deleteAction.style.transition = 'transform 0.3s ease';
+                
+                        const diff = currentX - startX;
+                        if (isSwiping && diff < -threshold) {
+                            wrapper.classList.add('swiped');
+                        } else {
+                            wrapper.classList.remove('swiped');
+                        }
+                    };
+
+                    if (startEvent.type === 'mousedown') {
+                        UIManager.elements.body.classList.add('grabbing');
+                        document.addEventListener('mousemove', swipeMove);
+                        document.addEventListener('mouseup', swipeEnd);
+                    } else {
+                        document.addEventListener('touchmove', swipeMove, { passive: false });
+                        document.addEventListener('touchend', swipeEnd);
+                    }
+                },
+
                 async openSidePanel(type) {
                      const titleEl = UIManager.elements['side-panel-title'];
                      const notesListEl = UIManager.elements['notes-list'];
