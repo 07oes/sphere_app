@@ -2037,8 +2037,9 @@
                     });
 
                     // Note creation
-                    document.addEventListener('mouseup', () => this.handleSelection());
-                    document.addEventListener('touchend', () => this.handleSelection());
+                    document.addEventListener('selectionchange', () => this.handleSelectionChange());
+                    elements['book-content-wrapper'].addEventListener('mouseup', () => this.handleSelectionEnd());
+                    elements['book-content-wrapper'].addEventListener('touchend', () => this.handleSelectionEnd());
                     elements['create-note-btn'].addEventListener('click', () => NoteManager.createNote());
                 },
                 
@@ -2232,36 +2233,47 @@
                     UIManager.elements['toc-panel'].classList.remove('open');
                 },
 
-                handleSelection() {
-                    setTimeout(() => {
-                        const selection = window.getSelection();
-                        const notePopupEl = UIManager.elements['note-popup'];
-                        const bookContentEl = UIManager.elements['book-content'];
-                        const appEl = UIManager.elements['app'];
+                handleSelectionChange() {
+                    const selection = window.getSelection();
+                    const { 'note-popup': notePopup, 'book-content': bookContent } = UIManager.elements;
 
-                        if (selection && !selection.isCollapsed && selection.toString().trim().length > 0) {
-                            const range = selection.getRangeAt(0);
-                            if (!bookContentEl.contains(range.commonAncestorContainer)) return;
-
+                    if (selection && !selection.isCollapsed && selection.toString().trim().length > 0) {
+                        const range = selection.getRangeAt(0);
+                        if (bookContent.contains(range.commonAncestorContainer)) {
                             AppState.currentSelection = range.cloneRange();
+                        } else {
+                            AppState.currentSelection = null;
+                        }
+                    } else {
+                        AppState.currentSelection = null;
+                    }
+
+                    if (!AppState.currentSelection) {
+                        notePopup.classList.add('hidden');
+                    }
+                },
+
+                handleSelectionEnd() {
+                    setTimeout(() => {
+                        if (AppState.currentSelection) {
+                            const { 'note-popup': notePopupEl, app: appEl } = UIManager.elements;
                             const rect = AppState.currentSelection.getBoundingClientRect();
                             const appRect = appEl.getBoundingClientRect();
 
                             const popupHeight = notePopupEl.offsetHeight || 40;
                             let top = rect.top - appRect.top - popupHeight - 15;
-                            let left = rect.left - appRect.top + (rect.width / 2);
+                            let left = rect.left - appRect.left + (rect.width / 2);
 
-                            if (rect.top < (popupHeight + 20)) top = rect.bottom - appRect.top + 10;
+                            if (rect.top < (popupHeight + 20)) {
+                                top = rect.bottom - appRect.top + 10;
+                            }
 
                             notePopupEl.style.left = `${left}px`;
                             notePopupEl.style.top = `${top}px`;
                             notePopupEl.style.transform = 'translateX(-50%)';
                             notePopupEl.classList.remove('hidden');
-                        } else {
-                           notePopupEl.classList.add('hidden');
-                           AppState.currentSelection = null;
                         }
-                    }, 10);
+                    }, 50); 
                 }
             };
             
