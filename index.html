@@ -2131,7 +2131,7 @@
                         if (isSwiping) {
                             if (moveEvent.cancelable) moveEvent.preventDefault();
                             const swipeProgress = Math.min(1, Math.abs(diffX) / threshold);
-                            const clampedDiff = Math.max(-threshold * 1.5, diffX);
+                            const clampedDiff = Math.max(-threshold * 1.5, Math.min(0, diffX));
 
                             bookItemContent.style.transition = 'none';
                             bookItemContent.style.transform = `translateX(${clampedDiff}px)`;
