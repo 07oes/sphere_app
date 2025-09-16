@@ -2261,12 +2261,17 @@
                             const appRect = appEl.getBoundingClientRect();
 
                             const popupHeight = notePopupEl.offsetHeight || 40;
-                            let top = rect.top - appRect.top - popupHeight - 15;
-                            let left = rect.left - appRect.left + (rect.width / 2);
+                            const popupMargin = 10;
 
-                            if (rect.top < (popupHeight + 20)) {
-                                top = rect.bottom - appRect.top + 10;
+                            // Default position is below the selection
+                            let top = rect.bottom - appRect.top + popupMargin;
+                            let left = rect.left - appRect.left + (rect.width / 2);
+                            
+                            // Fallback: if not enough space below, place it above
+                            if (top + popupHeight > appRect.height - popupMargin) {
+                                top = rect.top - appRect.top - popupHeight - popupMargin;
                             }
+
 
                             notePopupEl.style.left = `${left}px`;
                             notePopupEl.style.top = `${top}px`;
