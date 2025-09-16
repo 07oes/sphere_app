@@ -814,23 +814,18 @@
         .book-item-wrapper {
             position: relative;
             overflow: hidden;
+            background-color: transparent;
+             border-radius: 0.5rem;
         }
-
-        .delete-action {
+        
+        .delete-swipe-icon {
             position: absolute;
+            right: 24px;
             top: 50%;
-            right: 0;
-            width: 90px;
-            height: 92%;
-            transform: translateY(-50%) translateX(100%);
-            transition: transform 0.3s ease;
-            background-color: #af2b1e;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            user-select: none;
-            border-radius: 0.6rem;
+            transform: translateY(-50%);
+            color: #8e8e93;
+            opacity: 0;
+            transition: opacity 0.3s ease, color 0.1s ease;
         }
 
         .book-item-content {
@@ -839,14 +834,6 @@
             position: relative;
             z-index: 1;
             border-radius: 0.5rem;
-        }
-
-        .book-item-wrapper.swiped .book-item-content {
-            transform: translateX(-110px);
-        }
-
-        .book-item-wrapper.swiped .delete-action {
-            transform: translateY(-50%) translateX(-10px);
         }
 
         #toc-panel.open {
@@ -948,29 +935,18 @@
         }
 
 
-        /* --- СТИЛИ ДЛЯ ВСПЛЫВАЮЩЕЙ КНОПКИ ЗАМЕТКИ --- */
-        #note-popup {
-            position: absolute;
-            background-color: #000000;
-            /* Black for dark theme */
-            color: #ffffff;
+        /* --- СТИЛИ ДЛЯ ИКОНКИ КАРАНДАША --- */
+        #open-notes-btn.active-selection svg {
+            stroke: #FFD700;
         }
-
-        #reader-screen.theme-light #note-popup {
-            background-color: #ffffff;
-            color: #000000;
-            border: 1px solid #e0e0e0;
+        #reader-screen.theme-light #open-notes-btn.active-selection svg {
+            stroke: #B8860B;
         }
-
-        #reader-screen.theme-sepia #note-popup {
-            background-color: #e4d4b2;
-            color: #5b4636;
+        #reader-screen.theme-sepia #open-notes-btn.active-selection svg {
+            stroke: #AF642D;
         }
-
-        #reader-screen.theme-console #note-popup {
-            background-color: #111111;
-            color: #00ff00;
-            border: 1px solid #00ff00;
+        #reader-screen.theme-console #open-notes-btn.active-selection svg {
+            stroke: #FFFF00;
         }
 
         /* --- СТИЛИ ДЛЯ СКРОЛЛБАРОВ --- */
@@ -1139,9 +1115,6 @@
             <div class="flex-grow relative">
                 <main id="book-content-wrapper" class="relative">
                     <div id="book-content"></div>
-                    <div id="note-popup" class="hidden absolute py-2 px-4 rounded-full shadow-lg z-[999] transition-opacity duration-200">
-                        <button id="create-note-btn" class="font-semibold">Создать заметку</button>
-                    </div>
                 </main>
                 <div id="page-overlay"
                     class="absolute bottom-0 left-0 right-0 h-24 pointer-events-none flex justify-center items-end p-4">
@@ -1300,7 +1273,7 @@
                         'line-height-value', 'reset-settings-btn', 'confirm-modal', 'confirm-modal-text',
                         'confirm-modal-yes', 'confirm-modal-no', 'fullscreen-btn', 'toc-btn',
                         'toc-panel', 'toc-close-btn', 'toc-list', 'toc-overlay', 'progress-bar-color-selector',
-                        'open-notes-btn', 'notes-list', 'note-popup', 'create-note-btn', 'side-panel-title'
+                        'open-notes-btn', 'notes-list', 'side-panel-title'
                     ];
                     ids.forEach(id => this.elements[id] = document.getElementById(id));
                     this.elements.body = document.body;
@@ -1394,7 +1367,9 @@
                         let finalProgressBarColor = AppState.settings.progressBarColor;
 
                         wrapper.innerHTML = `
-                            <div class="delete-action font-bold">Удалить</div>
+                             <div class="delete-swipe-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                            </div>
                             <div class="book-item-content p-2 flex items-center gap-4 relative overflow-hidden">
                                 ${coverHtml}
                                 <div class="flex-grow self-start overflow-hidden">
@@ -1766,7 +1741,6 @@
 
                 clearSelection() {
                     window.getSelection().removeAllRanges();
-                    UIManager.elements['note-popup'].classList.add('hidden');
                     AppState.currentSelection = null;
                 },
                 
@@ -1956,18 +1930,12 @@
                         const wrapper = e.target.closest('.book-item-wrapper');
                         if (!wrapper) return;
 
-                        const deleteBtn = e.target.closest('.delete-action');
-                        
                         if (wrapper.dataset.isSwipe === 'true') {
                             wrapper.dataset.isSwipe = 'false';
                             return;
                         }
 
-                        if (deleteBtn) {
-                            UIManager.showConfirmationModal( 'Вы уверенны что хотите удалить данную книгу?', () => this.deleteBook(parseInt(wrapper.dataset.bookId, 10)) );
-                        } else {
-                            this.openBook(parseInt(wrapper.dataset.bookId, 10));
-                        }
+                        this.openBook(parseInt(wrapper.dataset.bookId, 10));
                     });
 
                     elements['book-list'].addEventListener('mousedown', e => this._handleSwipe(e));
@@ -1998,14 +1966,17 @@
 
                     // Modal
                     elements['confirm-modal-yes'].addEventListener('click', () => { if (typeof AppState.onConfirmAction === 'function') AppState.onConfirmAction(); UIManager.hideConfirmationModal(); });
-                    elements['confirm-modal-no'].addEventListener('click', () => UIManager.hideConfirmationModal());
+                    elements['confirm-modal-no'].addEventListener('click', () => {
+                         const swipedWrapper = document.querySelector('.book-item-wrapper.swiped');
+                         if(swipedWrapper) swipedWrapper.classList.remove('swiped');
+                         UIManager.hideConfirmationModal();
+                    });
                     
                     // Reader UI
                     elements['fullscreen-btn'].addEventListener('click', () => elements['reader-screen'].classList.toggle('ui-hidden'));
                     
                     let scrollTimeout;
                     elements['book-content-wrapper'].addEventListener('scroll', () => {
-                        UIManager.elements['note-popup'].classList.add('hidden');
                         this.updateScrollUI();
                         clearTimeout(scrollTimeout);
                         scrollTimeout = setTimeout(() => { DBManager.saveMetadata(AppState.currentBookId, { scrollPosition: elements['book-content-wrapper'].scrollTop, scrollHeight: elements['book-content-wrapper'].scrollHeight }); }, 250);
@@ -2013,7 +1984,13 @@
                     
                     // TOC and Notes Panel
                     elements['toc-btn'].addEventListener('click', () => this.openSidePanel('toc'));
-                    elements['open-notes-btn'].addEventListener('click', () => this.openSidePanel('notes'));
+                    elements['open-notes-btn'].addEventListener('click', () => {
+                        if (AppState.currentSelection) {
+                            NoteManager.createNote();
+                        } else {
+                            this.openSidePanel('notes');
+                        }
+                    });
                     elements['toc-close-btn'].addEventListener('click', () => this.closeSidePanel());
                     elements['toc-overlay'].addEventListener('click', () => this.closeSidePanel());
                     elements['toc-list'].addEventListener('click', e => {
@@ -2027,7 +2004,7 @@
                         const deleteButton = e.target.closest('.delete-note-btn');
                         const targetItem = e.target.closest('.note-item');
                         if (deleteButton) {
-                             UIManager.showConfirmationModal('Вы уверены что хотите удалить эту заметку?', () => NoteManager.deleteNote(parseInt(targetItem.dataset.noteId, 10)) );
+                             NoteManager.deleteNote(parseInt(targetItem.dataset.noteId, 10));
                         } else if (targetItem) {
                             const targetElement = elements['book-content'].querySelector(`[data-el-id='${targetItem.dataset.targetId}']`);
                             if (targetElement) setTimeout(() => targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
@@ -2037,9 +2014,6 @@
 
                     // Note creation
                     document.addEventListener('selectionchange', () => this.handleSelectionChange());
-                    elements['book-content-wrapper'].addEventListener('mouseup', () => this.handleSelectionEnd());
-                    elements['book-content-wrapper'].addEventListener('touchend', () => this.handleSelectionEnd());
-                    elements['create-note-btn'].addEventListener('click', () => NoteManager.createNote());
                 },
                 
                 async renderLibrary() {
@@ -2116,14 +2090,9 @@
                     const wrapper = startEvent.target.closest('.book-item-wrapper');
                     if (!wrapper || (startEvent.type === 'mousedown' && startEvent.button !== 0)) return;
                 
-                    const otherSwiped = document.querySelector('.book-item-wrapper.swiped');
-                    if (otherSwiped && otherSwiped !== wrapper) {
-                        otherSwiped.classList.remove('swiped');
-                    }
-                    
                     const bookItemContent = wrapper.querySelector('.book-item-content');
-                    const deleteAction = wrapper.querySelector('.delete-action');
-                    const threshold = 50;
+                    const deleteIcon = wrapper.querySelector('.delete-swipe-icon');
+                    const threshold = 60;
                     
                     let isDragging = true;
                     let isSwiping = false;
@@ -2134,9 +2103,6 @@
                     let startX = touchStart.clientX;
                     let startY = touchStart.clientY;
                     let currentX = startX;
-                
-                    bookItemContent.style.transition = 'none';
-                    deleteAction.style.transition = 'none';
                 
                     const swipeMove = (moveEvent) => {
                         if (!isDragging) return;
@@ -2158,16 +2124,23 @@
                         }
                 
                         if (isVerticalScroll) {
-                            swipeEnd(); // End the swipe gesture if it's a vertical scroll
+                            swipeEnd();
                             return;
                         }
                 
                         if (isSwiping) {
                             if (moveEvent.cancelable) moveEvent.preventDefault();
-                            const diff = Math.max(-110, Math.min(0, diffX));
-                            bookItemContent.style.transform = `translateX(${diff}px)`;
-                            const buttonTranslateX = 90 + (diff * (100 / 110));
-                            deleteAction.style.transform = `translateY(-50%) translateX(${buttonTranslateX}px)`;
+                            const swipeProgress = Math.min(1, Math.abs(diffX) / threshold);
+                            const clampedDiff = Math.max(-threshold * 1.5, diffX);
+
+                            bookItemContent.style.transition = 'none';
+                            bookItemContent.style.transform = `translateX(${clampedDiff}px)`;
+                            
+                            const r = 142 + (255 - 142) * swipeProgress;
+                            const g = 142 - (142 - 59) * swipeProgress;
+                            const b = 147 - (147 - 48) * swipeProgress;
+                            deleteIcon.style.color = `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
+                            deleteIcon.style.opacity = swipeProgress;
                         }
                     };
                 
@@ -2181,19 +2154,20 @@
                         document.removeEventListener('touchend', swipeEnd);
                 
                         UIManager.elements.body.classList.remove('grabbing');
-                        bookItemContent.style.transform = '';
-                        deleteAction.style.transform = '';
+                        
+                        const diff = currentX - startX;
+                        
+                        if (isSwiping && diff < -threshold) {
+                             UIManager.showConfirmationModal(
+                                'Вы уверены, что хотите удалить эту книгу?',
+                                () => this.deleteBook(parseInt(wrapper.dataset.bookId, 10))
+                            );
+                        } 
+                        
                         bookItemContent.style.transition = 'transform 0.3s ease';
-                        deleteAction.style.transition = 'transform 0.3s ease';
-                
-                        if (isSwiping) {
-                            const diff = currentX - startX;
-                            if (diff < -threshold) {
-                                wrapper.classList.add('swiped');
-                            } else {
-                                wrapper.classList.remove('swiped');
-                            }
-                        }
+                        bookItemContent.style.transform = '';
+                        deleteIcon.style.color = '';
+                        deleteIcon.style.opacity = 0;
                     };
 
                     if (startEvent.type === 'mousedown') {
@@ -2234,42 +2208,21 @@
 
                 handleSelectionChange() {
                     const selection = window.getSelection();
-                    const { 'note-popup': notePopup, 'book-content': bookContent } = UIManager.elements;
+                    const { 'open-notes-btn': notesBtn, 'book-content': bookContent } = UIManager.elements;
 
                     if (selection && !selection.isCollapsed && selection.toString().trim().length > 0) {
                         const range = selection.getRangeAt(0);
                         if (bookContent.contains(range.commonAncestorContainer)) {
                             AppState.currentSelection = range.cloneRange();
+                            notesBtn.classList.add('active-selection');
                         } else {
                             AppState.currentSelection = null;
+                            notesBtn.classList.remove('active-selection');
                         }
                     } else {
                         AppState.currentSelection = null;
+                        notesBtn.classList.remove('active-selection');
                     }
-
-                    if (!AppState.currentSelection) {
-                        notePopup.classList.add('hidden');
-                    }
-                },
-
-                handleSelectionEnd() {
-                    setTimeout(() => {
-                        if (AppState.currentSelection) {
-                            const { 'note-popup': notePopupEl, 'book-content-wrapper': wrapperEl } = UIManager.elements;
-                            const rect = AppState.currentSelection.getBoundingClientRect();
-                            const wrapperRect = wrapperEl.getBoundingClientRect();
-                            
-                            const popupMargin = 30; // Увеличенный отступ
-
-                            let top = rect.bottom - wrapperRect.top + wrapperEl.scrollTop + popupMargin;
-                            let left = rect.left - wrapperRect.left + (rect.width / 2);
-                           
-                            notePopupEl.style.left = `${left}px`;
-                            notePopupEl.style.top = `${top}px`;
-                            notePopupEl.style.transform = 'translateX(-50%)';
-                            notePopupEl.classList.remove('hidden');
-                        }
-                    }, 50); 
                 }
             };
             
