@@ -1223,7 +1223,7 @@
         </div>
     </div>
 
-    <div id="note-popup" class="hidden absolute py-2 px-4 rounded-lg shadow-lg z-[999] transition-opacity duration-200">
+    <div id="note-popup" class="hidden absolute py-2 px-4 rounded-full shadow-lg z-[999] transition-opacity duration-200">
         <button id="create-note-btn" class="font-semibold">Создать заметку</button>
     </div>
 
@@ -2259,20 +2259,12 @@
                             const { 'note-popup': notePopupEl, app: appEl } = UIManager.elements;
                             const rect = AppState.currentSelection.getBoundingClientRect();
                             const appRect = appEl.getBoundingClientRect();
+                            
+                            const popupMargin = 20;
 
-                            const popupHeight = notePopupEl.offsetHeight || 40;
-                            const popupMargin = 10;
-
-                            // Default position is below the selection
                             let top = rect.bottom - appRect.top + popupMargin;
                             let left = rect.left - appRect.left + (rect.width / 2);
-                            
-                            // Fallback: if not enough space below, place it above
-                            if (top + popupHeight > appRect.height - popupMargin) {
-                                top = rect.top - appRect.top - popupHeight - popupMargin;
-                            }
-
-
+                           
                             notePopupEl.style.left = `${left}px`;
                             notePopupEl.style.top = `${top}px`;
                             notePopupEl.style.transform = 'translateX(-50%)';
