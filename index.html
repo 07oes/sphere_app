@@ -1158,71 +1158,73 @@
                     <h1 class="text-xl font-bold truncate" data-translate="settingsTitle">Настройки</h1>
                 </div>
             </header>
-            <main class="w-full max-w-[900px] mx-auto p-4 flex-grow overflow-y-auto flex flex-col">
-                <div>
-                    <div class="mb-6">
-                        <h2 class="text-sm font-bold text-gray-400 mb-2" data-translate="colorScheme">Цветовая схема</h2>
-                        <div class="settings-block rounded-lg p-4">
-                            <span class="block mb-2" data-translate="background">Фон</span>
-                            <div id="theme-selector"
-                                class="grid grid-cols-3 sm:grid-cols-5 gap-3 justify-items-center mb-4">
-                                <!-- Опции тем будут рендериться здесь -->
-                            </div>
-                            <span class="block mt-8 mb-2" data-translate="progress">Прогресс</span>
-                            <div id="progress-bar-color-selector"
-                                class="grid grid-cols-4 sm:grid-cols-5 gap-3 justify-items-center">
-                                <!-- Опции цвета прогресс-бара -->
+            <main class="w-full flex-grow overflow-y-auto">
+                <div class="w-full max-w-[900px] mx-auto p-4 flex flex-col min-h-full">
+                    <div>
+                        <div class="mb-6">
+                            <h2 class="text-sm font-bold text-gray-400 mb-2" data-translate="colorScheme">Цветовая схема</h2>
+                            <div class="settings-block rounded-lg p-4">
+                                <span class="block mb-2" data-translate="background">Фон</span>
+                                <div id="theme-selector"
+                                    class="grid grid-cols-3 sm:grid-cols-5 gap-3 justify-items-center mb-4">
+                                    <!-- Опции тем будут рендериться здесь -->
+                                </div>
+                                <span class="block mt-8 mb-2" data-translate="progress">Прогресс</span>
+                                <div id="progress-bar-color-selector"
+                                    class="grid grid-cols-4 sm:grid-cols-5 gap-3 justify-items-center">
+                                    <!-- Опции цвета прогресс-бара -->
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="mb-6">
-                        <h2 class="text-sm font-bold text-gray-400 mb-2" data-translate="text">Текст</h2>
-                        <div class="settings-block rounded-lg p-4">
-                            <div class="flex justify-between items-center">
-                                <span data-translate="fontSize">Размер шрифта</span>
-                                <span id="font-size-value">18px</span>
+                        <div class="mb-6">
+                            <h2 class="text-sm font-bold text-gray-400 mb-2" data-translate="text">Текст</h2>
+                            <div class="settings-block rounded-lg p-4">
+                                <div class="flex justify-between items-center">
+                                    <span data-translate="fontSize">Размер шрифта</span>
+                                    <span id="font-size-value">18px</span>
+                                </div>
+                                <input type="range" id="font-size-slider" min="12" max="30" step="1" class="w-full mt-2">
+                                <div class="flex justify-between items-center mt-4">
+                                    <span data-translate="fontWeight">Жирный шрифт</span>
+                                    <span id="font-weight-value">400</span>
+                                </div>
+                                <input type="range" id="font-weight-slider" min="100" max="900" step="100"
+                                    class="w-full mt-2">
+                                <div class="flex justify-between items-center mt-4">
+                                    <span data-translate="lineHeight">Междустрочный интервал</span>
+                                    <span id="line-height-value">180%</span>
+                                </div>
+                                <input type="range" id="line-height-slider" min="100" max="200" step="10"
+                                    class="w-full mt-2">
+                                <div class="mt-4">
+                                    <span class="mb-2 block" data-translate="fontChoice">Выбор шрифта</span>
+                                    <div id="font-selector" class="grid grid-cols-2 gap-4">
+                                        <!-- Опции шрифтов -->
+                                    </div>
+                                </div>
                             </div>
-                            <input type="range" id="font-size-slider" min="12" max="30" step="1" class="w-full mt-2">
-                            <div class="flex justify-between items-center mt-4">
-                                <span data-translate="fontWeight">Жирный шрифт</span>
-                                <span id="font-weight-value">400</span>
-                            </div>
-                            <input type="range" id="font-weight-slider" min="100" max="900" step="100"
-                                class="w-full mt-2">
-                            <div class="flex justify-between items-center mt-4">
-                                <span data-translate="lineHeight">Междустрочный интервал</span>
-                                <span id="line-height-value">180%</span>
-                            </div>
-                            <input type="range" id="line-height-slider" min="100" max="200" step="10"
-                                class="w-full mt-2">
-                            <div class="mt-4">
-                                <span class="mb-2 block" data-translate="fontChoice">Выбор шрифта</span>
-                                <div id="font-selector" class="grid grid-cols-2 gap-4">
-                                    <!-- Опции шрифтов -->
+                        </div>
+                        <div class="mb-6">
+                            <h2 class="text-sm font-bold text-gray-400 mb-2" data-translate="language">Язык</h2>
+                            <div class="settings-block rounded-lg p-4">
+                                <div id="language-selector" class="grid grid-cols-2 gap-4">
+                                    <!-- Опции языков -->
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="mb-6">
-                        <h2 class="text-sm font-bold text-gray-400 mb-2" data-translate="language">Язык</h2>
-                        <div class="settings-block rounded-lg p-4">
-                            <div id="language-selector" class="grid grid-cols-2 gap-4">
-                                <!-- Опции языков -->
-                            </div>
-                        </div>
+    
+                    <div class="mt-4">
+                        <button id="reset-settings-btn"
+                            class="w-1/3 block mx-auto bg-[#2d2d2d] hover:bg-[#4a4a4a] text-[#646464] hover:text-[#fdfdfd] font-semibold py-2 px-3 rounded-lg transition-colors" data-translate="resetSettings">
+                            сбросить настройки
+                        </button>
                     </div>
+                    <div class="flex-grow"></div>
+                    <p class="p-4 text-center text-xs" style="color: #4a4a4a;">
+                        Version 0.6 (application for the test)
+                    </p>
                 </div>
-
-                <div class="mt-4">
-                    <button id="reset-settings-btn"
-                        class="w-1/3 block mx-auto bg-[#2d2d2d] hover:bg-[#4a4a4a] text-[#646464] hover:text-[#fdfdfd] font-semibold py-2 px-3 rounded-lg transition-colors" data-translate="resetSettings">
-                        сбросить настройки
-                    </button>
-                </div>
-                <div class="flex-grow"></div>
-                <p class="p-4 text-center text-xs" style="color: #4a4a4a;">
-                    Version 0.5 (application for the test)
-                </p>
             </main>
         </div>
 
