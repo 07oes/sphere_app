@@ -467,7 +467,6 @@
             display: block;
         }
 
-
         .back-button {
             color: #757575 !important;
         }
@@ -671,6 +670,9 @@
         #book-content {
             padding: 1rem 1.5rem 5rem;
             font-size: 18px;
+            max-width: 900px; /* Ограничиваем максимальную ширину */
+            margin-left: auto; /* Центрируем по горизонтали */
+            margin-right: auto; /* Центрируем по горизонтали */
         }
 
         #reader-screen #book-content p {
@@ -1148,7 +1150,7 @@
                     <div class="mb-6">
                         <h2 class="text-sm font-bold text-gray-400 mb-2">Цветовая схема</h2>
                         <div class="settings-block rounded-lg p-4">
-                            <span class="block mb-2">Тема</span>
+                            <span class="block mb-2">Фон</span>
                             <div id="theme-selector"
                                 class="grid grid-cols-3 sm:grid-cols-5 gap-3 justify-items-center mb-4">
                                 <!-- Опции тем будут рендериться здесь -->
@@ -1321,8 +1323,10 @@
                             screenEl.classList.add(readingTheme);
                         }
                     });
+                    
                     readerScreen.classList.add(readingTheme);
-
+                    
+                    bookContent.style.color = '';
                     bookContent.style.fontSize = `${fontSize}px`;
                     bookContent.style.fontWeight = `${fontWeight}`;
                     bookContent.style.fontFamily = `"${fontFamily}"`;
@@ -1414,7 +1418,7 @@
                         { id: 'theme-sepia', name: 'Сепия', color: '#fbf0d9', check: '#9b816a' },
                         { id: 'theme-console', name: 'Консоль', color: '#000000', check: '#00ff00' }
                     ];
-                    themeSelector.innerHTML = themes.map(theme => `
+                     themeSelector.innerHTML = themes.map(theme => `
                         <label class="flex flex-col items-center justify-center cursor-pointer">
                             <input type="radio" name="theme" value="${theme.id}" class="hidden" ${readingTheme === theme.id ? 'checked' : ''}>
                             <span class="theme-swatch w-12 h-12 rounded-full flex items-center justify-center" style="background: ${theme.color}; border-color: ${theme.id === 'theme-light' ? '#e0e0e0' : 'transparent'};">
@@ -1426,6 +1430,7 @@
                             <span class="mt-2 text-xs text-gray-400">${theme.name}</span>
                         </label>
                     `).join('');
+
 
                     // Render progress bar colors
                     const colors = [
@@ -1568,7 +1573,7 @@
                     return this.parse(content);
                 },
                 
-                async _optimizeImage(base64Str, maxWidth = 200, maxHeight = 300) {
+                async _optimizeImage(base64Str, maxWidth = 200, maxHeight = 300, quality = 0.8) {
                     return new Promise((resolve) => {
                         const img = new Image();
                         img.onload = () => {
@@ -1593,11 +1598,10 @@
                             const ctx = canvas.getContext('2d');
                             ctx.drawImage(img, 0, 0, width, height);
                             
-                            // Сжатие в JPEG с качеством 80%
-                            resolve(canvas.toDataURL('image/jpeg', 0.8)); 
+                            resolve(canvas.toDataURL('image/jpeg', quality)); 
                         };
                         img.onerror = () => {
-                            resolve(base64Str); // В случае ошибки вернуть оригинальное изображение
+                            resolve(base64Str);
                         };
                         img.src = base64Str;
                     });
@@ -1620,7 +1624,7 @@
                             const binaryImage = doc.querySelector(`binary[id="${imageId}"]`);
                             if (binaryImage) {
                                 let base64Image = `data:${binaryImage.getAttribute('content-type') || 'image/jpeg'};base64,${binaryImage.textContent}`;
-                                // Оптимизация изображения
+                                // Оптимизация изображения обложки
                                 coverImage = await this._optimizeImage(base64Image);
                             }
                         }
@@ -2285,3 +2289,5 @@
 </body>
 
 </html>
+" with the text selected.
+
