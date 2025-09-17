@@ -78,17 +78,17 @@
         /* --- ТЕМА СЕПИЯ ДЛЯ БИБЛИОТЕКИ --- */
         #library-screen.theme-sepia {
             --bg-color: #fbf0d9;
-            --ui-bg: #e4d4b2;
+            --ui-bg: #f1e5ca;
         }
 
         /* Кнопки в шапке */
         #library-screen.theme-sepia .btn-custom-add {
-            background-color: #e4d4b2 !important;
+            background-color: #f1e5ca !important;
             color: #5b4636;
         }
 
         #library-screen.theme-sepia .btn-custom-add:hover {
-            background-color: #cdbfa0 !important;
+            background-color: #e0d5ba !important;
         }
 
         #library-screen.theme-sepia .btn-custom-add svg {
@@ -106,7 +106,7 @@
 
         /* Иконка-заглушка для обложки */
         #library-screen.theme-sepia .book-icon-bg {
-            background-color: #cdbfa0 !important;
+            background-color: #e0d5ba !important;
         }
 
         #library-screen.theme-sepia .book-icon-bg span {
@@ -153,6 +153,44 @@
         #library-screen.theme-console #empty-library-view p {
             color: #00cc00;
         }
+
+        /* --- НОЧНАЯ ТЕМА ДЛЯ БИБЛИОТЕКИ --- */
+        #library-screen.theme-night {
+            --bg-color: #0c0c0c;
+            --ui-bg: #141414;
+            --border-color: #2a2a2a;
+            --text-color: #b0b0b0;
+        }
+
+        #library-screen.theme-night .btn-custom-add {
+            background-color: #141414 !important;
+            color: #b0b0b0;
+        }
+
+        #library-screen.theme-night .btn-custom-add:hover {
+            background-color: #2c2c2c !important;
+        }
+
+        #library-screen.theme-night .btn-custom-add svg {
+            stroke: #b0b0b0;
+        }
+
+        #library-screen.theme-night .book-item-content h3 {
+            color: #d4d4d4;
+        }
+
+        #library-screen.theme-night .book-item-content p {
+            color: #8a8a8a;
+        }
+
+        #library-screen.theme-night .book-icon-bg {
+            background-color: #2a2a2a !important;
+        }
+
+        #library-screen.theme-night #empty-library-view p {
+            color: #8a8a8a;
+        }
+
 
         /* --- СВЕТЛАЯ ТЕМА ДЛЯ НАСТРОЕК --- */
         #settings-screen.theme-light {
@@ -206,8 +244,8 @@
         /* --- ТЕМА СЕПИЯ ДЛЯ НАСТРОЕК --- */
         #settings-screen.theme-sepia {
             --bg-color: #fbf0d9;
-            --ui-bg: #e4d4b2;
-            --border-color: #e4d4b2;
+            --ui-bg: #f1e5ca;
+            --border-color: #f1e5ca;
         }
 
         #settings-screen.theme-sepia .settings-block {
@@ -231,18 +269,18 @@
         }
 
         #settings-screen.theme-sepia #reset-settings-btn {
-            background-color: #e4d4b2 !important;
+            background-color: #f1e5ca !important;
             color: #5b4636 !important;
         }
 
         #settings-screen.theme-sepia #reset-settings-btn:hover {
-            background-color: #cdbfa0 !important;
+            background-color: #e0d5ba !important;
             color: #000000 !important;
         }
 
         #settings-screen.theme-sepia #font-selector input:checked+span,
         #settings-screen.theme-sepia #language-selector input:checked+span {
-            background-color: #cdbfa0 !important;
+            background-color: #e0d5ba !important;
             color: #5b4636 !important;
         }
 
@@ -301,6 +339,55 @@
         #settings-screen.theme-console input[type=range]::-webkit-slider-thumb {
             background: #00ff00;
         }
+        
+        /* --- НОЧНАЯ ТЕМА ДЛЯ НАСТРОЕК --- */
+        #settings-screen.theme-night {
+            --bg-color: #0c0c0c;
+            --ui-bg: #141414;
+            --border-color: #2a2a2a;
+        }
+
+        #settings-screen.theme-night .settings-block {
+            background-color: var(--ui-bg) !important;
+        }
+
+        #settings-screen.theme-night header h1,
+        #settings-screen.theme-night span {
+            color: #d4d4d4;
+        }
+
+        #settings-screen.theme-night h2.text-gray-400 {
+            color: #8a8a8a !important;
+        }
+
+        #settings-screen.theme-night .back-button.font-bold {
+            color: #d4d4d4 !important;
+        }
+
+        #settings-screen.theme-night #reset-settings-btn {
+            background-color: #141414 !important;
+            color: #8a8a8a !important;
+        }
+
+        #settings-screen.theme-night #reset-settings-btn:hover {
+            background-color: #2c2c2c !important;
+            color: #d4d4d4 !important;
+        }
+
+        #settings-screen.theme-night #font-selector input:checked+span,
+        #settings-screen.theme-night #language-selector input:checked+span,
+        #settings-screen.theme-night #theme-selector input:checked+span {
+            background-color: #3c3c3c !important;
+            color: #ffffff !important;
+        }
+
+        #settings-screen.theme-night input[type=range]::-webkit-slider-runnable-track {
+            background: #3a3a3a;
+        }
+
+        #settings-screen.theme-night input[type=range]::-webkit-slider-thumb {
+            background: #b0b0b0;
+        }
 
         /* --- СВЕТЛАЯ ТЕМА ДЛЯ МОДАЛЬНОГО ОКНА --- */
         #confirm-modal.theme-light>div {
@@ -331,12 +418,12 @@
         }
 
         #confirm-modal.theme-sepia button {
-            background-color: #e4d4b2 !important;
+            background-color: #f1e5ca !important;
             color: #3b3b3b !important;
         }
 
         #confirm-modal.theme-sepia button:hover {
-            background-color: #cdbfa0 !important;
+            background-color: #e0d5ba !important;
             color: #000000 !important;
         }
 
@@ -358,6 +445,23 @@
             background-color: #1c1c1c !important;
         }
 
+        /* --- НОЧНАЯ ТЕМА ДЛЯ МОДАЛЬНОГО ОКНА --- */
+        #confirm-modal.theme-night>div {
+            background-color: #141414 !important;
+        }
+
+        #confirm-modal.theme-night p {
+            color: #d4d4d4 !important;
+        }
+
+        #confirm-modal.theme-night button {
+            background-color: #2a2a2a !important;
+            color: #d4d4d4 !important;
+        }
+
+        #confirm-modal.theme-night button:hover {
+            background-color: #3c3c3c !important;
+        }
 
         /* --- ТЕМЫ ДЛЯ ЭКРАНА ЧТЕНИЯ --- */
         #reader-screen.theme-light {
@@ -385,7 +489,7 @@
             --text-color: #5b4636;
             --border-color: #e6dace;
             --link-color: #716854;
-            --ui-bg: #fbf0d9;
+            --ui-bg: #f1e5ca;
             /* Фон для панели содержания в теме сепия */
         }
 
@@ -403,6 +507,18 @@
 
         #reader-screen.theme-console #page-info {
             color: #00cc00;
+        }
+        
+        #reader-screen.theme-night {
+            --bg-color: #0c0c0c;
+            --text-color: #b0b0b0;
+            --border-color: #2a2a2a;
+            --link-color: #0a84ff;
+            --ui-bg: #141414;
+        }
+
+        #reader-screen.theme-night #page-info {
+            color: #8a8a8a;
         }
 
         .screen {
@@ -488,11 +604,15 @@
         }
 
         #settings-screen.theme-sepia .back-button:active {
-            background-color: #cdbfa0 !important;
+            background-color: #e0d5ba !important;
         }
 
         #settings-screen.theme-console .back-button:active {
             background-color: #141a13 !important;
+        }
+
+        #settings-screen.theme-night .back-button:active {
+            background-color: #2c2c2c !important;
         }
 
         #reader-screen.theme-light .back-button:active {
@@ -507,6 +627,10 @@
             background-color: #141a13 !important;
         }
 
+        #reader-screen.theme-night .back-button:active {
+            background-color: #2c2c2c !important;
+        }
+
         @media (hover: hover) {
             .back-button:hover {
                 background-color: #292929 !important;
@@ -517,11 +641,15 @@
             }
 
             #settings-screen.theme-sepia .back-button:hover {
-                background-color: #e4d4b2 !important;
+                background-color: #e0d5ba !important;
             }
 
             #settings-screen.theme-console .back-button:hover {
                 background-color: #141a13 !important;
+            }
+
+            #settings-screen.theme-night .back-button:hover {
+                background-color: #2c2c2c !important;
             }
 
             #reader-screen.theme-light .back-button:hover {
@@ -534,6 +662,10 @@
 
             #reader-screen.theme-console .back-button:hover {
                 background-color: #141a13 !important;
+            }
+
+            #reader-screen.theme-night .back-button:hover {
+                background-color: #2c2c2c !important;
             }
         }
 
@@ -548,6 +680,10 @@
         #reader-screen.theme-console .back-button {
             color: #00ff00 !important;
         }
+        
+        #reader-screen.theme-night .back-button {
+            color: #b0b0b0 !important;
+        }
 
         /* --- Специфичные стили для кнопки "чистого экрана" --- */
         #reader-screen:not(.ui-hidden) #fullscreen-btn:active {
@@ -559,11 +695,15 @@
         }
 
         #reader-screen.theme-sepia:not(.ui-hidden) #fullscreen-btn:active {
-            background-color: #ddd4c1 !important;
+            background-color: #e0d5ba !important;
         }
 
         #reader-screen.theme-console:not(.ui-hidden) #fullscreen-btn:active {
             background-color: #141a13 !important;
+        }
+
+        #reader-screen.theme-night:not(.ui-hidden) #fullscreen-btn:active {
+            background-color: #2c2c2c !important;
         }
 
         @media (hover: hover) {
@@ -576,11 +716,15 @@
             }
 
             #reader-screen.theme-sepia:not(.ui-hidden) #fullscreen-btn:hover {
-                background-color: #e4d4b2 !important;
+                background-color: #e0d5ba !important;
             }
 
             #reader-screen.theme-console:not(.ui-hidden) #fullscreen-btn:hover {
                 background-color: #141a13 !important;
+            }
+
+            #reader-screen.theme-night:not(.ui-hidden) #fullscreen-btn:hover {
+                background-color: #2c2c2c !important;
             }
         }
 
@@ -602,6 +746,10 @@
 
         #reader-screen.theme-console.ui-hidden #fullscreen-btn svg {
             stroke: #003f00 !important;
+        }
+
+        #reader-screen.theme-night.ui-hidden #fullscreen-btn svg {
+            stroke: #333333 !important;
         }
 
         #reader-screen.ui-hidden #fullscreen-btn:active {
@@ -638,7 +786,7 @@
             }
 
             #reader-screen.theme-sepia.ui-hidden #fullscreen-btn:hover {
-                background-color: #e4d4b2 !important;
+                background-color: #e0d5ba !important;
             }
 
             #reader-screen.theme-sepia.ui-hidden #fullscreen-btn:hover svg {
@@ -651,6 +799,14 @@
 
             #reader-screen.theme-console.ui-hidden #fullscreen-btn:hover svg {
                 stroke: #00ff00 !important;
+            }
+
+             #reader-screen.theme-night.ui-hidden #fullscreen-btn:hover {
+                background-color: #2c2c2c !important;
+            }
+
+            #reader-screen.theme-night.ui-hidden #fullscreen-btn:hover svg {
+                stroke: #b0b0b0 !important;
             }
         }
 
@@ -919,6 +1075,11 @@
             background-color: rgba(0, 0, 0, 0.1);
         }
 
+        #reader-screen.theme-night #toc-list a:active,
+        #reader-screen.theme-night #notes-list .note-item:active {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
         @media (hover: hover) {
 
             #toc-list a:hover,
@@ -931,6 +1092,10 @@
             #reader-screen.theme-sepia #toc-list a:hover,
             #reader-screen.theme-sepia #notes-list .note-item:hover {
                 background-color: rgba(0, 0, 0, 0.05);
+            }
+            #reader-screen.theme-night #toc-list a:hover,
+            #reader-screen.theme-night #notes-list .note-item:hover {
+                background-color: rgba(255, 255, 255, 0.05);
             }
         }
 
@@ -983,9 +1148,9 @@
             background: transparent;
         }
 
-        #library-screen:not(.theme-light):not(.theme-sepia):not(.theme-console) ::-webkit-scrollbar-thumb,
-        #settings-screen:not(.theme-light):not(.theme-sepia):not(.theme-console) ::-webkit-scrollbar-thumb,
-        #reader-screen:not(.theme-light):not(.theme-sepia):not(.theme-console) ::-webkit-scrollbar-thumb {
+        #library-screen:not(.theme-light):not(.theme-sepia):not(.theme-console):not(.theme-night) ::-webkit-scrollbar-thumb,
+        #settings-screen:not(.theme-light):not(.theme-sepia):not(.theme-console):not(.theme-night) ::-webkit-scrollbar-thumb,
+        #reader-screen:not(.theme-light):not(.theme-sepia):not(.theme-console):not(.theme-night) ::-webkit-scrollbar-thumb {
             background-color: #555;
             border-radius: 4px;
         }
@@ -1026,6 +1191,19 @@
         #library-screen.theme-console ::-webkit-scrollbar-track,
         #settings-screen.theme-console ::-webkit-scrollbar-track,
         #reader-screen.theme-console ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+        
+        #library-screen.theme-night ::-webkit-scrollbar-thumb,
+        #settings-screen.theme-night ::-webkit-scrollbar-thumb,
+        #reader-screen.theme-night ::-webkit-scrollbar-thumb {
+            background-color: #444;
+            border-radius: 4px;
+        }
+
+        #library-screen.theme-night ::-webkit-scrollbar-track,
+        #settings-screen.theme-night ::-webkit-scrollbar-track,
+        #reader-screen.theme-night ::-webkit-scrollbar-track {
             background: #1a1a1a;
         }
     </style>
@@ -1319,6 +1497,7 @@
                         themeDark: 'Dark',
                         themeSepia: 'Sepia',
                         themeConsole: 'Console',
+                        themeNight: 'Night',
                         progress: 'Progress',
                         colorGray: 'Gray',
                         colorRed: 'Red',
@@ -1365,6 +1544,7 @@
                         themeDark: 'Тёмная',
                         themeSepia: 'Сепия',
                         themeConsole: 'Консоль',
+                        themeNight: 'Ночь',
                         progress: 'Прогресс',
                         colorGray: 'Серый',
                         colorRed: 'Красный',
@@ -1411,6 +1591,7 @@
                         themeDark: 'Темна',
                         themeSepia: 'Сепія',
                         themeConsole: 'Консоль',
+                        themeNight: 'Ніч',
                         progress: 'Прогрес',
                         colorGray: 'Сірий',
                         colorRed: 'Червоний',
@@ -1457,6 +1638,7 @@
                         themeDark: 'Dunkel',
                         themeSepia: 'Sepia',
                         themeConsole: 'Konsole',
+                        themeNight: 'Nacht',
                         progress: 'Fortschritt',
                         colorGray: 'Grau',
                         colorRed: 'Rot',
@@ -1547,7 +1729,7 @@
                     ['library-screen', 'settings-screen', 'reader-screen'].forEach(screenId => {
                         const screenEl = this.elements[screenId];
                         screenEl.className = screenEl.className.replace(/theme-\w+/g, '').trim() + ' screen';
-                        if (['theme-light', 'theme-sepia', 'theme-console'].includes(readingTheme)) {
+                        if (['theme-light', 'theme-sepia', 'theme-console', 'theme-night'].includes(readingTheme)) {
                             screenEl.classList.add(readingTheme);
                         }
                     });
@@ -1573,6 +1755,7 @@
                             'theme-dark': '#1e1e1e',
                             'theme-sepia': '#fbf0d9',
                             'theme-console': '#000000',
+                            'theme-night': '#0c0c0c'
                         };
 
                         const color = themeColors[readingTheme] || '#1e1e1e';
@@ -1650,6 +1833,7 @@
                     const themes = [
                         { id: 'theme-light', name: I18n.t('themeLight'), color: '#ffffff', check: '#000000' },
                         { id: 'theme-dark', name: I18n.t('themeDark'), color: '#1e1e1e', check: '#ffffff' },
+                        { id: 'theme-night', name: I18n.t('themeNight'), color: '#0c0c0c', check: '#ffffff' },
                         { id: 'theme-sepia', name: I18n.t('themeSepia'), color: '#fbf0d9', check: '#9b816a' },
                         { id: 'theme-console', name: I18n.t('themeConsole'), color: '#000000', check: '#00ff00' }
                     ];
