@@ -1387,15 +1387,21 @@
 
                         let finalProgressBarColor = AppState.settings.progressBarColor;
 
+                        let notesCountHTML = '';
+                        if (book.notes && book.notes.length > 0) {
+                            notesCountHTML = `<p class="text-xs text-gray-500 mt-1">Заметок: ${book.notes.length}</p>`;
+                        }
+
                         wrapper.innerHTML = `
                              <div class="delete-swipe-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                             </div>
                             <div class="book-item-content p-2 flex items-center gap-4 relative overflow-hidden">
                                 ${coverHtml}
-                                <div class="flex-grow self-start overflow-hidden">
+                                <div class="flex-grow self-start overflow-hidden py-1">
                                     <h3 class="font-bold text-lg mb-1 truncate">${book.title}</h3>
                                     <p class="text-sm text-gray-400 truncate">${book.author || 'Неизвестный автор'}</p>
+                                    ${notesCountHTML}
                                 </div>
                                 <div class="absolute bottom-0 left-0 h-1" style="background-color: ${finalProgressBarColor}; width: ${Math.min(100, progress).toFixed(2)}%"></div>
                             </div>
@@ -2298,8 +2304,4 @@
 </body>
 
 </html>
-" with the text selected.
-
-
-
 
