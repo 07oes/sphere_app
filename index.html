@@ -13,7 +13,7 @@
         /* --- СТАНДАРТНАЯ ТЕМА (ТЕМНАЯ) --- */
         body {
             --bg-color: #1e1e1e;
-            --text-color: #d4d4d4;
+            --text-color: #e5e5e5;
             --ui-bg: #2d2d2d;
             --border-color: #353535;
             --meta-color: #a0a0a0;
@@ -28,6 +28,46 @@
         body.grabbing {
             cursor: grabbing;
         }
+
+        /* --- ЦВЕТА НАЗВАНИЙ КНИГ --- */
+        #library-screen .book-item-content h3,
+        #reader-screen #book-title,
+        #library-screen.theme-dark .book-item-content h3,
+        #reader-screen.theme-dark #book-title,
+        #library-screen.theme-night .book-item-content h3,
+        #reader-screen.theme-night #book-title {
+            color: #e3e3e3;
+        }
+        #library-screen.theme-light .book-item-content h3, 
+        #reader-screen.theme-light #book-title {
+            color: #414141;
+        }
+        #library-screen.theme-sepia .book-item-content h3, 
+        #reader-screen.theme-sepia #book-title {
+            color: #79614e;
+        }
+        #library-screen.theme-console .book-item-content h3, 
+        #reader-screen.theme-console #book-title {
+            color: #00ff00;
+        }
+        
+        /* --- ЦВЕТА ВТОРОСТЕПЕННОГО ТЕКСТА --- */
+        #library-screen .book-item-content p {
+            color: #9f9f9f;
+        }
+        #library-screen.theme-light .book-item-content p {
+            color: #7b7b7b;
+        }
+        #library-screen.theme-night .book-item-content p {
+            color: #878787;
+        }
+        #library-screen.theme-sepia .book-item-content p {
+            color: #977d68;
+        }
+        #library-screen.theme-console .book-item-content p {
+            color: #00e900;
+        }
+
 
         /* --- СВЕТЛАЯ ТЕМА ДЛЯ БИБЛИОТЕКИ --- */
         #library-screen.theme-light {
@@ -50,15 +90,6 @@
 
         #library-screen.theme-light .btn-custom-add svg {
             stroke: #000000;
-        }
-
-        /* Элементы книги в списке */
-        #library-screen.theme-light .book-item-content h3 {
-            color: var(--text-color);
-        }
-
-        #library-screen.theme-light .book-item-content p {
-            color: #3b3b3b;
         }
 
         /* Иконка-заглушка для обложки */
@@ -96,15 +127,6 @@
             stroke: #5b4636;
         }
 
-        /* Элементы книги в списке */
-        #library-screen.theme-sepia .book-item-content h3 {
-            color: #79614e;
-        }
-
-        #library-screen.theme-sepia .book-item-content p {
-            color: #89725f;
-        }
-
         /* Иконка-заглушка для обложки */
         #library-screen.theme-sepia .book-icon-bg {
             background-color: #e0d5ba !important;
@@ -139,14 +161,6 @@
             stroke: #00ff00;
         }
 
-        #library-screen.theme-console .book-item-content h3 {
-            color: #00ff00;
-        }
-
-        #library-screen.theme-console .book-item-content p {
-            color: #00cc00;
-        }
-
         #library-screen.theme-console .book-icon-bg {
             background-color: #222222 !important;
         }
@@ -160,7 +174,7 @@
             --bg-color: #0c0c0c;
             --ui-bg: #141414;
             --border-color: #212121;
-            --text-color: #b0b0b0;
+            --text-color: #e5e5e5;
         }
 
         #library-screen.theme-night .btn-custom-add {
@@ -174,14 +188,6 @@
 
         #library-screen.theme-night .btn-custom-add svg {
             stroke: #ffffff;
-        }
-
-        #library-screen.theme-night .book-item-content h3 {
-            color: #d4d4d4;
-        }
-
-        #library-screen.theme-night .book-item-content p {
-            color: #8a8a8a;
         }
 
         #library-screen.theme-night .book-icon-bg {
@@ -484,16 +490,9 @@
             color: #717171;
         }
 
-        #reader-screen.theme-dark {
-            --bg-color: #1e1e1e;
-            --text-color: #d4d4d4;
-            --border-color: #353535;
-            --link-color: #0a84ff;
-        }
-
         #reader-screen.theme-sepia {
             --bg-color: #fbf0d9;
-            --text-color: #5b4636;
+            --text-color: #5f3a28;
             --border-color: #d7c8a8;
             --link-color: #716854;
             --ui-bg: #f1e5ca;
@@ -518,7 +517,7 @@
         
         #reader-screen.theme-night {
             --bg-color: #0c0c0c;
-            --text-color: #b0b0b0;
+            --text-color: #e5e5e5;
             --border-color: #212121;
             --link-color: #0a84ff;
             --ui-bg: #141414;
@@ -1407,7 +1406,7 @@
                     </div>
                     <div class="flex-grow"></div>
                     <p class="p-4 text-center text-xs" style="color: #4a4a4a;">
-                        Version 0.7 (application for the test)
+                        Version 1.0 (application for the test)
                     </p>
                 </div>
             </main>
@@ -2776,5 +2775,4 @@
 </body>
 
 </html>
-
 
