@@ -15,7 +15,7 @@
             --bg-color: #1e1e1e;
             --text-color: #d4d4d4;
             --ui-bg: #2d2d2d;
-            --border-color: #333;
+            --border-color: #353535;
             --meta-color: #a0a0a0;
             --link-color: #0a84ff;
 
@@ -34,7 +34,7 @@
             --bg-color: #ffffff;
             --text-color: #000000;
             --ui-bg: #e6e6e6;
-            --border-color: #e0e0e0;
+            --border-color: #d9d9d9;
             --meta-color: #717171;
         }
 
@@ -79,6 +79,7 @@
         #library-screen.theme-sepia {
             --bg-color: #fbf0d9;
             --ui-bg: #f1e5ca;
+            --border-color: #d7c8a8;
         }
 
         /* Кнопки в шапке */
@@ -122,7 +123,7 @@
         #library-screen.theme-console {
             --bg-color: #000000;
             --ui-bg: #111111;
-            --border-color: #00ff00;
+            --border-color: #212121;
         }
 
         #library-screen.theme-console .btn-custom-add {
@@ -158,7 +159,7 @@
         #library-screen.theme-night {
             --bg-color: #0c0c0c;
             --ui-bg: #141414;
-            --border-color: #2a2a2a;
+            --border-color: #212121;
             --text-color: #b0b0b0;
         }
 
@@ -197,11 +198,17 @@
             --bg-color: #ffffff;
             --text-color: #000000;
             --ui-bg: #e6e6e6;
-            --border-color: #e6e6e6;
+            --border-color: #d9d9d9;
         }
 
         #settings-screen.theme-light .settings-block {
             background-color: var(--ui-bg) !important;
+        }
+        
+        #settings-screen.theme-light #font-selector input:checked+span,
+        #settings-screen.theme-light #language-selector input:checked+span {
+            background-color: #d9d9d9 !important;
+            color: #000000 !important;
         }
 
         /* Устанавливаем цвет для текста внутри блоков */
@@ -245,7 +252,7 @@
         #settings-screen.theme-sepia {
             --bg-color: #fbf0d9;
             --ui-bg: #f1e5ca;
-            --border-color: #f1e5ca;
+            --border-color: #d7c8a8;
         }
 
         #settings-screen.theme-sepia .settings-block {
@@ -280,7 +287,7 @@
 
         #settings-screen.theme-sepia #font-selector input:checked+span,
         #settings-screen.theme-sepia #language-selector input:checked+span {
-            background-color: #e0d5ba !important;
+            background-color: #d7c8a8 !important;
             color: #5b4636 !important;
         }
 
@@ -296,7 +303,7 @@
         #settings-screen.theme-console {
             --bg-color: #000000;
             --ui-bg: #111111;
-            --border-color: #004700;
+            --border-color: #212121;
         }
 
         #settings-screen.theme-console .settings-block {
@@ -344,7 +351,7 @@
         #settings-screen.theme-night {
             --bg-color: #0c0c0c;
             --ui-bg: #141414;
-            --border-color: #2a2a2a;
+            --border-color: #212121;
         }
 
         #settings-screen.theme-night .settings-block {
@@ -377,7 +384,7 @@
         #settings-screen.theme-night #font-selector input:checked+span,
         #settings-screen.theme-night #language-selector input:checked+span,
         #settings-screen.theme-night #theme-selector input:checked+span {
-            background-color: #3c3c3c !important;
+            background-color: #212121 !important;
             color: #ffffff !important;
         }
 
@@ -467,7 +474,7 @@
         #reader-screen.theme-light {
             --bg-color: #ffffff;
             --text-color: #000000;
-            --border-color: #e0e0e0;
+            --border-color: #d9d9d9;
             --link-color: #22c55e;
             --ui-bg: #ffffff;
             /* Фон для панели содержания в светлой теме */
@@ -480,14 +487,14 @@
         #reader-screen.theme-dark {
             --bg-color: #1e1e1e;
             --text-color: #d4d4d4;
-            --border-color: #333;
+            --border-color: #353535;
             --link-color: #0a84ff;
         }
 
         #reader-screen.theme-sepia {
             --bg-color: #fbf0d9;
             --text-color: #5b4636;
-            --border-color: #e6dace;
+            --border-color: #d7c8a8;
             --link-color: #716854;
             --ui-bg: #f1e5ca;
             /* Фон для панели содержания в теме сепия */
@@ -500,7 +507,7 @@
         #reader-screen.theme-console {
             --bg-color: #000000;
             --text-color: #00ff00;
-            --border-color: #004700;
+            --border-color: #212121;
             --link-color: #00b500;
             --ui-bg: #111111;
         }
@@ -512,7 +519,7 @@
         #reader-screen.theme-night {
             --bg-color: #0c0c0c;
             --text-color: #b0b0b0;
-            --border-color: #2a2a2a;
+            --border-color: #212121;
             --link-color: #0a84ff;
             --ui-bg: #141414;
         }
@@ -556,7 +563,7 @@
         #theme-selector input:checked+span,
         #font-selector input:checked+span,
         #language-selector input:checked+span {
-            background-color: #717171;
+            background-color: #353535;
             color: #ffffff;
         }
 
@@ -1790,6 +1797,29 @@
                             `<div class="w-24 h-36 flex-shrink-0 book-icon-bg rounded flex items-center justify-center"><span class="text-gray-500 text-3xl">📖</span></div>`;
 
                         let finalProgressBarColor = AppState.settings.progressBarColor;
+                        
+                        // Apply theme-specific gray for progress bar if selected
+                        if (finalProgressBarColor === '#3f3f3f') {
+                            const currentTheme = AppState.settings.readingTheme;
+                            switch (currentTheme) {
+                                case 'theme-light':
+                                    finalProgressBarColor = '#d5d5d5';
+                                    break;
+                                case 'theme-dark':
+                                    finalProgressBarColor = '#3f3f3f';
+                                    break;
+                                case 'theme-night':
+                                case 'theme-console':
+                                    finalProgressBarColor = '#252525';
+                                    break;
+                                case 'theme-sepia':
+                                    finalProgressBarColor = '#cfc3a9';
+                                    break;
+                                default:
+                                    finalProgressBarColor = '#3f3f3f'; // Fallback
+                            }
+                        }
+
 
                         let notesCountHTML = '';
                         if (book.notes && book.notes.length > 0) {
@@ -2452,6 +2482,7 @@
                             AppState.saveSettings();
                             UIManager.applyThemeToApp();
                             UIManager.renderSettings(); // To update checkmark
+                            App.renderLibrary();
                         } else if (target.name === 'progress-color') {
                             AppState.settings.progressBarColor = target.value;
                             AppState.saveSettings();
@@ -2745,4 +2776,6 @@
 </body>
 
 </html>
+" to answer the query.
+Give me a full code diff with all the necessary context.
 
