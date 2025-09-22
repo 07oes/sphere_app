@@ -38,32 +38,39 @@
         #reader-screen.theme-night #book-title {
             color: #e3e3e3;
         }
-        #library-screen.theme-light .book-item-content h3, 
+
+        #library-screen.theme-light .book-item-content h3,
         #reader-screen.theme-light #book-title {
             color: #414141;
         }
-        #library-screen.theme-sepia .book-item-content h3, 
+
+        #library-screen.theme-sepia .book-item-content h3,
         #reader-screen.theme-sepia #book-title {
             color: #79614e;
         }
-        #library-screen.theme-console .book-item-content h3, 
+
+        #library-screen.theme-console .book-item-content h3,
         #reader-screen.theme-console #book-title {
             color: #00ff00;
         }
-        
+
         /* --- ЦВЕТА ВТОРОСТЕПЕННОГО ТЕКСТА --- */
         #library-screen .book-item-content p {
             color: #9f9f9f;
         }
+
         #library-screen.theme-light .book-item-content p {
             color: #7b7b7b;
         }
+
         #library-screen.theme-night .book-item-content p {
             color: #878787;
         }
+
         #library-screen.theme-sepia .book-item-content p {
             color: #977d68;
         }
+
         #library-screen.theme-console .book-item-content p {
             color: #00e900;
         }
@@ -210,7 +217,7 @@
         #settings-screen.theme-light .settings-block {
             background-color: var(--ui-bg) !important;
         }
-        
+
         #settings-screen.theme-light #font-selector input:checked+span,
         #settings-screen.theme-light #language-selector input:checked+span {
             background-color: #d9d9d9 !important;
@@ -345,6 +352,11 @@
             color: #000000 !important;
         }
 
+        /* Fix for language selector text color in console theme */
+        #settings-screen.theme-console #language-selector input:checked+span span {
+            color: #000000 !important;
+        }
+
         #settings-screen.theme-console input[type=range]::-webkit-slider-runnable-track {
             background: #004700;
         }
@@ -352,7 +364,7 @@
         #settings-screen.theme-console input[type=range]::-webkit-slider-thumb {
             background: #00ff00;
         }
-        
+
         /* --- НОЧНАЯ ТЕМА ДЛЯ НАСТРОЕК --- */
         #settings-screen.theme-night {
             --bg-color: #0c0c0c;
@@ -521,7 +533,7 @@
         #reader-screen.theme-console #page-info {
             color: #00cc00;
         }
-        
+
         #reader-screen.theme-night {
             --bg-color: #0c0c0c;
             --text-color: #e5e5e5;
@@ -575,13 +587,15 @@
 
         /* --- НОВЫЕ СТИЛИ ДЛЯ ВИЗУАЛЬНОГО ВЫБОРА --- */
         #theme-selector .theme-swatch,
-        #progress-bar-color-selector .theme-swatch {
+        #progress-bar-color-selector .theme-swatch,
+        #note-color-selector .theme-swatch {
             transition: all 0.2s ease-in-out;
             border-width: 2px;
         }
 
         #theme-selector input:checked+.theme-swatch,
-        #progress-bar-color-selector input:checked+.theme-swatch {
+        #progress-bar-color-selector input:checked+.theme-swatch,
+        #note-color-selector input:checked+.theme-swatch {
             border-color: #0a84ff;
             transform: scale(1.1);
         }
@@ -595,7 +609,8 @@
         }
 
         #theme-selector input:checked+.theme-swatch svg,
-        #progress-bar-color-selector input:checked+.theme-swatch svg {
+        #progress-bar-color-selector input:checked+.theme-swatch svg,
+        #note-color-selector input:checked+.theme-swatch svg {
             display: block;
         }
 
@@ -693,7 +708,7 @@
         #reader-screen.theme-console .back-button {
             color: #00ff00 !important;
         }
-        
+
         #reader-screen.theme-night .back-button {
             color: #6d6d6d !important;
         }
@@ -814,7 +829,7 @@
                 stroke: #00ff00 !important;
             }
 
-             #reader-screen.theme-night.ui-hidden #fullscreen-btn:hover {
+            #reader-screen.theme-night.ui-hidden #fullscreen-btn:hover {
                 background-color: #1a1a1a !important;
             }
 
@@ -902,7 +917,7 @@
             background: linear-gradient(to top, var(--bg-color) 10%, transparent);
         }
 
-        #page-overlay > span {
+        #page-overlay>span {
             color: #afafaf;
         }
 
@@ -1110,6 +1125,7 @@
             #reader-screen.theme-sepia #notes-list .note-item:hover {
                 background-color: rgba(0, 0, 0, 0.05);
             }
+
             #reader-screen.theme-night #toc-list a:hover,
             #reader-screen.theme-night #notes-list .note-item:hover {
                 background-color: rgba(255, 255, 255, 0.05);
@@ -1119,41 +1135,138 @@
         /* --- СТИЛИ ДЛЯ ВЫДЕЛЕНИЯ --- */
         .highlight {
             background-color: transparent !important;
+        }
+
+        /* Yellow */
+        .highlight.yellow {
             color: #FFD700;
-            /* Yellow for Dark Theme */
         }
 
-        #reader-screen.theme-light .highlight {
+        #reader-screen.theme-light .highlight.yellow {
             color: #B8860B;
-            /* Darker yellow for better contrast on white */
         }
 
-        #reader-screen.theme-sepia .highlight {
+        #reader-screen.theme-sepia .highlight.yellow {
             color: #AF642D;
-            /* Dark goldenrod for sepia */
         }
 
-        #reader-screen.theme-console .highlight {
+        #reader-screen.theme-console .highlight.yellow {
             color: #FFFF00 !important;
-            /* Bright yellow for console */
         }
 
-
-        /* --- СТИЛИ ДЛЯ ИКОНКИ КАРАНДАША --- */
-        #open-notes-btn.active-selection svg {
+        #open-notes-btn.active-selection.yellow svg {
             stroke: #FFD700;
         }
 
-        #reader-screen.theme-light #open-notes-btn.active-selection svg {
+        #reader-screen.theme-light #open-notes-btn.active-selection.yellow svg {
             stroke: #B8860B;
         }
 
-        #reader-screen.theme-sepia #open-notes-btn.active-selection svg {
+        #reader-screen.theme-sepia #open-notes-btn.active-selection.yellow svg {
             stroke: #AF642D;
         }
 
-        #reader-screen.theme-console #open-notes-btn.active-selection svg {
+        #reader-screen.theme-console #open-notes-btn.active-selection.yellow svg {
             stroke: #FFFF00;
+        }
+
+        /* Green */
+        .highlight.green {
+            color: #9edd54;
+        }
+
+        #reader-screen.theme-light .highlight.green {
+            color: #006400;
+        }
+
+        #reader-screen.theme-sepia .highlight.green {
+            color: #556B2F;
+        }
+
+        #reader-screen.theme-console .highlight.green {
+            color: #d5ffa4 !important;
+        }
+
+        #open-notes-btn.active-selection.green svg {
+            stroke: #9edd54;
+        }
+
+        #reader-screen.theme-light #open-notes-btn.active-selection.green svg {
+            stroke: #006400;
+        }
+
+        #reader-screen.theme-sepia #open-notes-btn.active-selection.green svg {
+            stroke: #556B2F;
+        }
+
+        #reader-screen.theme-console #open-notes-btn.active-selection.green svg {
+            stroke: #d5ffa4;
+        }
+
+        /* Red */
+        .highlight.red {
+            color: #ff4133;
+        }
+
+        #reader-screen.theme-light .highlight.red {
+            color: #A52A2A;
+        }
+
+        #reader-screen.theme-sepia .highlight.red {
+            color: #8B4513;
+        }
+
+        #reader-screen.theme-console .highlight.red {
+            color: #FF6347 !important;
+        }
+
+        #open-notes-btn.active-selection.red svg {
+            stroke: #ff4133;
+        }
+
+        #reader-screen.theme-light #open-notes-btn.active-selection.red svg {
+            stroke: #A52A2A;
+        }
+
+        #reader-screen.theme-sepia #open-notes-btn.active-selection.red svg {
+            stroke: #8B4513;
+        }
+
+        #reader-screen.theme-console #open-notes-btn.active-selection.red svg {
+            stroke: #FF6347;
+        }
+
+        /* Purple */
+        .highlight.purple {
+            color: #d374e3;
+        }
+
+        #reader-screen.theme-light .highlight.purple {
+            color: #800080;
+        }
+
+        #reader-screen.theme-sepia .highlight.purple {
+            color: #8A2BE2;
+        }
+
+        #reader-screen.theme-console .highlight.purple {
+            color: #DA70D6 !important;
+        }
+
+        #open-notes-btn.active-selection.purple svg {
+            stroke: #d374e3;
+        }
+
+        #reader-screen.theme-light #open-notes-btn.active-selection.purple svg {
+            stroke: #800080;
+        }
+
+        #reader-screen.theme-sepia #open-notes-btn.active-selection.purple svg {
+            stroke: #8A2BE2;
+        }
+
+        #reader-screen.theme-console #open-notes-btn.active-selection.purple svg {
+            stroke: #DA70D6;
         }
 
         /* --- СТИЛИ ДЛЯ СКРОЛЛБАРОВ --- */
@@ -1210,7 +1323,7 @@
         #reader-screen.theme-console ::-webkit-scrollbar-track {
             background: #1a1a1a;
         }
-        
+
         #library-screen.theme-night ::-webkit-scrollbar-thumb,
         #settings-screen.theme-night ::-webkit-scrollbar-thumb,
         #reader-screen.theme-night ::-webkit-scrollbar-thumb {
@@ -1235,7 +1348,8 @@
             <header id="library-header-top" class="px-4 py-6 text-center hidden">
                 <div class="w-full max-w-[900px] mx-auto flex justify-center items-center gap-4">
                     <label for="file-input-top"
-                        class="btn-custom-add text-white font-bold py-2 px-4 rounded-lg cursor-pointer transition-colors duration-300 inline-block" data-translate="add">
+                        class="btn-custom-add text-white font-bold py-2 px-4 rounded-lg cursor-pointer transition-colors duration-300 inline-block"
+                        data-translate="add">
                         + Добавить
                     </label>
                     <input type="file" id="file-input-top" class="hidden" accept=".fb2,.fb2.zip">
@@ -1259,7 +1373,8 @@
                 class="w-full max-w-[900px] mx-auto flex-grow flex flex-col justify-center items-center text-center p-4">
                 <p class="text-gray-500 mb-6" data-translate="libraryEmpty">Ваша библиотека пуста.</p>
                 <label for="file-input-center"
-                    class="btn-custom-add text-white font-bold py-3 px-6 rounded-lg cursor-pointer transition-colors duration-300 text-lg" data-translate="addBook">
+                    class="btn-custom-add text-white font-bold py-3 px-6 rounded-lg cursor-pointer transition-colors duration-300 text-lg"
+                    data-translate="addBook">
                     Добавить книгу
                 </label>
                 <input type="file" id="file-input-center" class="hidden" accept=".fb2,.fb2.zip">
@@ -1269,7 +1384,8 @@
         <!-- Экран Чтения -->
         <div id="reader-screen" class="screen hidden w-full h-full flex flex-col">
             <header class="p-2 pr-16 border-b flex items-center justify-between relative flex-shrink-0 h-[56px]">
-                <button id="back-to-library-btn" class="back-button font-bold py-2 px-4 rounded-lg flex-shrink-0" data-translate="back">❮
+                <button id="back-to-library-btn" class="back-button font-bold py-2 px-4 rounded-lg flex-shrink-0"
+                    data-translate="back">❮
                     Назад</button>
                 <div class="text-center mx-4 overflow-hidden">
                     <h2 id="book-title" class="text-lg font-bold truncate">Название книги</h2>
@@ -1347,7 +1463,8 @@
         <div id="settings-screen" class="screen hidden w-full h-full flex flex-col">
             <header class="p-2 border-b flex items-center justify-center relative flex-shrink-0 h-[56px]">
                 <button id="back-to-library-from-settings-btn"
-                    class="back-button absolute left-2 top-1/2 -translate-y-1/2 font-bold py-2 px-4 rounded-lg" data-translate="back">❮
+                    class="back-button absolute left-2 top-1/2 -translate-y-1/2 font-bold py-2 px-4 rounded-lg"
+                    data-translate="back">❮
                     Назад</button>
                 <div class="text-center mx-auto px-28 overflow-hidden">
                     <h1 class="text-xl font-bold truncate" data-translate="settingsTitle">Настройки</h1>
@@ -1357,7 +1474,8 @@
                 <div class="w-full max-w-[900px] mx-auto p-4 flex flex-col min-h-full">
                     <div>
                         <div class="mb-6">
-                            <h2 class="text-sm font-bold text-gray-400 mb-2" data-translate="colorScheme">Цветовая схема</h2>
+                            <h2 class="text-sm font-bold text-gray-400 mb-2" data-translate="colorScheme">Цветовая схема
+                            </h2>
                             <div class="settings-block rounded-lg p-4">
                                 <span class="block mb-2" data-translate="background">Фон</span>
                                 <div id="theme-selector"
@@ -1369,6 +1487,11 @@
                                     class="grid grid-cols-4 sm:grid-cols-5 gap-3 justify-items-center">
                                     <!-- Опции цвета прогресс-бара -->
                                 </div>
+                                <span class="block mt-8 mb-2" data-translate="noteColor">Цвет заметок</span>
+                                <div id="note-color-selector"
+                                    class="grid grid-cols-4 sm:grid-cols-5 gap-3 justify-items-center">
+                                    <!-- Опции цвета заметок -->
+                                </div>
                             </div>
                         </div>
                         <div class="mb-6">
@@ -1378,7 +1501,8 @@
                                     <span data-translate="fontSize">Размер шрифта</span>
                                     <span id="font-size-value">18px</span>
                                 </div>
-                                <input type="range" id="font-size-slider" min="12" max="30" step="1" class="w-full mt-2">
+                                <input type="range" id="font-size-slider" min="12" max="30" step="1"
+                                    class="w-full mt-2">
                                 <div class="flex justify-between items-center mt-4">
                                     <span data-translate="fontWeight">Жирный шрифт</span>
                                     <span id="font-weight-value">400</span>
@@ -1408,10 +1532,11 @@
                             </div>
                         </div>
                     </div>
-    
+
                     <div class="mt-4">
                         <button id="reset-settings-btn"
-                            class="w-1/3 block mx-auto bg-[#2d2d2d] hover:bg-[#4a4a4a] text-[#646464] hover:text-[#fdfdfd] font-semibold py-2 px-3 rounded-lg transition-colors" data-translate="resetSettings">
+                            class="w-1/3 block mx-auto bg-[#2d2d2d] hover:bg-[#4a4a4a] text-[#646464] hover:text-[#fdfdfd] font-semibold py-2 px-3 rounded-lg transition-colors"
+                            data-translate="resetSettings">
                             сбросить настройки
                         </button>
                     </div>
@@ -1434,8 +1559,8 @@
         <div class="rounded-lg p-6 w-11/12 max-w-sm text-center shadow-lg" style="background-color: #1e1e1e;">
             <p id="confirm-modal-text" class="mb-6 text-white">Вы уверены?</p>
             <div class="flex justify-center gap-4">
-                <button id="confirm-modal-yes" class="px-6 py-2 rounded-lg text-white font-semibold" data-translate="yes"
-                    style="background-color: #2d2d2d;">Да</button>
+                <button id="confirm-modal-yes" class="px-6 py-2 rounded-lg text-white font-semibold"
+                    data-translate="yes" style="background-color: #2d2d2d;">Да</button>
                 <button id="confirm-modal-no" class="px-6 py-2 rounded-lg text-white font-semibold" data-translate="no"
                     style="background-color: #2d2d2d;">Нет</button>
             </div>
@@ -1460,7 +1585,8 @@
                     fontWeight: 400,
                     fontFamily: 'Arial',
                     lineHeight: 180,
-                    progressBarColor: '#3f3f3f'
+                    progressBarColor: '#3f3f3f',
+                    noteColor: 'yellow'
                 },
                 defaultSettings: {
                     language: 'ru',
@@ -1469,15 +1595,20 @@
                     fontWeight: 400,
                     fontFamily: 'Arial',
                     lineHeight: 180,
-                    progressBarColor: '#3f3f3f'
+                    progressBarColor: '#3f3f3f',
+                    noteColor: 'yellow'
                 },
 
                 loadSettings() {
                     const saved = localStorage.getItem('sphereReaderSettings');
                     if (saved) {
-                        this.settings = { ...this.defaultSettings, ...JSON.parse(saved) };
+                        this.settings = {
+                            ...this.defaultSettings, ...JSON.parse(saved)
+                        };
                     } else {
-                        this.settings = { ...this.defaultSettings };
+                        this.settings = {
+                            ...this.defaultSettings
+                        };
                     }
                     document.documentElement.lang = this.settings.language;
                 },
@@ -1487,7 +1618,9 @@
                 },
 
                 resetSettings() {
-                    this.settings = { ...this.defaultSettings };
+                    this.settings = {
+                        ...this.defaultSettings
+                    };
                     this.saveSettings();
                 }
             };
@@ -1521,6 +1654,8 @@
                         colorYellow: 'Yellow',
                         colorGreen: 'Green',
                         colorBlue: 'Blue',
+                        colorPurple: 'Purple',
+                        noteColor: 'Note Color',
                         text: 'Text',
                         fontSize: 'Font size',
                         fontWeight: 'Font weight',
@@ -1568,6 +1703,8 @@
                         colorYellow: 'Жёлтый',
                         colorGreen: 'Зелёный',
                         colorBlue: 'Голубой',
+                        colorPurple: 'Фиолетовый',
+                        noteColor: 'Цвет заметок',
                         text: 'Текст',
                         fontSize: 'Размер шрифта',
                         fontWeight: 'Жирный шрифт',
@@ -1615,6 +1752,8 @@
                         colorYellow: 'Жовтий',
                         colorGreen: 'Зелений',
                         colorBlue: 'Синій',
+                        colorPurple: 'Фіолетовий',
+                        noteColor: 'Колір нотаток',
                         text: 'Текст',
                         fontSize: 'Розмір шрифту',
                         fontWeight: 'Жирність шрифту',
@@ -1662,6 +1801,8 @@
                         colorYellow: 'Gelb',
                         colorGreen: 'Grün',
                         colorBlue: 'Blau',
+                        colorPurple: 'Lila',
+                        noteColor: 'Notizfarbe',
                         text: 'Text',
                         fontSize: 'Schriftgröße',
                         fontWeight: 'Schriftstärke',
@@ -1672,7 +1813,7 @@
                         langUa: 'Українська',
                         langEn: 'English',
                         langDe: 'Deutsch',
-                        resetSettings: 'Einstellungen zurücksetzen',
+                        resetSettings: 'einstellungen zurücksetzen',
                         areYouSure: 'Sind Sie sicher?',
                         areYouSureDeleteBook: 'Möchten Sie dieses Buch wirklich löschen?',
                         areYouSureResetSettings: 'Möchten Sie die Einstellungen wirklich zurücksetzen?',
@@ -1704,7 +1845,8 @@
                         'line-height-value', 'reset-settings-btn', 'confirm-modal', 'confirm-modal-text',
                         'confirm-modal-yes', 'confirm-modal-no', 'fullscreen-btn', 'toc-btn',
                         'toc-panel', 'toc-close-btn', 'toc-list', 'toc-overlay', 'progress-bar-color-selector',
-                        'open-notes-btn', 'notes-list', 'side-panel-title', 'language-selector'
+                        'open-notes-btn', 'notes-list', 'side-panel-title', 'language-selector',
+                        'note-color-selector'
                     ];
                     ids.forEach(id => this.elements[id] = document.getElementById(id));
                     this.elements.body = document.body;
@@ -1726,18 +1868,26 @@
                 showLoader(show) {
                     this.elements['loader-container'].classList.toggle('hidden', !show);
                 },
-                
+
                 applyTranslations() {
                     document.querySelectorAll('[data-translate]').forEach(el => {
                         const key = el.dataset.translate;
                         el.textContent = I18n.t(key);
                     });
-                    this.renderSettings(); 
+                    this.renderSettings();
                 },
 
                 applyThemeToApp() {
-                    const { readingTheme, fontSize, fontWeight, fontFamily, lineHeight } = AppState.settings;
-                    const { body } = this.elements;
+                    const {
+                        readingTheme,
+                        fontSize,
+                        fontWeight,
+                        fontFamily,
+                        lineHeight
+                    } = AppState.settings;
+                    const {
+                        body
+                    } = this.elements;
                     const bookContent = this.elements['book-content'];
                     const readerScreen = this.elements['reader-screen'];
 
@@ -1765,7 +1915,9 @@
                 updateTelegramTheme() {
                     try {
                         const tg = window.Telegram.WebApp;
-                        const { readingTheme } = AppState.settings;
+                        const {
+                            readingTheme
+                        } = AppState.settings;
 
                         const themeColors = {
                             'theme-light': '#ffffff',
@@ -1807,7 +1959,7 @@
                             `<div class="w-24 h-36 flex-shrink-0 book-icon-bg rounded flex items-center justify-center"><span class="text-gray-500 text-3xl">📖</span></div>`;
 
                         let finalProgressBarColor = AppState.settings.progressBarColor;
-                        
+
                         // Apply theme-specific gray for progress bar if selected
                         if (finalProgressBarColor === '#3f3f3f') {
                             const currentTheme = AppState.settings.readingTheme;
@@ -1858,6 +2010,7 @@
                     const {
                         'theme-selector': themeSelector,
                         'progress-bar-color-selector': progressBarColorSelector,
+                        'note-color-selector': noteColorSelector,
                         'language-selector': languageSelector,
                         'font-size-slider': fontSizeSlider,
                         'font-size-value': fontSizeValue,
@@ -1867,16 +2020,44 @@
                         'line-height-value': lineHeightValue,
                         'font-selector': fontSelector
                     } = this.elements;
-                    const { readingTheme, progressBarColor, language, fontSize, fontWeight, lineHeight, fontFamily } = AppState.settings;
+                    const {
+                        readingTheme,
+                        progressBarColor,
+                        noteColor,
+                        language,
+                        fontSize,
+                        fontWeight,
+                        lineHeight,
+                        fontFamily
+                    } = AppState.settings;
 
                     // Render themes
-                    const themes = [
-                        { id: 'theme-light', name: I18n.t('themeLight'), color: '#ffffff', check: '#000000' },
-                        { id: 'theme-dark', name: I18n.t('themeDark'), color: '#1e1e1e', check: '#ffffff' },
-                        { id: 'theme-night', name: I18n.t('themeNight'), color: '#0c0c0c', check: '#ffffff' },
-                        { id: 'theme-sepia', name: I18n.t('themeSepia'), color: '#fbf0d9', check: '#9b816a' },
-                        { id: 'theme-console', name: I18n.t('themeConsole'), color: '#000000', check: '#00ff00' }
-                    ];
+                    const themes = [{
+                        id: 'theme-light',
+                        name: I18n.t('themeLight'),
+                        color: '#ffffff',
+                        check: '#000000'
+                    }, {
+                        id: 'theme-dark',
+                        name: I18n.t('themeDark'),
+                        color: '#1e1e1e',
+                        check: '#ffffff'
+                    }, {
+                        id: 'theme-night',
+                        name: I18n.t('themeNight'),
+                        color: '#0c0c0c',
+                        check: '#ffffff'
+                    }, {
+                        id: 'theme-sepia',
+                        name: I18n.t('themeSepia'),
+                        color: '#fbf0d9',
+                        check: '#9b816a'
+                    }, {
+                        id: 'theme-console',
+                        name: I18n.t('themeConsole'),
+                        color: '#000000',
+                        check: '#00ff00'
+                    }];
                     themeSelector.innerHTML = themes.map(theme => `
                         <label class="flex flex-col items-center justify-center cursor-pointer">
                             <input type="radio" name="theme" value="${theme.id}" class="hidden" ${readingTheme === theme.id ? 'checked' : ''}>
@@ -1892,12 +2073,23 @@
 
 
                     // Render progress bar colors
-                    const colors = [
-                        { name: I18n.t('colorGray'), value: '#3f3f3f' }, { name: I18n.t('colorRed'), value: '#ef4444' },
-                        { name: I18n.t('colorYellow'), value: '#eab308' }, { name: I18n.t('colorGreen'), value: '#22c55e' },
-                        { name: I18n.t('colorBlue'), value: '#3b82f6' }
-                    ];
-                    progressBarColorSelector.innerHTML = colors.map(color => `
+                    const progressColors = [{
+                        name: I18n.t('colorGray'),
+                        value: '#3f3f3f'
+                    }, {
+                        name: I18n.t('colorRed'),
+                        value: '#ef4444'
+                    }, {
+                        name: I18n.t('colorYellow'),
+                        value: '#eab308'
+                    }, {
+                        name: I18n.t('colorGreen'),
+                        value: '#22c55e'
+                    }, {
+                        name: I18n.t('colorBlue'),
+                        value: '#3b82f6'
+                    }];
+                    progressBarColorSelector.innerHTML = progressColors.map(color => `
                          <label class="flex flex-col items-center justify-center cursor-pointer">
                             <input type="radio" name="progress-color" value="${color.value}" class="hidden" ${progressBarColor === color.value ? 'checked' : ''}>
                              <span class="theme-swatch w-12 h-12 rounded-full flex items-center justify-center" style="background: ${color.value}; border-color: transparent;">
@@ -1908,14 +2100,55 @@
                             <span class="mt-2 text-xs text-gray-400">${color.name}</span>
                         </label>
                     `).join('');
-                    
+
+                    // Render note colors
+                    const noteColors = [{
+                        name: I18n.t('colorYellow'),
+                        value: 'yellow',
+                        hex: '#FFD700'
+                    }, {
+                        name: I18n.t('colorGreen'),
+                        value: 'green',
+                        hex: '#9edd54'
+                    }, {
+                        name: I18n.t('colorRed'),
+                        value: 'red',
+                        hex: '#ff4133'
+                    }, {
+                        name: I18n.t('colorPurple'),
+                        value: 'purple',
+                        hex: '#d374e3'
+                    },];
+                    noteColorSelector.innerHTML = noteColors.map(color => `
+                         <label class="flex flex-col items-center justify-center cursor-pointer">
+                            <input type="radio" name="note-color" value="${color.value}" class="hidden" ${noteColor === color.value ? 'checked' : ''}>
+                             <span class="theme-swatch w-12 h-12 rounded-full flex items-center justify-center" style="background: ${color.hex}; border-color: transparent;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="hidden">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                            </span>
+                            <span class="mt-2 text-xs text-gray-400">${color.name}</span>
+                        </label>
+                    `).join('');
+
                     // Render languages
-                    const languages = [
-                        { id: 'ru', name: I18n.t('langRu'), svg: '<svg width="24" height="24" viewBox="150 0 600 600" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="clip-ru-circle"><circle cx="450" cy="300" r="300"/></clipPath></defs><g clip-path="url(#clip-ru-circle)"><rect width="900" height="600" fill="#fff"/><rect width="900" height="400" y="200" fill="#0039a6"/><rect width="900" height="200" y="400" fill="#d52b1e"/></g></svg>' },
-                        { id: 'ua', name: I18n.t('langUa'), svg: '<svg width="24" height="24" viewBox="150 0 600 600" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="clip-ua-circle"><circle cx="450" cy="300" r="300"/></clipPath></defs><g clip-path="url(#clip-ua-circle)"><rect width="900" height="300" fill="#005bbb"/><rect width="900" height="300" y="300" fill="#ffd500"/></g></svg>' },
-                        { id: 'en', name: I18n.t('langEn'), svg: '<svg width="24" height="24" viewBox="292.5 0 650 650" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="clip-us-circle"><circle cx="617.5" cy="325" r="325"/></clipPath></defs><g clip-path="url(#clip-us-circle)"><path fill="#FFF" d="M0 0h1235v650H0z"/><path fill="#B22234" d="M0 50h1235v50H0zm0 100h1235v50H0zm0 100h1235v50H0zm0 100h1235v50H0zm0 100h1235v50H0zm0 100h1235v50H0z"/><path fill="#3C3B6E" d="M0 0h494v350H0z"/></g></svg>' },
-                        { id: 'de', name: I18n.t('langDe'), svg: '<svg width="24" height="24" viewBox="150 0 600 600" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="clip-de-circle"><circle cx="450" cy="300" r="300"/></clipPath></defs><g clip-path="url(#clip-de-circle)"><rect width="900" height="600" fill="#000"/><rect width="900" height="400" y="200" fill="#D00"/><rect width="900" height="200" y="400" fill="#FFCE00"/></g></svg>' }
-                    ];
+                    const languages = [{
+                        id: 'ru',
+                        name: I18n.t('langRu'),
+                        svg: '<svg width="24" height="24" viewBox="150 0 600 600" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="clip-ru-circle"><circle cx="450" cy="300" r="300"/></clipPath></defs><g clip-path="url(#clip-ru-circle)"><rect width="900" height="600" fill="#fff"/><rect width="900" height="400" y="200" fill="#0039a6"/><rect width="900" height="200" y="400" fill="#d52b1e"/></g></svg>'
+                    }, {
+                        id: 'ua',
+                        name: I18n.t('langUa'),
+                        svg: '<svg width="24" height="24" viewBox="150 0 600 600" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="clip-ua-circle"><circle cx="450" cy="300" r="300"/></clipPath></defs><g clip-path="url(#clip-ua-circle)"><rect width="900" height="300" fill="#005bbb"/><rect width="900" height="300" y="300" fill="#ffd500"/></g></svg>'
+                    }, {
+                        id: 'en',
+                        name: I18n.t('langEn'),
+                        svg: '<svg width="24" height="24" viewBox="292.5 0 650 650" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="clip-us-circle"><circle cx="617.5" cy="325" r="325"/></clipPath></defs><g clip-path="url(#clip-us-circle)"><path fill="#FFF" d="M0 0h1235v650H0z"/><path fill="#B22234" d="M0 50h1235v50H0zm0 100h1235v50H0zm0 100h1235v50H0zm0 100h1235v50H0zm0 100h1235v50H0zm0 100h1235v50H0z"/><path fill="#3C3B6E" d="M0 0h494v350H0z"/></g></svg>'
+                    }, {
+                        id: 'de',
+                        name: I18n.t('langDe'),
+                        svg: '<svg width="24" height="24" viewBox="150 0 600 600" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="clip-de-circle"><circle cx="450" cy="300" r="300"/></clipPath></defs><g clip-path="url(#clip-de-circle)"><rect width="900" height="600" fill="#000"/><rect width="900" height="400" y="200" fill="#D00"/><rect width="900" height="200" y="400" fill="#FFCE00"/></g></svg>'
+                    }];
 
                     languageSelector.innerHTML = languages.map(lang => `
                         <label class="flex items-center justify-start p-1 rounded-md cursor-pointer text-sm transition-colors">
@@ -1971,7 +2204,10 @@
                         request.onupgradeneeded = e => {
                             const db = e.target.result;
                             if (!db.objectStoreNames.contains('books')) {
-                                db.createObjectStore('books', { keyPath: 'id', autoIncrement: true });
+                                db.createObjectStore('books', {
+                                    keyPath: 'id',
+                                    autoIncrement: true
+                                });
                             }
                         };
                         request.onsuccess = e => {
@@ -2055,7 +2291,10 @@
                         const img = new Image();
                         img.onload = () => {
                             const canvas = document.createElement('canvas');
-                            let { width, height } = img;
+                            let {
+                                width,
+                                height
+                            } = img;
 
                             if (width > height) {
                                 if (width > maxWidth) {
@@ -2117,7 +2356,16 @@
 
                     if (!contentHTML) contentHTML = "<p>Не удалось загрузить содержимое книги.</p>";
 
-                    return { title, author, content: contentHTML, coverImage, toc, notes: [], scrollPosition: 0, scrollHeight: 0 };
+                    return {
+                        title,
+                        author,
+                        content: contentHTML,
+                        coverImage,
+                        toc,
+                        notes: [],
+                        scrollPosition: 0,
+                        scrollHeight: 0
+                    };
                 },
 
                 _parseBody(rootNode, doc, tocArray) {
@@ -2134,9 +2382,14 @@
                                 const tagName = child.tagName.toLowerCase();
                                 const innerHTML = processFormatting(child);
                                 switch (tagName) {
-                                    case 'emphasis': html += `<em>${innerHTML}</em>`; break;
-                                    case 'strong': html += `<strong>${innerHTML}</strong>`; break;
-                                    default: html += innerHTML;
+                                    case 'emphasis':
+                                        html += `<em>${innerHTML}</em>`;
+                                        break;
+                                    case 'strong':
+                                        html += `<strong>${innerHTML}</strong>`;
+                                        break;
+                                    default:
+                                        html += innerHTML;
                                 }
                             }
                         });
@@ -2156,7 +2409,11 @@
                                         const sectionTitle = processFormatting(node).trim();
                                         if (sectionTitle) {
                                             const sectionId = `section-${tocArray.length}`;
-                                            tocArray.push({ title: sectionTitle, id: sectionId, level: level - 1 });
+                                            tocArray.push({
+                                                title: sectionTitle,
+                                                id: sectionId,
+                                                level: level - 1
+                                            });
                                             html += `<h${Math.min(6, level + 1)} id="${sectionId}" data-el-id="${elementCounter++}">${sectionTitle}</h${Math.min(6, level + 1)}>`;
                                         }
                                     }
@@ -2251,7 +2508,9 @@
                     const book = await DBManager.getBookById(AppState.currentBookId);
                     if (!book.notes) book.notes = [];
                     book.notes.push(newNote);
-                    await DBManager.saveMetadata(AppState.currentBookId, { notes: book.notes });
+                    await DBManager.saveMetadata(AppState.currentBookId, {
+                        notes: book.notes
+                    });
 
                     this.applyAllHighlights(book);
                     this.clearSelection();
@@ -2262,7 +2521,9 @@
                     const book = await DBManager.getBookById(AppState.currentBookId);
                     if (!book || !book.notes) return;
                     book.notes = book.notes.filter(note => note.id !== noteId);
-                    await DBManager.saveMetadata(AppState.currentBookId, { notes: book.notes });
+                    await DBManager.saveMetadata(AppState.currentBookId, {
+                        notes: book.notes
+                    });
                     this.renderNotes();
                     this.applyAllHighlights(book);
                 },
@@ -2337,13 +2598,12 @@
                     const nodes = [];
                     const walker = document.createTreeWalker(
                         range.commonAncestorContainer,
-                        NodeFilter.SHOW_TEXT,
-                        {
-                            acceptNode: (node) => {
-                                if (!node.textContent.trim()) return NodeFilter.FILTER_REJECT;
-                                return range.intersectsNode(node) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
-                            }
+                        NodeFilter.SHOW_TEXT, {
+                        acceptNode: (node) => {
+                            if (!node.textContent.trim()) return NodeFilter.FILTER_REJECT;
+                            return range.intersectsNode(node) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
                         }
+                    }
                     );
                     while (walker.nextNode()) nodes.push(walker.currentNode);
                     return nodes;
@@ -2353,7 +2613,7 @@
                     if (range.collapsed) return;
                     try {
                         const wrapper = document.createElement('span');
-                        wrapper.className = 'highlight';
+                        wrapper.className = `highlight ${AppState.settings.noteColor}`;
                         range.surroundContents(wrapper);
                     } catch (e) {
                         console.warn("surroundContents failed, using fallback. Error:", e);
@@ -2375,7 +2635,7 @@
                                 }
 
                                 const fallbackWrapper = document.createElement('span');
-                                fallbackWrapper.className = 'highlight';
+                                fallbackWrapper.className = `highlight ${AppState.settings.noteColor}`;
                                 try {
                                     intersection.surroundContents(fallbackWrapper);
                                 } catch (e2) {
@@ -2446,7 +2706,9 @@
                 },
 
                 addEventListeners() {
-                    const { elements } = UIManager;
+                    const {
+                        elements
+                    } = UIManager;
                     // File inputs
                     elements['file-input-top'].addEventListener('change', e => this.handleFileSelect(e));
                     elements['file-input-center'].addEventListener('change', e => this.handleFileSelect(e));
@@ -2470,24 +2732,35 @@
                     });
 
                     elements['book-list'].addEventListener('mousedown', e => this._handleSwipe(e));
-                    elements['book-list'].addEventListener('touchstart', e => this._handleSwipe(e), { passive: false });
+                    elements['book-list'].addEventListener('touchstart', e => this._handleSwipe(e), {
+                        passive: false
+                    });
 
 
                     // Settings
                     elements['settings-screen'].addEventListener('input', e => {
                         const target = e.target;
-                        if(target.id === 'font-size-slider') {
-                            AppState.settings.fontSize = parseInt(target.value, 10); UIManager.elements['font-size-value'].textContent = `${target.value}px`; AppState.saveSettings(); UIManager.applyThemeToApp();
+                        if (target.id === 'font-size-slider') {
+                            AppState.settings.fontSize = parseInt(target.value, 10);
+                            UIManager.elements['font-size-value'].textContent = `${target.value}px`;
+                            AppState.saveSettings();
+                            UIManager.applyThemeToApp();
                         } else if (target.id === 'font-weight-slider') {
-                            AppState.settings.fontWeight = parseInt(target.value, 10); UIManager.elements['font-weight-value'].textContent = target.value; AppState.saveSettings(); UIManager.applyThemeToApp();
+                            AppState.settings.fontWeight = parseInt(target.value, 10);
+                            UIManager.elements['font-weight-value'].textContent = target.value;
+                            AppState.saveSettings();
+                            UIManager.applyThemeToApp();
                         } else if (target.id === 'line-height-slider') {
-                            AppState.settings.lineHeight = parseInt(target.value, 10); UIManager.elements['line-height-value'].textContent = `${target.value}%`; AppState.saveSettings(); UIManager.applyThemeToApp();
+                            AppState.settings.lineHeight = parseInt(target.value, 10);
+                            UIManager.elements['line-height-value'].textContent = `${target.value}%`;
+                            AppState.saveSettings();
+                            UIManager.applyThemeToApp();
                         }
                     });
 
-                    elements['settings-screen'].addEventListener('change', e => {
+                    elements['settings-screen'].addEventListener('change', async e => {
                         const target = e.target;
-                         if (target.name === 'theme') {
+                        if (target.name === 'theme') {
                             AppState.settings.readingTheme = target.value;
                             AppState.saveSettings();
                             UIManager.applyThemeToApp();
@@ -2497,6 +2770,13 @@
                             AppState.settings.progressBarColor = target.value;
                             AppState.saveSettings();
                             this.renderLibrary();
+                        } else if (target.name === 'note-color') {
+                            AppState.settings.noteColor = target.value;
+                            AppState.saveSettings();
+                            if (AppState.currentBookId) {
+                                const book = await DBManager.getBookById(AppState.currentBookId);
+                                NoteManager.applyAllHighlights(book);
+                            }
                         } else if (target.name === 'font') {
                             AppState.settings.fontFamily = target.value;
                             AppState.saveSettings();
@@ -2509,11 +2789,20 @@
                         }
                     });
 
-                    elements['reset-settings-btn'].addEventListener('click', () => { UIManager.showConfirmationModal(I18n.t('areYouSureResetSettings'), () => { AppState.resetSettings(); UIManager.applyThemeToApp(); UIManager.applyTranslations(); }); });
+                    elements['reset-settings-btn'].addEventListener('click', () => {
+                        UIManager.showConfirmationModal(I18n.t('areYouSureResetSettings'), () => {
+                            AppState.resetSettings();
+                            UIManager.applyThemeToApp();
+                            UIManager.applyTranslations();
+                        });
+                    });
 
 
                     // Modal
-                    elements['confirm-modal-yes'].addEventListener('click', () => { if (typeof AppState.onConfirmAction === 'function') AppState.onConfirmAction(); UIManager.hideConfirmationModal(); });
+                    elements['confirm-modal-yes'].addEventListener('click', () => {
+                        if (typeof AppState.onConfirmAction === 'function') AppState.onConfirmAction();
+                        UIManager.hideConfirmationModal();
+                    });
                     elements['confirm-modal-no'].addEventListener('click', () => {
                         const swipedWrapper = document.querySelector('.book-item-wrapper.swiped');
                         if (swipedWrapper) swipedWrapper.classList.remove('swiped');
@@ -2527,7 +2816,12 @@
                     elements['book-content-wrapper'].addEventListener('scroll', () => {
                         this.updateScrollUI();
                         clearTimeout(scrollTimeout);
-                        scrollTimeout = setTimeout(() => { DBManager.saveMetadata(AppState.currentBookId, { scrollPosition: elements['book-content-wrapper'].scrollTop, scrollHeight: elements['book-content-wrapper'].scrollHeight }); }, 250);
+                        scrollTimeout = setTimeout(() => {
+                            DBManager.saveMetadata(AppState.currentBookId, {
+                                scrollPosition: elements['book-content-wrapper'].scrollTop,
+                                scrollHeight: elements['book-content-wrapper'].scrollHeight
+                            });
+                        }, 250);
                     });
 
                     // TOC and Notes Panel
@@ -2544,7 +2838,9 @@
                     elements['toc-list'].addEventListener('click', e => {
                         if (e.target.tagName === 'A') {
                             const targetElement = document.getElementById(e.target.dataset.id);
-                            if (targetElement) setTimeout(() => targetElement.scrollIntoView({ behavior: 'smooth' }), 300);
+                            if (targetElement) setTimeout(() => targetElement.scrollIntoView({
+                                behavior: 'smooth'
+                            }), 300);
                             this.closeSidePanel();
                         }
                     });
@@ -2555,7 +2851,10 @@
                             NoteManager.deleteNote(parseInt(targetItem.dataset.noteId, 10));
                         } else if (targetItem) {
                             const targetElement = elements['book-content'].querySelector(`[data-el-id='${targetItem.dataset.targetId}']`);
-                            if (targetElement) setTimeout(() => targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
+                            if (targetElement) setTimeout(() => targetElement.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'center'
+                            }), 300);
                             this.closeSidePanel();
                         }
                     });
@@ -2607,7 +2906,9 @@
                     requestAnimationFrame(() => {
                         wrapperEl.scrollTop = book.scrollPosition || 0;
                         this.updateScrollUI();
-                        DBManager.saveMetadata(bookId, { scrollHeight: wrapperEl.scrollHeight });
+                        DBManager.saveMetadata(bookId, {
+                            scrollHeight: wrapperEl.scrollHeight
+                        });
                     });
                 },
 
@@ -2630,7 +2931,11 @@
                 updateScrollUI() {
                     const wrapper = UIManager.elements['book-content-wrapper'];
                     const pageInfo = UIManager.elements['page-info'];
-                    const { scrollTop, scrollHeight, clientHeight } = wrapper;
+                    const {
+                        scrollTop,
+                        scrollHeight,
+                        clientHeight
+                    } = wrapper;
                     if (scrollHeight <= clientHeight) {
                         pageInfo.textContent = '1 / 1';
                         return;
@@ -2729,7 +3034,9 @@
                         document.addEventListener('mousemove', swipeMove);
                         document.addEventListener('mouseup', swipeEnd);
                     } else {
-                        document.addEventListener('touchmove', swipeMove, { passive: false });
+                        document.addEventListener('touchmove', swipeMove, {
+                            passive: false
+                        });
                         document.addEventListener('touchend', swipeEnd);
                     }
                 },
@@ -2744,9 +3051,9 @@
                         notesListEl.classList.add('hidden');
                         tocListEl.classList.remove('hidden');
                         const book = await DBManager.getBookById(AppState.currentBookId);
-                        tocListEl.innerHTML = (!book.toc || book.toc.length === 0)
-                            ? `<p class="text-gray-400 p-4 text-center">${I18n.t('noToc')}</p>`
-                            : book.toc.map(item => `<a data-id="${item.id}" style="padding-left: ${0.75 + item.level * 1}rem">${item.title}</a>`).join('');
+                        tocListEl.innerHTML = (!book.toc || book.toc.length === 0) ?
+                            `<p class="text-gray-400 p-4 text-center">${I18n.t('noToc')}</p>` :
+                            book.toc.map(item => `<a data-id="${item.id}" style="padding-left: ${0.75 + item.level * 1}rem">${item.title}</a>`).join('');
                     } else if (type === 'notes') {
                         titleEl.textContent = I18n.t('notesTitle');
                         tocListEl.classList.add('hidden');
@@ -2762,20 +3069,24 @@
 
                 handleSelectionChange() {
                     const selection = window.getSelection();
-                    const { 'open-notes-btn': notesBtn, 'book-content': bookContent } = UIManager.elements;
+                    const {
+                        'open-notes-btn': notesBtn,
+                        'book-content': bookContent
+                    } = UIManager.elements;
+                    const colorClasses = ['yellow', 'green', 'red', 'purple'];
+
+                    notesBtn.classList.remove('active-selection', ...colorClasses);
 
                     if (selection && !selection.isCollapsed && selection.toString().trim().length > 0) {
                         const range = selection.getRangeAt(0);
                         if (bookContent.contains(range.commonAncestorContainer)) {
                             AppState.currentSelection = range.cloneRange();
-                            notesBtn.classList.add('active-selection');
+                            notesBtn.classList.add('active-selection', AppState.settings.noteColor);
                         } else {
                             AppState.currentSelection = null;
-                            notesBtn.classList.remove('active-selection');
                         }
                     } else {
                         AppState.currentSelection = null;
-                        notesBtn.classList.remove('active-selection');
                     }
                 }
             };
