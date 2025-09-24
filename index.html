@@ -932,9 +932,10 @@
             position: absolute;
         }
 
-        #reader-screen > header {
-             transition: border-color 0.3s ease-in-out;
+        #reader-screen>header {
+            transition: border-color 0.3s ease-in-out;
         }
+
         .ui-element-to-hide {
             transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
         }
@@ -944,15 +945,15 @@
             pointer-events: none;
         }
 
-        #reader-screen.ui-hidden > header .ui-element-to-hide {
-             transform: translateY(-150%);
+        #reader-screen.ui-hidden>header .ui-element-to-hide {
+            transform: translateY(-150%);
         }
 
         #reader-screen.ui-hidden #page-overlay.ui-element-to-hide {
-             transform: translateY(100%);
+            transform: translateY(100%);
         }
-        
-        #reader-screen.ui-hidden > header {
+
+        #reader-screen.ui-hidden>header {
             border-bottom-color: transparent !important;
         }
 
@@ -1507,7 +1508,8 @@
                             </path>
                         </svg>
                     </button>
-                    <button id="toc-btn" class="back-button p-2 rounded-lg w-10 h-10 flex items-center justify-center ui-element-to-hide"
+                    <button id="toc-btn"
+                        class="back-button p-2 rounded-lg w-10 h-10 flex items-center justify-center ui-element-to-hide"
                         style="display: none;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -3378,8 +3380,3 @@
 </body>
 
 </html>
-
-
-
-
-
