@@ -943,14 +943,13 @@
         #reader-screen.ui-hidden .ui-element-to-hide {
             opacity: 0;
             pointer-events: none;
-        }
-
-        #reader-screen.ui-hidden>header .ui-element-to-hide {
             transform: translateY(-150%);
         }
 
-        #reader-screen.ui-hidden #page-overlay.ui-element-to-hide {
+        #reader-screen.ui-hidden #page-overlay {
             transform: translateY(100%);
+            opacity: 0;
+            pointer-events: none;
         }
 
         #reader-screen.ui-hidden>header {
@@ -1350,30 +1349,39 @@
             font-weight: bold;
         }
 
-        .status-btn .status-symbol {
-            font-size: 22px;
-            transition: font-size 0.2s ease-in-out;
+        .status-btn {
+            transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
         }
 
+        /* Mobile First: Скрываем кнопку "+" по умолчанию */
         .status-btn:not(.has-status) {
             opacity: 0;
             transform: scale(0.8);
-            transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+            pointer-events: none;
         }
 
-        .book-item-content:hover .status-btn:not(.has-status),
-        .status-btn.picker-open {
+        .status-btn.has-status {
+            background-color: transparent;
             opacity: 1;
             transform: scale(1);
         }
 
-        .status-btn.has-status {
-            background-color: transparent !important;
-            opacity: 1;
-        }
-
         .status-btn.has-status .status-symbol {
             font-size: 30px;
+        }
+
+        /* Desktop: Показываем кнопку "+" при наведении на книгу */
+        @media (hover: hover) and (pointer: fine) {
+            .book-item-content:hover .status-btn:not(.has-status) {
+                opacity: 1;
+                transform: scale(1);
+                pointer-events: auto;
+                background-color: transparent;
+            }
+
+            .status-btn:not(.has-status):hover {
+                background-color: transparent;
+            }
         }
 
         .status-symbol.green {
@@ -1552,7 +1560,7 @@
                     <div id="book-content"></div>
                 </main>
                 <div id="page-overlay"
-                    class="ui-element-to-hide absolute bottom-0 left-0 right-0 h-24 pointer-events-none flex justify-center items-end p-4">
+                    class="absolute bottom-0 left-0 right-0 h-24 pointer-events-none flex justify-center items-end p-4 ui-element-to-hide">
                     <span id="page-info" class="text-sm text-gray-400">1 / 1</span>
                 </div>
             </div>
@@ -1698,6 +1706,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
             // --- МОДУЛЬ СОСТОЯНИЯ ПРИЛОЖЕНИЯ ---
             const AppState = {
@@ -2372,6 +2381,7 @@
                     if (status && status.symbol && status.color) {
                         return `<span class="status-symbol ${status.color}">${status.symbol}</span>`;
                     }
+                    // Возвращаем иконку плюса для десктопной версии (CSS скроет ее на мобильных)
                     return `<svg class="status-icon-svg" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line class="plus-v" x1="12" y1="8" x2="12" y2="16"></line><line class="plus-h" x1="8" y1="12" x2="16" y2="12"></line></svg>`;
                 }
             };
@@ -2903,12 +2913,13 @@
                     // Book list interaction (delegated)
                     elements['book-list'].addEventListener('click', async e => {
                         const statusBtn = e.target.closest('.status-btn');
+                        // Desktop: Handle click on status button
                         if (statusBtn) {
                             e.stopPropagation();
                             const bookId = parseInt(statusBtn.dataset.bookId, 10);
                             const currentlyOpenBookId = AppState.currentBookIdForStatus;
 
-                            // If a picker is already open for a different button, close it first.
+                            // Close other pickers
                             if (currentlyOpenBookId && currentlyOpenBookId !== bookId) {
                                 const oldButton = document.querySelector(`.status-btn[data-book-id="${currentlyOpenBookId}"]`);
                                 if (oldButton) {
@@ -2918,13 +2929,11 @@
                                 }
                             }
 
-                            // Toggle the picker for the clicked button
+                            // Toggle current picker
                             if (statusBtn.classList.contains('picker-open')) {
-                                // It's open, so close it
                                 statusBtn.classList.remove('picker-open');
                                 UIManager.hideEmojiPicker();
                                 const book = await DBManager.getBookById(bookId);
-                                // After animation, restore status icon if it exists
                                 if (book.status) {
                                     setTimeout(() => {
                                         if (!statusBtn.classList.contains('picker-open')) {
@@ -2933,12 +2942,10 @@
                                     }, 300);
                                 }
                             } else {
-                                // It's closed, so open it
                                 const book = await DBManager.getBookById(bookId);
-                                // If it's a status icon, replace it with the plus icon to enable animation
                                 if (book.status) {
                                     statusBtn.innerHTML = UIManager.getStatusIconHTML(null);
-                                    void statusBtn.offsetWidth; // Force reflow for animation
+                                    void statusBtn.offsetWidth;
                                 }
                                 statusBtn.classList.add('picker-open');
                                 UIManager.showEmojiPicker(bookId, statusBtn);
@@ -2946,6 +2953,7 @@
                             return;
                         }
 
+                        // General click to open book
                         const wrapper = e.target.closest('.book-item-wrapper');
                         if (!wrapper) return;
 
@@ -2956,6 +2964,7 @@
 
                         this.openBook(parseInt(wrapper.dataset.bookId, 10));
                     });
+
 
                     elements['book-list'].addEventListener('mousedown', e => this._handleSwipe(e));
                     elements['book-list'].addEventListener('touchstart', e => this._handleSwipe(e), {
@@ -3036,7 +3045,9 @@
                     });
 
                     // Reader UI
-                    elements['fullscreen-btn'].addEventListener('click', () => elements['reader-screen'].classList.toggle('ui-hidden'));
+                    elements['fullscreen-btn'].addEventListener('click', () => {
+                        elements['reader-screen'].classList.toggle('ui-hidden');
+                    });
 
                     let scrollTimeout;
                     elements['book-content-wrapper'].addEventListener('scroll', () => {
@@ -3239,10 +3250,40 @@
                     let isVerticalScroll = false;
                     wrapper.dataset.isSwipe = 'false';
 
+                    // --- Логика для долгого нажатия (только для мобильных) ---
+                    let longPressTimeout;
+                    let isLongPress = false;
+
+                    if (isMobile) {
+                        const longPressDuration = 500; // 500ms
+                        longPressTimeout = setTimeout(() => {
+                            isLongPress = true;
+                            isDragging = false;
+                            wrapper.dataset.isSwipe = 'true'; // Предотвращаем клик
+
+                            // Вибрация для обратной связи
+                            try {
+                                window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+                            } catch (e) {
+                                console.warn("Haptic feedback is not available.");
+                            }
+
+                            // Открываем меню выбора статуса
+                            const bookId = parseInt(wrapper.dataset.bookId, 10);
+                            const statusBtnAnchor = wrapper.querySelector('.status-btn');
+                            UIManager.showEmojiPicker(bookId, statusBtnAnchor);
+
+                        }, longPressDuration);
+                    }
+
                     const touchStart = startEvent.type === 'touchstart' ? startEvent.touches[0] : startEvent;
                     let startX = touchStart.clientX;
                     let startY = touchStart.clientY;
                     let currentX = startX;
+
+                    const cancelLongPress = () => {
+                        if (isMobile) clearTimeout(longPressTimeout);
+                    };
 
                     const swipeMove = (moveEvent) => {
                         if (!isDragging) return;
@@ -3253,6 +3294,11 @@
 
                         const diffX = currentX - startX;
                         const diffY = currentY - startY;
+
+                        // Если пользователь начал двигать палец, отменяем долгое нажатие
+                        if (Math.abs(diffX) > 10 || Math.abs(diffY) > 10) {
+                            cancelLongPress();
+                        }
 
                         if (!isSwiping && !isVerticalScroll) {
                             if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 10) {
@@ -3285,6 +3331,7 @@
                     };
 
                     const swipeEnd = () => {
+                        cancelLongPress(); // Всегда отменяем таймер при отпускании
                         if (!isDragging) return;
                         isDragging = false;
 
@@ -3297,7 +3344,8 @@
 
                         const diff = currentX - startX;
 
-                        if (isSwiping && diff < -threshold) {
+                        // Если это не было долгое нажатие, проверяем на свайп
+                        if (!isLongPress && isSwiping && diff < -threshold) {
                             UIManager.showConfirmationModal(
                                 I18n.t('areYouSureDeleteBook'),
                                 () => this.deleteBook(parseInt(wrapper.dataset.bookId, 10))
