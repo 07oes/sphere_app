@@ -1427,6 +1427,22 @@
             transform: scaleY(0);
         }
 
+        .book-item-content.long-press-active {
+            animation: long-press-pulse 0.4s ease-in-out;
+        }
+
+        @keyframes long-press-pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(0.97);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
         /* --- АНИМАЦИЯ МОДАЛЬНОГО ОКНА --- */
         #confirm-modal {
             transition: opacity 0.2s ease-in-out;
@@ -1652,7 +1668,7 @@
                     </div>
                     <div class="flex-grow"></div>
                     <p class="p-4 text-center text-xs" style="color: #4a4a4a;">
-                        Version 0.7 (application for the test)
+                        Version 0.7
                     </p>
                 </div>
             </main>
@@ -1856,7 +1872,7 @@
                         resetSettings: 'сбросить настройки',
                         areYouSure: 'Вы уверены?',
                         areYouSureDeleteBook: 'Вы уверены, что хотите удалить эту книгу?',
-                        areYouSureResetSettings: 'Вы уверенны что хотите сбросить настройки?',
+                        areYouSureResetSettings: 'Вы уверены, что хотите сбросить настройки?',
                         yes: 'Да',
                         no: 'Нет',
                         fileProcessError: 'Не удалось обработать файл.',
@@ -1951,7 +1967,7 @@
                         langUa: 'Українська',
                         langEn: 'English',
                         langDe: 'Deutsch',
-                        resetSettings: 'einstellungen zurücksetzen',
+                        resetSettings: 'Einstellungen zurücksetzen',
                         areYouSure: 'Sind Sie sicher?',
                         areYouSureDeleteBook: 'Möchten Sie dieses Buch wirklich löschen?',
                         areYouSureResetSettings: 'Möchten Sie die Einstellungen wirklich zurücksetzen?',
@@ -2098,7 +2114,7 @@
 
                         let finalProgressBarColor = AppState.settings.progressBarColor;
 
-                        // Apply theme-specific gray for progress bar if selected
+                        // Применяем серый цвет для прогресс-бара в зависимости от темы, если он выбран
                         if (finalProgressBarColor === '#3f3f3f') {
                             const currentTheme = AppState.settings.readingTheme;
                             switch (currentTheme) {
@@ -2373,6 +2389,10 @@
                 },
 
                 hideEmojiPicker() {
+                    const animatedItem = document.querySelector('.book-item-content.long-press-active');
+                    if (animatedItem) {
+                        animatedItem.classList.remove('long-press-active');
+                    }
                     this.elements['emoji-picker'].classList.remove('open');
                     AppState.currentBookIdForStatus = null;
                 },
@@ -2381,7 +2401,7 @@
                     if (status && status.symbol && status.color) {
                         return `<span class="status-symbol ${status.color}">${status.symbol}</span>`;
                     }
-                    // Возвращаем иконку плюса для десктопной версии (CSS скроет ее на мобильных)
+                    // Возвращаем иконку плюса; CSS управляет ее видимостью (скрыта по умолчанию на мобильных, появляется при наведении на десктопе).
                     return `<svg class="status-icon-svg" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line class="plus-v" x1="12" y1="8" x2="12" y2="16"></line><line class="plus-h" x1="8" y1="12" x2="16" y2="12"></line></svg>`;
                 }
             };
@@ -3261,6 +3281,10 @@
                             isDragging = false;
                             wrapper.dataset.isSwipe = 'true'; // Предотвращаем клик
 
+                            if (bookItemContent) {
+                                bookItemContent.classList.add('long-press-active');
+                            }
+
                             // Вибрация для обратной связи
                             try {
                                 window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
@@ -3428,3 +3452,4 @@
 </body>
 
 </html>
+
