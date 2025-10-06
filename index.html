@@ -1,16 +1,3454 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
-    <title>Sphere</title>
-    <link rel="stylesheet" href="theme(b).css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>FB2 Reader</title>
+    <!-- Подключение Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Подключение Telegram Web App script -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        /* --- СТАНДАРТНАЯ ТЕМА (ТЕМНАЯ) --- */
+        body {
+            --bg-color: #1e1e1e;
+            --text-color: #e5e5e5;
+            --ui-bg: #2d2d2d;
+            --border-color: #353535;
+            --meta-color: #a0a0a0;
+            --link-color: #0a84ff;
+
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            overscroll-behavior: none;
+        }
+
+        body.grabbing {
+            cursor: grabbing;
+        }
+
+        /* --- ЦВЕТА НАЗВАНИЙ КНИГ --- */
+        #library-screen .book-item-content h3,
+        #reader-screen #book-title,
+        #library-screen.theme-dark .book-item-content h3,
+        #reader-screen.theme-dark #book-title,
+        #library-screen.theme-night .book-item-content h3,
+        #reader-screen.theme-night #book-title {
+            color: #e3e3e3;
+        }
+
+        #library-screen.theme-light .book-item-content h3,
+        #reader-screen.theme-light #book-title {
+            color: #414141;
+        }
+
+        #library-screen.theme-sepia .book-item-content h3,
+        #reader-screen.theme-sepia #book-title {
+            color: #79614e;
+        }
+
+        #library-screen.theme-console .book-item-content h3,
+        #reader-screen.theme-console #book-title {
+            color: #00ff00;
+        }
+
+        /* --- ЦВЕТА ВТОРОСТЕПЕННОГО ТЕКСТА --- */
+        #library-screen .book-item-content p {
+            color: #9f9f9f;
+        }
+
+        #library-screen.theme-light .book-item-content p {
+            color: #7b7b7b;
+        }
+
+        #library-screen.theme-night .book-item-content p {
+            color: #878787;
+        }
+
+        #library-screen.theme-sepia .book-item-content p {
+            color: #977d68;
+        }
+
+        #library-screen.theme-console .book-item-content p {
+            color: #00e900;
+        }
+
+
+        /* --- СВЕТЛАЯ ТЕМА ДЛЯ БИБЛИОТЕКИ --- */
+        #library-screen.theme-light {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --ui-bg: #e6e6e6;
+            --border-color: #d9d9d9;
+            --meta-color: #717171;
+        }
+
+        /* Кнопки в шапке */
+        #library-screen.theme-light .btn-custom-add {
+            background-color: #e6e6e6 !important;
+            color: #000000;
+        }
+
+        #library-screen.theme-light .btn-custom-add:hover {
+            background-color: #d3d3d3 !important;
+        }
+
+        #library-screen.theme-light .btn-custom-add svg {
+            stroke: #000000;
+        }
+
+        /* Иконка-заглушка для обложки */
+        #library-screen.theme-light .book-icon-bg {
+            background-color: #c7c7c7 !important;
+        }
+
+        #library-screen.theme-light .book-icon-bg span {
+            color: #f0f0f0;
+        }
+
+        /* Пустая библиотека */
+        #library-screen.theme-light #empty-library-view p {
+            color: var(--meta-color);
+        }
+
+        /* --- ТЕМА СЕПИЯ ДЛЯ БИБЛИОТЕКИ --- */
+        #library-screen.theme-sepia {
+            --bg-color: #fbf0d9;
+            --ui-bg: #f1e5ca;
+            --border-color: #d7c8a8;
+        }
+
+        /* Кнопки в шапке */
+        #library-screen.theme-sepia .btn-custom-add {
+            background-color: #f1e5ca !important;
+            color: #5b4636;
+        }
+
+        #library-screen.theme-sepia .btn-custom-add:hover {
+            background-color: #e0d5ba !important;
+        }
+
+        #library-screen.theme-sepia .btn-custom-add svg {
+            stroke: #5b4636;
+        }
+
+        /* Иконка-заглушка для обложки */
+        #library-screen.theme-sepia .book-icon-bg {
+            background-color: #e0d5ba !important;
+        }
+
+        #library-screen.theme-sepia .book-icon-bg span {
+            color: #fbf0d9;
+        }
+
+        /* Пустая библиотека */
+        #library-screen.theme-sepia #empty-library-view p {
+            color: #515151;
+        }
+
+        /* --- КОНСОЛЬНАЯ ТЕМА ДЛЯ БИБЛИОТЕКИ --- */
+        #library-screen.theme-console {
+            --bg-color: #000000;
+            --ui-bg: #111111;
+            --border-color: #212121;
+        }
+
+        #library-screen.theme-console .btn-custom-add {
+            background-color: #111111 !important;
+            color: #00ff00;
+        }
+
+        #library-screen.theme-console .btn-custom-add:hover {
+            background-color: #222222 !important;
+        }
+
+        #library-screen.theme-console .btn-custom-add svg {
+            stroke: #00ff00;
+        }
+
+        #library-screen.theme-console .book-icon-bg {
+            background-color: #222222 !important;
+        }
+
+        #library-screen.theme-console #empty-library-view p {
+            color: #00cc00;
+        }
+
+        /* --- НОЧНАЯ ТЕМА ДЛЯ БИБЛИОТЕКИ --- */
+        #library-screen.theme-night {
+            --bg-color: #0c0c0c;
+            --ui-bg: #141414;
+            --border-color: #212121;
+            --text-color: #e5e5e5;
+        }
+
+        #library-screen.theme-night .btn-custom-add {
+            background-color: #141414 !important;
+            color: #ffffff;
+        }
+
+        #library-screen.theme-night .btn-custom-add:hover {
+            background-color: #2c2c2c !important;
+        }
+
+        #library-screen.theme-night .btn-custom-add svg {
+            stroke: #ffffff;
+        }
+
+        #library-screen.theme-night .book-icon-bg {
+            background-color: #2a2a2a !important;
+        }
+
+        #library-screen.theme-night #empty-library-view p {
+            color: #8a8a8a;
+        }
+
+
+        /* --- СВЕТЛАЯ ТЕМА ДЛЯ НАСТРОЕК --- */
+        #settings-screen.theme-light {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --ui-bg: #e6e6e6;
+            --border-color: #d9d9d9;
+        }
+
+        #settings-screen.theme-light .settings-block {
+            background-color: var(--ui-bg) !important;
+        }
+
+        #settings-screen.theme-light #font-selector input:checked+span,
+        #settings-screen.theme-light #language-selector input:checked+span {
+            background-color: #d9d9d9 !important;
+            color: #000000 !important;
+        }
+
+        /* Устанавливаем цвет для текста внутри блоков */
+        #settings-screen.theme-light span {
+            color: #3b3b3b;
+        }
+
+        /* Отдельно стилизуем кнопку "Назад", чтобы не затрагивать заголовок */
+        #settings-screen.theme-light .back-button.font-bold {
+            color: #979797 !important;
+        }
+
+        /* Устанавливаем черный цвет для главного заголовка "Настройки" */
+        #settings-screen.theme-light header h1 {
+            color: #000000;
+        }
+
+        #settings-screen.theme-light h2.text-gray-400 {
+            color: #717171 !important;
+        }
+
+        #settings-screen.theme-light input[type=range]::-webkit-slider-runnable-track {
+            background: #d3d3d3;
+        }
+
+        #settings-screen.theme-light input[type=range]::-webkit-slider-thumb {
+            background: #717171;
+        }
+
+        #settings-screen.theme-light #reset-settings-btn {
+            background-color: #e6e6e6 !important;
+            color: #717171 !important;
+        }
+
+        #settings-screen.theme-light #reset-settings-btn:hover {
+            background-color: #d3d3d3 !important;
+            color: #3b3b3b !important;
+        }
+
+        /* --- ТЕМА СЕПИЯ ДЛЯ НАСТРОЕК --- */
+        #settings-screen.theme-sepia {
+            --bg-color: #fbf0d9;
+            --ui-bg: #f1e5ca;
+            --border-color: #d7c8a8;
+        }
+
+        #settings-screen.theme-sepia .settings-block {
+            background-color: var(--ui-bg) !important;
+        }
+
+        #settings-screen.theme-sepia header h1 {
+            color: #5b4636;
+        }
+
+        #settings-screen.theme-sepia h2.text-gray-400 {
+            color: #89725f !important;
+        }
+
+        #settings-screen.theme-sepia span {
+            color: #79614e;
+        }
+
+        #settings-screen.theme-sepia .back-button.font-bold {
+            color: #897c6f !important;
+        }
+
+        #settings-screen.theme-sepia #reset-settings-btn {
+            background-color: #f1e5ca !important;
+            color: #5b4636 !important;
+        }
+
+        #settings-screen.theme-sepia #reset-settings-btn:hover {
+            background-color: #e0d5ba !important;
+            color: #000000 !important;
+        }
+
+        #settings-screen.theme-sepia #font-selector input:checked+span,
+        #settings-screen.theme-sepia #language-selector input:checked+span {
+            background-color: #d7c8a8 !important;
+            color: #5b4636 !important;
+        }
+
+        #settings-screen.theme-sepia input[type=range]::-webkit-slider-runnable-track {
+            background: #d1c1a2;
+        }
+
+        #settings-screen.theme-sepia input[type=range]::-webkit-slider-thumb {
+            background: #96836c;
+        }
+
+        /* --- КОНСОЛЬНАЯ ТЕМА ДЛЯ НАСТРОЕК --- */
+        #settings-screen.theme-console {
+            --bg-color: #000000;
+            --ui-bg: #111111;
+            --border-color: #212121;
+        }
+
+        #settings-screen.theme-console .settings-block {
+            background-color: var(--ui-bg) !important;
+        }
+
+        #settings-screen.theme-console header h1,
+        #settings-screen.theme-console span {
+            color: #00ff00;
+        }
+
+        #settings-screen.theme-console h2.text-gray-400 {
+            color: #00ad00 !important;
+        }
+
+        #settings-screen.theme-console .back-button.font-bold {
+            color: #00ff00 !important;
+        }
+
+        #settings-screen.theme-console #reset-settings-btn {
+            background-color: #111111 !important;
+            color: #00cc00 !important;
+        }
+
+        #settings-screen.theme-console #reset-settings-btn:hover {
+            background-color: #222222 !important;
+            color: #00ff00 !important;
+        }
+
+        #settings-screen.theme-console #font-selector input:checked+span,
+        #settings-screen.theme-console #language-selector input:checked+span {
+            background-color: #00ff00 !important;
+            color: #000000 !important;
+        }
+
+        /* Fix for language selector text color in console theme */
+        #settings-screen.theme-console #language-selector input:checked+span span {
+            color: #000000 !important;
+        }
+
+        #settings-screen.theme-console input[type=range]::-webkit-slider-runnable-track {
+            background: #004700;
+        }
+
+        #settings-screen.theme-console input[type=range]::-webkit-slider-thumb {
+            background: #00ff00;
+        }
+
+        /* --- НОЧНАЯ ТЕМА ДЛЯ НАСТРОЕК --- */
+        #settings-screen.theme-night {
+            --bg-color: #0c0c0c;
+            --ui-bg: #141414;
+            --border-color: #212121;
+        }
+
+        #settings-screen.theme-night .settings-block {
+            background-color: var(--ui-bg) !important;
+        }
+
+        #settings-screen.theme-night header h1,
+        #settings-screen.theme-night span {
+            color: #d4d4d4;
+        }
+
+        #settings-screen.theme-night h2.text-gray-400 {
+            color: #8a8a8a !important;
+        }
+
+        #settings-screen.theme-night .back-button.font-bold {
+            color: #6d6d6d !important;
+        }
+
+        #settings-screen.theme-night #reset-settings-btn {
+            background-color: #141414 !important;
+            color: #8a8a8a !important;
+        }
+
+        #settings-screen.theme-night #reset-settings-btn:hover {
+            background-color: #2c2c2c !important;
+            color: #d4d4d4 !important;
+        }
+
+        #settings-screen.theme-night #font-selector input:checked+span,
+        #settings-screen.theme-night #language-selector input:checked+span,
+        #settings-screen.theme-night #theme-selector input:checked+span {
+            background-color: #212121 !important;
+            color: #ffffff !important;
+        }
+
+        #settings-screen.theme-night input[type=range]::-webkit-slider-runnable-track {
+            background: #3a3a3a;
+        }
+
+        #settings-screen.theme-night input[type=range]::-webkit-slider-thumb {
+            background: #b0b0b0;
+        }
+
+        /* --- СВЕТЛАЯ ТЕМА ДЛЯ МОДАЛЬНОГО ОКНА --- */
+        #confirm-modal.theme-light>div {
+            background-color: #ffffff !important;
+        }
+
+        #confirm-modal.theme-light p {
+            color: #000000 !important;
+        }
+
+        #confirm-modal.theme-light button {
+            background-color: #e6e6e6 !important;
+            color: #3b3b3b !important;
+        }
+
+        #confirm-modal.theme-light button:hover {
+            background-color: #d3d3d3 !important;
+            color: #000000 !important;
+        }
+
+        /* --- ТЕМА СЕПИЯ ДЛЯ МОДАЛЬНОГО ОКНА --- */
+        #confirm-modal.theme-sepia>div {
+            background-color: #fbf0d9 !important;
+        }
+
+        #confirm-modal.theme-sepia p {
+            color: #000000 !important;
+        }
+
+        #confirm-modal.theme-sepia button {
+            background-color: #f1e5ca !important;
+            color: #3b3b3b !important;
+        }
+
+        #confirm-modal.theme-sepia button:hover {
+            background-color: #e0d5ba !important;
+            color: #000000 !important;
+        }
+
+        /* --- КОНСОЛЬНАЯ ТЕМА ДЛЯ МОДАЛЬНОГО ОКНА --- */
+        #confirm-modal.theme-console>div {
+            background-color: #111111 !important;
+        }
+
+        #confirm-modal.theme-console p {
+            color: #00ff00 !important;
+        }
+
+        #confirm-modal.theme-console button {
+            background-color: #181818 !important;
+            color: #00ff00 !important;
+        }
+
+        #confirm-modal.theme-console button:hover {
+            background-color: #1c1c1c !important;
+        }
+
+        /* --- НОЧНАЯ ТЕМА ДЛЯ МОДАЛЬНОГО ОКНА --- */
+        #confirm-modal.theme-night>div {
+            background-color: #141414 !important;
+        }
+
+        #confirm-modal.theme-night p {
+            color: #d4d4d4 !important;
+        }
+
+        #confirm-modal.theme-night button {
+            background-color: #2a2a2a !important;
+            color: #d4d4d4 !important;
+        }
+
+        #confirm-modal.theme-night button:hover {
+            background-color: #3c3c3c !important;
+        }
+
+        /* --- ТЕМЫ ДЛЯ ЭКРАНА ЧТЕНИЯ --- */
+        #reader-screen.theme-light {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --border-color: #d9d9d9;
+            --link-color: #22c55e;
+            --ui-bg: #ffffff;
+            /* Фон для панели содержания в светлой теме */
+        }
+
+        #reader-screen.theme-light #page-info {
+            color: #535353;
+        }
+
+        #reader-screen.theme-dark {
+            --bg-color: #1e1e1e;
+            --text-color: #e5e5e5;
+            --border-color: #353535;
+            --link-color: #0a84ff;
+        }
+
+        #reader-screen.theme-sepia {
+            --bg-color: #fbf0d9;
+            --text-color: #5f3a28;
+            --border-color: #d7c8a8;
+            --link-color: #716854;
+            --ui-bg: #f1e5ca;
+            /* Фон для панели содержания в теме сепия */
+        }
+
+        #reader-screen.theme-sepia #page-info {
+            color: #79614e;
+        }
+
+        #reader-screen.theme-console {
+            --bg-color: #000000;
+            --text-color: #00ff00;
+            --border-color: #212121;
+            --link-color: #00b500;
+            --ui-bg: #111111;
+        }
+
+        #reader-screen.theme-console #page-info {
+            color: #00cc00;
+        }
+
+        #reader-screen.theme-night {
+            --bg-color: #0c0c0c;
+            --text-color: #e5e5e5;
+            --border-color: #212121;
+            --link-color: #0a84ff;
+            --ui-bg: #141414;
+        }
+
+        #reader-screen.theme-night #page-info {
+            color: #7f7f7f;
+        }
+
+        .screen {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        header {
+            border-color: var(--border-color) !important;
+            position: relative;
+            z-index: 10;
+        }
+
+        .settings-block {
+            background-color: var(--ui-bg) !important;
+        }
+
+        .book-icon-bg {
+            background-color: #3e3e3e !important;
+        }
+
+        .book-cover-img {
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .btn-custom-add {
+            background-color: #2d2d2d !important;
+        }
+
+        .btn-custom-add:hover {
+            background-color: #404040 !important;
+        }
+
+        #theme-selector input:checked+span,
+        #font-selector input:checked+span,
+        #language-selector input:checked+span {
+            background-color: #353535;
+            color: #ffffff;
+        }
+
+        /* --- НОВЫЕ СТИЛИ ДЛЯ ВИЗУАЛЬНОГО ВЫБОРА --- */
+        #theme-selector .theme-swatch,
+        #progress-bar-color-selector .theme-swatch,
+        #note-color-selector .theme-swatch {
+            transition: all 0.2s ease-in-out;
+            border-width: 2px;
+        }
+
+        #theme-selector input:checked+.theme-swatch,
+        #progress-bar-color-selector input:checked+.theme-swatch,
+        #note-color-selector input:checked+.theme-swatch {
+            border-color: #0a84ff;
+            transform: scale(1.1);
+        }
+
+        #theme-selector input[value="theme-console"]:checked+.theme-swatch {
+            border-color: transparent !important;
+        }
+
+        #theme-selector input:checked+.theme-swatch .console-dot {
+            display: none;
+        }
+
+        #theme-selector input:checked+.theme-swatch svg,
+        #progress-bar-color-selector input:checked+.theme-swatch svg,
+        #note-color-selector input:checked+.theme-swatch svg {
+            display: block;
+        }
+
+        .back-button {
+            color: #6f6f6f !important;
+        }
+
+        #settings-screen .back-button.font-bold {
+            color: #6f6f6f !important;
+        }
+
+        /* --- ИНТЕРАКТИВНЫЕ СТИЛИ ДЛЯ КНОПОК --- */
+        .back-button:active {
+            background-color: #2b2b2b !important;
+        }
+
+        #settings-screen.theme-light .back-button:active {
+            background-color: #e7e7e7 !important;
+        }
+
+        #settings-screen.theme-sepia .back-button:active {
+            background-color: #e9dfc5 !important;
+        }
+
+        #settings-screen.theme-console .back-button:active {
+            background-color: #141a13 !important;
+        }
+
+        #settings-screen.theme-night .back-button:active {
+            background-color: #1a1a1a !important;
+        }
+
+        #reader-screen.theme-light .back-button:active {
+            background-color: #e7e7e7 !important;
+        }
+
+        #reader-screen.theme-sepia .back-button:active {
+            background-color: #e9dfc5 !important;
+        }
+
+        #reader-screen.theme-console .back-button:active {
+            background-color: #141a13 !important;
+        }
+
+        #reader-screen.theme-night .back-button:active {
+            background-color: #1a1a1a !important;
+        }
+
+        @media (hover: hover) {
+            .back-button:hover {
+                background-color: #2b2b2b !important;
+            }
+
+            #settings-screen.theme-light .back-button:hover {
+                background-color: #e7e7e7 !important;
+            }
+
+            #settings-screen.theme-sepia .back-button:hover {
+                background-color: #e9dfc5 !important;
+            }
+
+            #settings-screen.theme-console .back-button:hover {
+                background-color: #141a13 !important;
+            }
+
+            #settings-screen.theme-night .back-button:hover {
+                background-color: #1a1a1a !important;
+            }
+
+            #reader-screen.theme-light .back-button:hover {
+                background-color: #e7e7e7 !important;
+            }
+
+            #reader-screen.theme-sepia .back-button:hover {
+                background-color: #e9dfc5 !important;
+            }
+
+            #reader-screen.theme-console .back-button:hover {
+                background-color: #141a13 !important;
+            }
+
+            #reader-screen.theme-night .back-button:hover {
+                background-color: #1a1a1a !important;
+            }
+        }
+
+        #reader-screen.theme-light .back-button {
+            color: #979797 !important;
+        }
+
+        #reader-screen.theme-sepia .back-button {
+            color: #897c6f !important;
+        }
+
+        #reader-screen.theme-console .back-button {
+            color: #00ff00 !important;
+        }
+
+        #reader-screen.theme-night .back-button {
+            color: #6d6d6d !important;
+        }
+
+        /* --- Специфичные стили для кнопки "чистого экрана" --- */
+        #reader-screen:not(.ui-hidden) #fullscreen-btn:active {
+            background-color: #2b2b2b !important;
+        }
+
+        #reader-screen.theme-light:not(.ui-hidden) #fullscreen-btn:active {
+            background-color: #e7e7e7 !important;
+        }
+
+        #reader-screen.theme-sepia:not(.ui-hidden) #fullscreen-btn:active {
+            background-color: #e9dfc5 !important;
+        }
+
+        #reader-screen.theme-console:not(.ui-hidden) #fullscreen-btn:active {
+            background-color: #141a13 !important;
+        }
+
+        #reader-screen.theme-night:not(.ui-hidden) #fullscreen-btn:active {
+            background-color: #1a1a1a !important;
+        }
+
+        @media (hover: hover) {
+            #reader-screen:not(.ui-hidden) #fullscreen-btn:hover {
+                background-color: #2b2b2b !important;
+            }
+
+            #reader-screen.theme-light:not(.ui-hidden) #fullscreen-btn:hover {
+                background-color: #e7e7e7 !important;
+            }
+
+            #reader-screen.theme-sepia:not(.ui-hidden) #fullscreen-btn:hover {
+                background-color: #e9dfc5 !important;
+            }
+
+            #reader-screen.theme-console:not(.ui-hidden) #fullscreen-btn:hover {
+                background-color: #141a13 !important;
+            }
+
+            #reader-screen.theme-night:not(.ui-hidden) #fullscreen-btn:hover {
+                background-color: #1a1a1a !important;
+            }
+        }
+
+        #reader-screen.ui-hidden #fullscreen-btn {
+            background-color: transparent !important;
+        }
+
+        #reader-screen.ui-hidden #fullscreen-btn svg {
+            stroke: #3f3f3f !important;
+        }
+
+        #reader-screen.theme-light.ui-hidden #fullscreen-btn svg {
+            stroke: #b0b0b0 !important;
+        }
+
+        #reader-screen.theme-sepia.ui-hidden #fullscreen-btn svg {
+            stroke: #b0a38b !important;
+        }
+
+        #reader-screen.theme-console.ui-hidden #fullscreen-btn svg {
+            stroke: #003f00 !important;
+        }
+
+        #reader-screen.theme-night.ui-hidden #fullscreen-btn svg {
+            stroke: #333333 !important;
+        }
+
+        #reader-screen.ui-hidden #fullscreen-btn:active {
+            background-color: #2b2b2b !important;
+        }
+
+        #reader-screen.ui-hidden #fullscreen-btn:active svg {
+            stroke: #757575 !important;
+        }
+
+        #reader-screen.theme-light.ui-hidden #fullscreen-btn:active {
+            background-color: #d3d3d3 !important;
+        }
+
+        #reader-screen.theme-light.ui-hidden #fullscreen-btn:active svg {
+            stroke: #3b3b3b !important;
+        }
+
+        @media (hover: hover) {
+            #reader-screen.ui-hidden #fullscreen-btn:hover {
+                background-color: #2b2b2b !important;
+            }
+
+            #reader-screen.ui-hidden #fullscreen-btn:hover svg {
+                stroke: #757575 !important;
+            }
+
+            #reader-screen.theme-light.ui-hidden #fullscreen-btn:hover {
+                background-color: #e6e6e6 !important;
+            }
+
+            #reader-screen.theme-light.ui-hidden #fullscreen-btn:hover svg {
+                stroke: #5d5d5d !important;
+            }
+
+            #reader-screen.theme-sepia.ui-hidden #fullscreen-btn:hover {
+                background-color: #e9dfc5 !important;
+            }
+
+            #reader-screen.theme-sepia.ui-hidden #fullscreen-btn:hover svg {
+                stroke: #5b4636 !important;
+            }
+
+            #reader-screen.theme-console.ui-hidden #fullscreen-btn:hover {
+                background-color: #141a13 !important;
+            }
+
+            #reader-screen.theme-console.ui-hidden #fullscreen-btn:hover svg {
+                stroke: #00ff00 !important;
+            }
+
+            #reader-screen.theme-night.ui-hidden #fullscreen-btn:hover {
+                background-color: #1a1a1a !important;
+            }
+
+            #reader-screen.theme-night.ui-hidden #fullscreen-btn:hover svg {
+                stroke: #b0b0b0 !important;
+            }
+        }
+
+        #settings-screen .text-gray-400 {
+            color: #717171 !important;
+        }
+
+        #book-content-wrapper {
+            height: calc(100vh - 57px);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            transition: height 0.3s ease-in-out, margin-top 0.3s ease-in-out;
+        }
+
+        #reader-screen.ui-hidden #book-content-wrapper {
+            height: 100vh;
+            margin-top: -57px;
+        }
+
+        #book-content {
+            padding: 1rem 1.5rem 5rem;
+            font-size: 18px;
+            max-width: 900px;
+            /* Ограничиваем максимальную ширину */
+            margin-left: auto;
+            /* Центрируем по горизонтали */
+            margin-right: auto;
+            /* Центрируем по горизонтали */
+        }
+
+        #reader-screen #book-content p {
+            margin-bottom: 1em;
+            text-indent: 0;
+            text-align: left;
+        }
+
+        #reader-screen #book-content h2,
+        #reader-screen #book-content h3,
+        #reader-screen #book-content h4,
+        #reader-screen #book-content h5,
+        #reader-screen #book-content h6 {
+            text-align: center;
+            font-weight: 600;
+            line-height: 1.4;
+            margin: 2em 0 1.5em 0;
+        }
+
+        #reader-screen #book-content h2 {
+            font-size: 1.4em;
+        }
+
+        #reader-screen #book-content h3 {
+            font-size: 1.2em;
+        }
+
+        #reader-screen #book-content h4 {
+            font-size: 1.1em;
+        }
+
+        #reader-screen #book-content .quote-block {
+            font-style: italic;
+            margin: 1em 2em;
+            color: var(--meta-color);
+        }
+
+        #reader-screen #book-content .empty-line-break {
+            height: 1em;
+        }
+
+        #reader-screen #book-content img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 2em auto;
+            border-radius: 0.25rem;
+            background-color: #444;
+        }
+
+        #page-overlay {
+            background: linear-gradient(to top, var(--bg-color) 10%, transparent);
+        }
+
+        #page-overlay>span {
+            color: #afafaf;
+        }
+
+        .screen {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+
+        .screen.hidden {
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+            position: absolute;
+        }
+
+        #reader-screen>header {
+            transition: border-color 0.3s ease-in-out;
+        }
+
+        .ui-element-to-hide {
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        }
+
+        #reader-screen.ui-hidden .ui-element-to-hide {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-150%);
+        }
+
+        #reader-screen.ui-hidden #page-overlay {
+            transform: translateY(100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #reader-screen.ui-hidden>header {
+            border-bottom-color: transparent !important;
+        }
+
+        .loader-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #d4d4d4;
+            cursor: pointer;
+            margin-top: -8px;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #4a4a4a;
+            border-radius: 5px;
+        }
+
+        .book-item-wrapper {
+            position: relative;
+            overflow: hidden;
+            background-color: transparent;
+            border-radius: 0.5rem;
+        }
+
+        .delete-swipe-icon {
+            position: absolute;
+            right: 24px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8e8e93;
+            opacity: 0;
+            transition: opacity 0.3s ease, color 0.1s ease;
+        }
+
+        .book-item-content {
+            transition: transform 0.3s ease;
+            background-color: var(--ui-bg);
+            position: relative;
+            z-index: 1;
+            border-radius: 0.5rem;
+        }
+
+        #toc-panel.open {
+            pointer-events: auto;
+        }
+
+        #toc-panel.open #toc-overlay {
+            opacity: 1;
+        }
+
+        #toc-panel.open>div:last-child {
+            transform: translateX(0);
+        }
+
+        #toc-list a,
+        #notes-list .note-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0.5rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            text-align: left;
+        }
+
+        #notes-list .note-text {
+            font-style: italic;
+            color: var(--meta-color);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            flex-grow: 1;
+        }
+
+        .delete-note-btn {
+            background: none;
+            border: none;
+            color: var(--meta-color);
+            cursor: pointer;
+            padding: 0;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .delete-note-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #ff4545;
+        }
+
+        .delete-note-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+
+        #toc-list a:active,
+        #notes-list .note-item:active {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        #reader-screen.theme-light #toc-list a:active,
+        #reader-screen.theme-light #notes-list .note-item:active,
+        #reader-screen.theme-sepia #toc-list a:active,
+        #reader-screen.theme-sepia #notes-list .note-item:active {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        #reader-screen.theme-night #toc-list a:active,
+        #reader-screen.theme-night #notes-list .note-item:active {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        @media (hover: hover) {
+
+            #toc-list a:hover,
+            #notes-list .note-item:hover {
+                background-color: rgba(255, 255, 255, 0.05);
+            }
+
+            #reader-screen.theme-light #toc-list a:hover,
+            #reader-screen.theme-light #notes-list .note-item:hover,
+            #reader-screen.theme-sepia #toc-list a:hover,
+            #reader-screen.theme-sepia #notes-list .note-item:hover {
+                background-color: rgba(0, 0, 0, 0.05);
+            }
+
+            #reader-screen.theme-night #toc-list a:hover,
+            #reader-screen.theme-night #notes-list .note-item:hover {
+                background-color: rgba(255, 255, 255, 0.05);
+            }
+        }
+
+        /* --- СТИЛИ ДЛЯ ВЫДЕЛЕНИЯ --- */
+        .highlight {
+            background-color: transparent !important;
+        }
+
+        /* Yellow */
+        .highlight.yellow {
+            color: #FFD700;
+        }
+
+        #reader-screen.theme-light .highlight.yellow {
+            color: #B8860B;
+        }
+
+        #reader-screen.theme-sepia .highlight.yellow {
+            color: #AF642D;
+        }
+
+        #reader-screen.theme-console .highlight.yellow {
+            color: #FFFF00 !important;
+        }
+
+        #open-notes-btn.active-selection.yellow svg {
+            stroke: #FFD700;
+        }
+
+        #reader-screen.theme-light #open-notes-btn.active-selection.yellow svg {
+            stroke: #B8860B;
+        }
+
+        #reader-screen.theme-sepia #open-notes-btn.active-selection.yellow svg {
+            stroke: #AF642D;
+        }
+
+        #reader-screen.theme-console #open-notes-btn.active-selection.yellow svg {
+            stroke: #FFFF00;
+        }
+
+        /* Green */
+        .highlight.green {
+            color: #9edd54;
+        }
+
+        #reader-screen.theme-light .highlight.green {
+            color: #006400;
+        }
+
+        #reader-screen.theme-sepia .highlight.green {
+            color: #556B2F;
+        }
+
+        #reader-screen.theme-console .highlight.green {
+            color: #d5ffa4 !important;
+        }
+
+        #open-notes-btn.active-selection.green svg {
+            stroke: #9edd54;
+        }
+
+        #reader-screen.theme-light #open-notes-btn.active-selection.green svg {
+            stroke: #006400;
+        }
+
+        #reader-screen.theme-sepia #open-notes-btn.active-selection.green svg {
+            stroke: #556B2F;
+        }
+
+        #reader-screen.theme-console #open-notes-btn.active-selection.green svg {
+            stroke: #d5ffa4;
+        }
+
+        /* Red */
+        .highlight.red {
+            color: #ff4133;
+        }
+
+        #reader-screen.theme-light .highlight.red {
+            color: #A52A2A;
+        }
+
+        #reader-screen.theme-sepia .highlight.red {
+            color: #8B4513;
+        }
+
+        #reader-screen.theme-console .highlight.red {
+            color: #FF6347 !important;
+        }
+
+        #open-notes-btn.active-selection.red svg {
+            stroke: #ff4133;
+        }
+
+        #reader-screen.theme-light #open-notes-btn.active-selection.red svg {
+            stroke: #A52A2A;
+        }
+
+        #reader-screen.theme-sepia #open-notes-btn.active-selection.red svg {
+            stroke: #8B4513;
+        }
+
+        #reader-screen.theme-console #open-notes-btn.active-selection.red svg {
+            stroke: #FF6347;
+        }
+
+        /* Purple */
+        .highlight.purple {
+            color: #d374e3;
+        }
+
+        #reader-screen.theme-light .highlight.purple {
+            color: #800080;
+        }
+
+        #reader-screen.theme-sepia .highlight.purple {
+            color: #8A2BE2;
+        }
+
+        #reader-screen.theme-console .highlight.purple {
+            color: #DA70D6 !important;
+        }
+
+        #open-notes-btn.active-selection.purple svg {
+            stroke: #d374e3;
+        }
+
+        #reader-screen.theme-light #open-notes-btn.active-selection.purple svg {
+            stroke: #800080;
+        }
+
+        #reader-screen.theme-sepia #open-notes-btn.active-selection.purple svg {
+            stroke: #8A2BE2;
+        }
+
+        #reader-screen.theme-console #open-notes-btn.active-selection.purple svg {
+            stroke: #DA70D6;
+        }
+
+        /* --- СТИЛИ ДЛЯ СКРОЛЛБАРОВ --- */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        #library-screen:not(.theme-light):not(.theme-sepia):not(.theme-console):not(.theme-night) ::-webkit-scrollbar-thumb,
+        #settings-screen:not(.theme-light):not(.theme-sepia):not(.theme-console):not(.theme-night) ::-webkit-scrollbar-thumb,
+        #reader-screen:not(.theme-light):not(.theme-sepia):not(.theme-console):not(.theme-night) ::-webkit-scrollbar-thumb {
+            background-color: #555;
+            border-radius: 4px;
+        }
+
+        #library-screen.theme-light ::-webkit-scrollbar-thumb,
+        #settings-screen.theme-light ::-webkit-scrollbar-thumb,
+        #reader-screen.theme-light ::-webkit-scrollbar-thumb {
+            background-color: #c9c9c9;
+            border-radius: 4px;
+        }
+
+        #library-screen.theme-light ::-webkit-scrollbar-thumb:hover,
+        #settings-screen.theme-light ::-webkit-scrollbar-thumb:hover,
+        #reader-screen.theme-light ::-webkit-scrollbar-thumb:hover {
+            background-color: #a8a8a8;
+        }
+
+        #library-screen.theme-sepia ::-webkit-scrollbar-thumb,
+        #settings-screen.theme-sepia ::-webkit-scrollbar-thumb,
+        #reader-screen.theme-sepia ::-webkit-scrollbar-thumb {
+            background-color: #cdbfa0;
+            border-radius: 4px;
+        }
+
+        #library-screen.theme-sepia ::-webkit-scrollbar-thumb:hover,
+        #settings-screen.theme-sepia ::-webkit-scrollbar-thumb:hover,
+        #reader-screen.theme-sepia ::-webkit-scrollbar-thumb:hover {
+            background-color: #bfae8d;
+        }
+
+        #library-screen.theme-console ::-webkit-scrollbar-thumb,
+        #settings-screen.theme-console ::-webkit-scrollbar-thumb,
+        #reader-screen.theme-console ::-webkit-scrollbar-thumb {
+            background-color: #00ff00;
+            border-radius: 0;
+        }
+
+        #library-screen.theme-console ::-webkit-scrollbar-track,
+        #settings-screen.theme-console ::-webkit-scrollbar-track,
+        #reader-screen.theme-console ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        #library-screen.theme-night ::-webkit-scrollbar-thumb,
+        #settings-screen.theme-night ::-webkit-scrollbar-thumb,
+        #reader-screen.theme-night ::-webkit-scrollbar-thumb {
+            background-color: #444;
+            border-radius: 4px;
+        }
+
+        #library-screen.theme-night ::-webkit-scrollbar-track,
+        #settings-screen.theme-night ::-webkit-scrollbar-track,
+        #reader-screen.theme-night ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        /* --- СТИЛИ ДЛЯ СТАТУСОВ --- */
+        .status-symbol {
+            font-size: 30px;
+            line-height: 1;
+            font-weight: bold;
+        }
+
+        .status-btn {
+            transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+        }
+
+        /* Mobile First: Скрываем кнопку "+" по умолчанию */
+        .status-btn:not(.has-status) {
+            opacity: 0;
+            transform: scale(0.8);
+            pointer-events: none;
+        }
+
+        .status-btn.has-status {
+            background-color: transparent;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .status-btn.has-status .status-symbol {
+            font-size: 30px;
+        }
+
+        /* Desktop: Показываем кнопку "+" при наведении на книгу */
+        @media (hover: hover) and (pointer: fine) {
+            .book-item-content:hover .status-btn:not(.has-status) {
+                opacity: 1;
+                transform: scale(1);
+                pointer-events: auto;
+                background-color: transparent;
+            }
+
+            .status-btn:not(.has-status):hover {
+                background-color: transparent;
+            }
+        }
+
+        .status-symbol.green {
+            color: #22c55e;
+        }
+
+        .status-symbol.red {
+            color: #ef4444;
+        }
+
+        .status-symbol.pink {
+            color: #ec4899;
+        }
+
+        .status-symbol.orange {
+            color: #f97316;
+        }
+
+        .status-symbol.blue {
+            color: #3b82f6;
+        }
+
+        /* --- АНИМАЦИЯ ВЫБОРА СТАТУСА --- */
+        #emoji-picker {
+            transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+            opacity: 0;
+            transform: scale(0.95) translateY(-10px);
+            pointer-events: none;
+        }
+
+        #emoji-picker.open {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            pointer-events: auto;
+        }
+
+        .status-btn .status-icon-svg line {
+            transform-origin: center center;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .status-btn.picker-open .status-icon-svg .plus-v {
+            transform: scaleY(0);
+        }
+
+        .book-item-content.long-press-active {
+            animation: long-press-pulse 0.4s ease-in-out;
+        }
+
+        @keyframes long-press-pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(0.97);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* --- АНИМАЦИЯ МОДАЛЬНОГО ОКНА --- */
+        #confirm-modal {
+            transition: opacity 0.2s ease-in-out;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #confirm-modal.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #confirm-modal>div {
+            transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
+            transform: scale(0.95);
+            opacity: 0;
+        }
+
+        #confirm-modal.open>div {
+            transform: scale(1);
+            opacity: 1;
+        }
+    </style>
 </head>
 
+<body class="overflow-hidden">
 
+    <div id="app" class="h-screen w-screen flex flex-col">
 
-<body light>
-    <div>
-        <p class="lib-empty">Ваша библиотека пуста</p>
-        <button>Добавить книгу</button>
+        <!-- Экран Библиотеки -->
+        <div id="library-screen" class="screen w-full h-full flex flex-col">
+            <header id="library-header-top" class="px-4 py-6 text-center hidden">
+                <div class="w-full max-w-[900px] mx-auto flex justify-center items-center gap-4">
+                    <label for="file-input-top"
+                        class="btn-custom-add text-white font-bold py-2 px-4 rounded-lg cursor-pointer transition-colors duration-300 inline-block"
+                        data-translate="add">
+                        + Добавить
+                    </label>
+                    <input type="file" id="file-input-top" class="hidden" accept=".fb2,.fb2.zip">
+                    <button id="settings-btn"
+                        class="btn-custom-add text-white w-[40px] h-[40px] rounded-lg cursor-pointer transition-colors duration-300 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path
+                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+            <main id="book-list"
+                class="w-full max-w-[900px] mx-auto flex-grow px-4 pb-4 overflow-y-auto flex flex-col gap-4">
+                <!-- Сюда будут добавляться книги -->
+            </main>
+            <div id="empty-library-view"
+                class="w-full max-w-[900px] mx-auto flex-grow flex flex-col justify-center items-center text-center p-4">
+                <p class="text-gray-500 mb-6" data-translate="libraryEmpty">Ваша библиотека пуста.</p>
+                <label for="file-input-center"
+                    class="btn-custom-add text-white font-bold py-3 px-6 rounded-lg cursor-pointer transition-colors duration-300 text-lg"
+                    data-translate="addBook">
+                    Добавить книгу
+                </label>
+                <input type="file" id="file-input-center" class="hidden" accept=".fb2,.fb2.zip">
+            </div>
+        </div>
+
+        <!-- Экран Чтения -->
+        <div id="reader-screen" class="screen hidden w-full h-full flex flex-col">
+            <header class="p-2 border-b flex items-center justify-between relative flex-shrink-0 h-[56px]">
+                <div class="w-32 text-left">
+                    <button id="back-to-library-btn"
+                        class="back-button font-bold py-2 px-3 rounded-lg inline-flex items-center ui-element-to-hide"
+                        data-translate="back">❮
+                        Назад</button>
+                </div>
+                <div class="flex-grow text-center overflow-hidden px-2">
+                    <h2 id="book-title" class="text-lg font-bold truncate ui-element-to-hide">Название книги</h2>
+                </div>
+                <div id="header-buttons" class="w-32 flex items-center justify-end space-x-1 flex-shrink-0">
+                    <button id="open-notes-btn"
+                        class="back-button p-2 rounded-lg w-10 h-10 flex items-center justify-center ui-element-to-hide">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z">
+                            </path>
+                        </svg>
+                    </button>
+                    <button id="toc-btn"
+                        class="back-button p-2 rounded-lg w-10 h-10 flex items-center justify-center ui-element-to-hide"
+                        style="display: none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="8" y1="6" x2="21" y2="6"></line>
+                            <line x1="8" y1="12" x2="21" y2="12"></line>
+                            <line x1="8" y1="18" x2="21" y2="18"></line>
+                            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                        </svg>
+                    </button>
+                    <button id="fullscreen-btn"
+                        class="back-button p-2 rounded-lg w-10 h-10 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <div id="toc-panel" class="absolute top-0 left-0 h-full w-full pointer-events-none z-30">
+                <div id="toc-overlay"
+                    class="absolute top-0 left-0 h-full w-full bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 ease-in-out">
+                </div>
+                <div class="h-full w-full max-w-xs flex flex-col shadow-lg pointer-events-auto relative transform translate-x-full transition-transform duration-300 ease-in-out ml-auto z-10"
+                    style="background-color: var(--ui-bg);">
+                    <header class="p-2 border-b flex items-center justify-center relative flex-shrink-0 h-[56px]">
+                        <h2 id="side-panel-title" class="text-lg font-bold px-2 text-center"></h2>
+                    </header>
+                    <nav id="toc-list" class="flex-grow overflow-y-auto p-2"></nav>
+                    <div id="notes-list" class="hidden flex-grow overflow-y-auto p-2"></div>
+                </div>
+            </div>
+
+            <div class="flex-grow relative">
+                <main id="book-content-wrapper" class="relative">
+                    <div id="book-content"></div>
+                </main>
+                <div id="page-overlay"
+                    class="absolute bottom-0 left-0 right-0 h-24 pointer-events-none flex justify-center items-end p-4 ui-element-to-hide">
+                    <span id="page-info" class="text-sm text-gray-400">1 / 1</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Экран Настроек -->
+        <div id="settings-screen" class="screen hidden w-full h-full flex flex-col">
+            <header class="p-2 border-b flex items-center justify-between relative flex-shrink-0 h-[56px]">
+                <div class="w-32 text-left">
+                    <button id="back-to-library-from-settings-btn"
+                        class="back-button font-bold py-2 px-3 rounded-lg inline-flex items-center"
+                        data-translate="back">❮
+                        Назад</button>
+                </div>
+                <div class="flex-grow text-center overflow-hidden px-2">
+                    <h1 class="text-xl font-bold truncate" data-translate="settingsTitle">Настройки</h1>
+                </div>
+                <div class="w-32"></div>
+            </header>
+            <main class="w-full flex-grow overflow-y-auto">
+                <div class="w-full max-w-[900px] mx-auto p-4 flex flex-col min-h-full">
+                    <div>
+                        <div class="mb-6">
+                            <h2 class="text-sm font-bold text-gray-400 mb-2" data-translate="colorScheme">Цветовая схема
+                            </h2>
+                            <div class="settings-block rounded-lg p-4">
+                                <span class="block mb-2" data-translate="background">Фон</span>
+                                <div id="theme-selector"
+                                    class="grid grid-cols-3 sm:grid-cols-5 gap-3 justify-items-center mb-4">
+                                    <!-- Опции тем будут рендериться здесь -->
+                                </div>
+                                <span class="block mt-8 mb-2" data-translate="progress">Прогресс</span>
+                                <div id="progress-bar-color-selector"
+                                    class="grid grid-cols-4 sm:grid-cols-5 gap-3 justify-items-center">
+                                    <!-- Опции цвета прогресс-бара -->
+                                </div>
+                                <span class="block mt-8 mb-2" data-translate="noteColor">Цвет заметок</span>
+                                <div id="note-color-selector"
+                                    class="grid grid-cols-4 sm:grid-cols-5 gap-3 justify-items-center">
+                                    <!-- Опции цвета заметок -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-6">
+                            <h2 class="text-sm font-bold text-gray-400 mb-2" data-translate="text">Текст</h2>
+                            <div class="settings-block rounded-lg p-4">
+                                <div class="flex justify-between items-center">
+                                    <span data-translate="fontSize">Размер шрифта</span>
+                                    <span id="font-size-value">18px</span>
+                                </div>
+                                <input type="range" id="font-size-slider" min="12" max="30" step="1"
+                                    class="w-full mt-2">
+                                <div class="flex justify-between items-center mt-4">
+                                    <span data-translate="fontWeight">Жирный шрифт</span>
+                                    <span id="font-weight-value">400</span>
+                                </div>
+                                <input type="range" id="font-weight-slider" min="100" max="900" step="100"
+                                    class="w-full mt-2">
+                                <div class="flex justify-between items-center mt-4">
+                                    <span data-translate="lineHeight">Междустрочный интервал</span>
+                                    <span id="line-height-value">180%</span>
+                                </div>
+                                <input type="range" id="line-height-slider" min="100" max="200" step="10"
+                                    class="w-full mt-2">
+                                <div class="mt-4">
+                                    <span class="mb-2 block" data-translate="fontChoice">Выбор шрифта</span>
+                                    <div id="font-selector" class="grid grid-cols-2 gap-4">
+                                        <!-- Опции шрифтов -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-6">
+                            <h2 class="text-sm font-bold text-gray-400 mb-2" data-translate="language">Язык</h2>
+                            <div class="settings-block rounded-lg p-4">
+                                <div id="language-selector" class="grid grid-cols-2 gap-4">
+                                    <!-- Опции языков -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <button id="reset-settings-btn"
+                            class="w-1/3 block mx-auto bg-[#2d2d2d] hover:bg-[#4a4a4a] text-[#646464] hover:text-[#fdfdfd] font-semibold py-2 px-3 rounded-lg transition-colors"
+                            data-translate="resetSettings">
+                            сбросить настройки
+                        </button>
+                    </div>
+                    <div class="flex-grow"></div>
+                    <p class="p-4 text-center text-xs" style="color: #4a4a4a;">
+                        Version 0.7
+                    </p>
+                </div>
+            </main>
+        </div>
+
+        <!-- Индикатор загрузки -->
+        <div id="loader-container" class="loader-container hidden">
+            <div class="loader"></div>
+        </div>
     </div>
-</body light>
+
+    <!-- Модальное окно подтверждения -->
+    <div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[1000]">
+        <div class="rounded-lg p-6 w-11/12 max-w-sm text-center shadow-lg" style="background-color: #1e1e1e;">
+            <p id="confirm-modal-text" class="mb-6 text-white">Вы уверены?</p>
+            <div class="flex justify-center gap-4">
+                <button id="confirm-modal-yes" class="px-6 py-2 rounded-lg text-white font-semibold"
+                    data-translate="yes" style="background-color: #2d2d2d;">Да</button>
+                <button id="confirm-modal-no" class="px-6 py-2 rounded-lg text-white font-semibold" data-translate="no"
+                    style="background-color: #2d2d2d;">Нет</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Emoji Picker -->
+    <div id="emoji-picker" class="absolute z-50 bg-[#3a3a3a] rounded-lg shadow-lg p-2 flex gap-2">
+        <button data-status='{"symbol":"✔", "color":"green"}'
+            class="p-2 rounded-lg hover:bg-gray-600 transition-colors">
+            <span class="status-symbol green">✔</span></button>
+        <button data-status='{"symbol":"✖", "color":"red"}' class="p-2 rounded-lg hover:bg-gray-600 transition-colors">
+            <span class="status-symbol red">✖</span></button>
+        <button data-status='{"symbol":"🎔", "color":"pink"}'
+            class="p-2 rounded-lg hover:bg-gray-600 transition-colors">
+            <span class="status-symbol pink">🎔</span></button>
+        <button data-status='{"symbol":"✦", "color":"orange"}'
+            class="p-2 rounded-lg hover:bg-gray-600 transition-colors">
+            <span class="status-symbol orange">✦</span></button>
+        <button data-status='{"symbol":"♬", "color":"blue"}' class="p-2 rounded-lg hover:bg-gray-600 transition-colors">
+            <span class="status-symbol blue">♬</span></button>
+        <button data-status="null" class="p-2 rounded-lg hover:bg-gray-600 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="15" y1="9" x2="9" y2="15"></line>
+                <line x1="9" y1="9" x2="15" y2="15"></line>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Подключение JSZip для работы с .fb2.zip -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+            // --- МОДУЛЬ СОСТОЯНИЯ ПРИЛОЖЕНИЯ ---
+            const AppState = {
+                db: null,
+                currentBookId: null,
+                currentBookIdForStatus: null,
+                onConfirmAction: null,
+                currentSelection: null,
+                currentPanelType: null,
+                settings: {
+                    language: 'ru',
+                    readingTheme: 'theme-dark',
+                    fontSize: 18,
+                    fontWeight: 400,
+                    fontFamily: 'Arial',
+                    lineHeight: 180,
+                    progressBarColor: '#3f3f3f',
+                    noteColor: 'yellow'
+                },
+                defaultSettings: {
+                    language: 'ru',
+                    readingTheme: 'theme-dark',
+                    fontSize: 18,
+                    fontWeight: 400,
+                    fontFamily: 'Arial',
+                    lineHeight: 180,
+                    progressBarColor: '#3f3f3f',
+                    noteColor: 'yellow'
+                },
+
+                loadSettings() {
+                    const saved = localStorage.getItem('sphereReaderSettings');
+                    if (saved) {
+                        this.settings = {
+                            ...this.defaultSettings, ...JSON.parse(saved)
+                        };
+                    } else {
+                        this.settings = {
+                            ...this.defaultSettings
+                        };
+                    }
+                    document.documentElement.lang = this.settings.language;
+                },
+
+                saveSettings() {
+                    localStorage.setItem('sphereReaderSettings', JSON.stringify(this.settings));
+                },
+
+                resetSettings() {
+                    this.settings = {
+                        ...this.defaultSettings
+                    };
+                    this.saveSettings();
+                }
+            };
+
+            // --- МОДУЛЬ ЛОКАЛИЗАЦИИ ---
+            const I18n = {
+                translations: {
+                    en: {
+                        add: '+ Add',
+                        settings: 'Settings',
+                        libraryEmpty: 'Your library is empty.',
+                        addBook: 'Add Book',
+                        unknownAuthor: 'Unknown author',
+                        notesCount: 'Notes: ',
+                        back: '❮ Back',
+                        tocTitle: 'Contents',
+                        notesTitle: 'Notes',
+                        noToc: 'No table of contents.',
+                        noNotesYet: 'You have no notes yet.',
+                        settingsTitle: 'Settings',
+                        colorScheme: 'Color Scheme',
+                        background: 'Background',
+                        themeLight: 'Light',
+                        themeDark: 'Dark',
+                        themeSepia: 'Sepia',
+                        themeConsole: 'Console',
+                        themeNight: 'Night',
+                        progress: 'Progress',
+                        colorGray: 'Gray',
+                        colorRed: 'Red',
+                        colorYellow: 'Yellow',
+                        colorGreen: 'Green',
+                        colorBlue: 'Blue',
+                        colorPurple: 'Purple',
+                        noteColor: 'Note Color',
+                        text: 'Text',
+                        fontSize: 'Font size',
+                        fontWeight: 'Font weight',
+                        lineHeight: 'Line height',
+                        fontChoice: 'Font choice',
+                        language: 'Language',
+                        langRu: 'Русский',
+                        langUa: 'Українська',
+                        langEn: 'English',
+                        langDe: 'Deutsch',
+                        resetSettings: 'reset settings',
+                        areYouSure: 'Are you sure?',
+                        areYouSureDeleteBook: 'Are you sure you want to delete this book?',
+                        areYouSureResetSettings: 'Are you sure you want to reset settings?',
+                        yes: 'Yes',
+                        no: 'No',
+                        fileProcessError: 'Could not process the file.',
+                        noteCreationError: 'Could not create a note for this selection.',
+                        selectionStructureError: 'Failed to save selection structure.',
+                        dbInitError: 'An error occurred while starting the application.',
+                    },
+                    ru: {
+                        add: '+ Добавить',
+                        settings: 'Настройки',
+                        libraryEmpty: 'Ваша библиотека пуста.',
+                        addBook: 'Добавить книгу',
+                        unknownAuthor: 'Неизвестный автор',
+                        notesCount: 'Заметок: ',
+                        back: '❮ Назад',
+                        tocTitle: 'Содержание',
+                        notesTitle: 'Заметки',
+                        noToc: 'Нет содержания.',
+                        noNotesYet: 'У вас пока нет заметок.',
+                        settingsTitle: 'Настройки',
+                        colorScheme: 'Цветовая схема',
+                        background: 'Фон',
+                        themeLight: 'Светлая',
+                        themeDark: 'Тёмная',
+                        themeSepia: 'Сепия',
+                        themeConsole: 'Консоль',
+                        themeNight: 'Ночь',
+                        progress: 'Прогресс',
+                        colorGray: 'Серый',
+                        colorRed: 'Красный',
+                        colorYellow: 'Жёлтый',
+                        colorGreen: 'Зелёный',
+                        colorBlue: 'Голубой',
+                        colorPurple: 'Фиолетовый',
+                        noteColor: 'Цвет заметок',
+                        text: 'Текст',
+                        fontSize: 'Размер шрифта',
+                        fontWeight: 'Жирный шрифт',
+                        lineHeight: 'Междустрочный интервал',
+                        fontChoice: 'Выбор шрифта',
+                        language: 'Язык',
+                        langRu: 'Русский',
+                        langUa: 'Українська',
+                        langEn: 'English',
+                        langDe: 'Deutsch',
+                        resetSettings: 'сбросить настройки',
+                        areYouSure: 'Вы уверены?',
+                        areYouSureDeleteBook: 'Вы уверены, что хотите удалить эту книгу?',
+                        areYouSureResetSettings: 'Вы уверены, что хотите сбросить настройки?',
+                        yes: 'Да',
+                        no: 'Нет',
+                        fileProcessError: 'Не удалось обработать файл.',
+                        noteCreationError: 'Не удалось создать заметку для этого выделения.',
+                        selectionStructureError: 'Не удалось сохранить структуру выделения.',
+                        dbInitError: 'Произошла ошибка при запуске приложения.',
+                    },
+                    ua: {
+                        add: '+ Додати',
+                        settings: 'Налаштування',
+                        libraryEmpty: 'Ваша бібліотека порожня.',
+                        addBook: 'Додати книгу',
+                        unknownAuthor: 'Невідомий автор',
+                        notesCount: 'Нотаток: ',
+                        back: '❮ Назад',
+                        tocTitle: 'Зміст',
+                        notesTitle: 'Нотатки',
+                        noToc: 'Зміст відсутній.',
+                        noNotesYet: 'У вас ще немає нотаток.',
+                        settingsTitle: 'Налаштування',
+                        colorScheme: 'Колірна схема',
+                        background: 'Фон',
+                        themeLight: 'Світла',
+                        themeDark: 'Темна',
+                        themeSepia: 'Сепія',
+                        themeConsole: 'Консоль',
+                        themeNight: 'Ніч',
+                        progress: 'Прогрес',
+                        colorGray: 'Сірий',
+                        colorRed: 'Червоний',
+                        colorYellow: 'Жовтий',
+                        colorGreen: 'Зелений',
+                        colorBlue: 'Синій',
+                        colorPurple: 'Фіолетовий',
+                        noteColor: 'Колір нотаток',
+                        text: 'Текст',
+                        fontSize: 'Розмір шрифту',
+                        fontWeight: 'Жирність шрифту',
+                        lineHeight: 'Міжрядковий інтервал',
+                        fontChoice: 'Вибір шрифту',
+                        language: 'Мова',
+                        langRu: 'Русский',
+                        langUa: 'Українська',
+                        langEn: 'English',
+                        langDe: 'Deutsch',
+                        resetSettings: 'скинути налаштування',
+                        areYouSure: 'Ви впевнені?',
+                        areYouSureDeleteBook: 'Ви впевнені, що хочете видалити цю книгу?',
+                        areYouSureResetSettings: 'Ви впевнені, що хочете скинути налаштування?',
+                        yes: 'Так',
+                        no: 'Ні',
+                        fileProcessError: 'Не вдалося обробити файл.',
+                        noteCreationError: 'Не вдалося створити нотатку для цього виділення.',
+                        selectionStructureError: 'Не вдалося зберегти структуру виділення.',
+                        dbInitError: 'Сталася помилка під час запуску програми.',
+                    },
+                    de: {
+                        add: '+ Hinzufügen',
+                        settings: 'Einstellungen',
+                        libraryEmpty: 'Ihre Bibliothek ist leer.',
+                        addBook: 'Buch hinzufügen',
+                        unknownAuthor: 'Unbekannter Autor',
+                        notesCount: 'Notizen: ',
+                        back: '❮ Zurück',
+                        tocTitle: 'Inhalt',
+                        notesTitle: 'Notizen',
+                        noToc: 'Kein Inhaltsverzeichnis.',
+                        noNotesYet: 'Sie haben noch keine Notizen.',
+                        settingsTitle: 'Einstellungen',
+                        colorScheme: 'Farbschema',
+                        background: 'Hintergrund',
+                        themeLight: 'Hell',
+                        themeDark: 'Dunkel',
+                        themeSepia: 'Sepia',
+                        themeConsole: 'Konsole',
+                        themeNight: 'Nacht',
+                        progress: 'Fortschritt',
+                        colorGray: 'Grau',
+                        colorRed: 'Rot',
+                        colorYellow: 'Gelb',
+                        colorGreen: 'Grün',
+                        colorBlue: 'Blau',
+                        colorPurple: 'Lila',
+                        noteColor: 'Notizfarbe',
+                        text: 'Text',
+                        fontSize: 'Schriftgröße',
+                        fontWeight: 'Schriftstärke',
+                        lineHeight: 'Zeilenhöhe',
+                        fontChoice: 'Schriftauswahl',
+                        language: 'Sprache',
+                        langRu: 'Русский',
+                        langUa: 'Українська',
+                        langEn: 'English',
+                        langDe: 'Deutsch',
+                        resetSettings: 'Einstellungen zurücksetzen',
+                        areYouSure: 'Sind Sie sicher?',
+                        areYouSureDeleteBook: 'Möchten Sie dieses Buch wirklich löschen?',
+                        areYouSureResetSettings: 'Möchten Sie die Einstellungen wirklich zurücksetzen?',
+                        yes: 'Ja',
+                        no: 'Nein',
+                        fileProcessError: 'Datei konnte nicht verarbeitet werden.',
+                        noteCreationError: 'Für diese Auswahl konnte keine Notiz erstellt werden.',
+                        selectionStructureError: 'Auswahlstruktur konnte nicht gespeichert werden.',
+                        dbInitError: 'Beim Starten der Anwendung ist ein Fehler aufgetreten.',
+                    }
+                },
+                t(key) {
+                    const lang = AppState.settings.language || 'ru';
+                    return this.translations[lang][key] || key;
+                }
+            };
+
+            // --- МОДУЛЬ УПРАВЛЕНИЯ UI ---
+            const UIManager = {
+                elements: {},
+                init() {
+                    const ids = [
+                        'library-screen', 'reader-screen', 'settings-screen', 'book-list',
+                        'back-to-library-btn', 'back-to-library-from-settings-btn', 'book-title',
+                        'book-content', 'book-content-wrapper', 'page-info', 'loader-container',
+                        'library-header-top', 'empty-library-view', 'file-input-top', 'file-input-center',
+                        'settings-btn', 'theme-selector', 'font-size-slider', 'font-size-value',
+                        'font-weight-slider', 'font-weight-value', 'font-selector', 'line-height-slider',
+                        'line-height-value', 'reset-settings-btn', 'confirm-modal', 'confirm-modal-text',
+                        'confirm-modal-yes', 'confirm-modal-no', 'fullscreen-btn', 'toc-btn',
+                        'toc-panel', 'toc-list', 'toc-overlay', 'progress-bar-color-selector',
+                        'open-notes-btn', 'notes-list', 'side-panel-title', 'language-selector',
+                        'note-color-selector', 'emoji-picker'
+                    ];
+                    ids.forEach(id => this.elements[id] = document.getElementById(id));
+                    this.elements.body = document.body;
+                    this.elements.app = document.getElementById('app');
+                },
+
+                switchToScreen(screenName) {
+                    ['library-screen', 'reader-screen', 'settings-screen'].forEach(id => {
+                        this.elements[id].classList.add('hidden');
+                    });
+                    if (this.elements[screenName]) {
+                        this.elements[screenName].classList.remove('hidden');
+                    }
+                    if (screenName === 'library-screen') App.renderLibrary();
+                    if (screenName === 'settings-screen') this.renderSettings();
+                    this.applyThemeToApp();
+                },
+
+                showLoader(show) {
+                    this.elements['loader-container'].classList.toggle('hidden', !show);
+                },
+
+                applyTranslations() {
+                    document.querySelectorAll('[data-translate]').forEach(el => {
+                        const key = el.dataset.translate;
+                        el.textContent = I18n.t(key);
+                    });
+                    this.renderSettings();
+                },
+
+                applyThemeToApp() {
+                    const {
+                        readingTheme,
+                        fontSize,
+                        fontWeight,
+                        fontFamily,
+                        lineHeight
+                    } = AppState.settings;
+                    const {
+                        body
+                    } = this.elements;
+                    const bookContent = this.elements['book-content'];
+                    const readerScreen = this.elements['reader-screen'];
+
+                    body.className = `overflow-hidden`;
+
+                    ['library-screen', 'settings-screen', 'reader-screen'].forEach(screenId => {
+                        const screenEl = this.elements[screenId];
+                        screenEl.className = screenEl.className.replace(/theme-\w+/g, '').trim() + ' screen';
+                        if (['theme-light', 'theme-sepia', 'theme-console', 'theme-night'].includes(readingTheme)) {
+                            screenEl.classList.add(readingTheme);
+                        }
+                    });
+
+                    readerScreen.classList.add(readingTheme);
+
+                    bookContent.style.color = '';
+                    bookContent.style.fontSize = `${fontSize}px`;
+                    bookContent.style.fontWeight = `${fontWeight}`;
+                    bookContent.style.fontFamily = `"${fontFamily}"`;
+                    bookContent.style.lineHeight = `${lineHeight}%`;
+
+                    this.updateTelegramTheme();
+                },
+
+                updateTelegramTheme() {
+                    try {
+                        const tg = window.Telegram.WebApp;
+                        const {
+                            readingTheme
+                        } = AppState.settings;
+
+                        const themeColors = {
+                            'theme-light': '#ffffff',
+                            'theme-dark': '#1e1e1e',
+                            'theme-sepia': '#fbf0d9',
+                            'theme-console': '#000000',
+                            'theme-night': '#0c0c0c'
+                        };
+
+                        const color = themeColors[readingTheme] || '#1e1e1e';
+
+                        tg.setHeaderColor(color);
+                        tg.setBackgroundColor(color);
+                    } catch (e) { /* Ignore if TG script is not available */ }
+                },
+
+                renderLibrary(books) {
+                    const bookList = this.elements['book-list'];
+                    const header = this.elements['library-header-top'];
+                    const emptyView = this.elements['empty-library-view'];
+
+                    bookList.innerHTML = '';
+                    const hasBooks = books.length > 0;
+
+                    header.classList.toggle('hidden', !hasBooks);
+                    emptyView.classList.toggle('hidden', hasBooks);
+                    bookList.classList.toggle('hidden', !hasBooks);
+
+                    if (!hasBooks) return;
+
+                    books.forEach(book => {
+                        const progress = (book.scrollPosition && book.scrollHeight) ? (book.scrollPosition / (book.scrollHeight - this.elements['book-content-wrapper'].clientHeight)) * 100 : 0;
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'book-item-wrapper flex-shrink-0';
+                        wrapper.dataset.bookId = book.id;
+
+                        const coverHtml = book.coverImage ?
+                            `<img src="${book.coverImage}" alt="Обложка" class="w-24 h-36 flex-shrink-0 book-cover-img rounded">` :
+                            `<div class="w-24 h-36 flex-shrink-0 book-icon-bg rounded flex items-center justify-center"><span class="text-gray-500 text-3xl">📖</span></div>`;
+
+                        let finalProgressBarColor = AppState.settings.progressBarColor;
+
+                        // Применяем серый цвет для прогресс-бара в зависимости от темы, если он выбран
+                        if (finalProgressBarColor === '#3f3f3f') {
+                            const currentTheme = AppState.settings.readingTheme;
+                            switch (currentTheme) {
+                                case 'theme-light':
+                                    finalProgressBarColor = '#d5d5d5';
+                                    break;
+                                case 'theme-dark':
+                                    finalProgressBarColor = '#3f3f3f';
+                                    break;
+                                case 'theme-night':
+                                case 'theme-console':
+                                    finalProgressBarColor = '#252525';
+                                    break;
+                                case 'theme-sepia':
+                                    finalProgressBarColor = '#cfc3a9';
+                                    break;
+                                default:
+                                    finalProgressBarColor = '#3f3f3f'; // Fallback
+                            }
+                        }
+
+
+                        let notesCountHTML = '';
+                        if (book.notes && book.notes.length > 0) {
+                            notesCountHTML = `<p class="text-xs text-gray-500 mt-1">${I18n.t('notesCount')}${book.notes.length}</p>`;
+                        }
+
+                        const hasStatusClass = book.status ? 'has-status' : '';
+                        const statusIcon = this.getStatusIconHTML(book.status);
+
+                        wrapper.innerHTML = `
+                             <div class="delete-swipe-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                            </div>
+                            <div class="book-item-content p-2 flex items-center gap-4 relative overflow-hidden">
+                                ${coverHtml}
+                                <div class="flex-grow self-start overflow-hidden py-1">
+                                    <h3 class="font-bold text-lg mb-1 truncate">${book.title}</h3>
+                                    <p class="text-sm text-gray-400 truncate">${book.author || I18n.t('unknownAuthor')}</p>
+                                    ${notesCountHTML}
+                                </div>
+                                <button class="status-btn ${hasStatusClass} absolute bottom-2 right-2 w-10 h-10 rounded-full flex items-center justify-center text-lg transition-all duration-200" data-book-id="${book.id}">
+                                    ${statusIcon}
+                                </button>
+                                <div class="absolute bottom-0 left-0 h-1" style="background-color: ${finalProgressBarColor}; width: ${Math.min(100, progress).toFixed(2)}%"></div>
+                            </div>
+                        `;
+                        bookList.appendChild(wrapper);
+                    });
+                },
+
+                renderSettings() {
+                    const {
+                        'theme-selector': themeSelector,
+                        'progress-bar-color-selector': progressBarColorSelector,
+                        'note-color-selector': noteColorSelector,
+                        'language-selector': languageSelector,
+                        'font-size-slider': fontSizeSlider,
+                        'font-size-value': fontSizeValue,
+                        'font-weight-slider': fontWeightSlider,
+                        'font-weight-value': fontWeightValue,
+                        'line-height-slider': lineHeightSlider,
+                        'line-height-value': lineHeightValue,
+                        'font-selector': fontSelector
+                    } = this.elements;
+                    const {
+                        readingTheme,
+                        progressBarColor,
+                        noteColor,
+                        language,
+                        fontSize,
+                        fontWeight,
+                        lineHeight,
+                        fontFamily
+                    } = AppState.settings;
+
+                    // Render themes
+                    const themes = [{
+                        id: 'theme-light',
+                        name: I18n.t('themeLight'),
+                        color: '#ffffff',
+                        check: '#000000'
+                    }, {
+                        id: 'theme-dark',
+                        name: I18n.t('themeDark'),
+                        color: '#1e1e1e',
+                        check: '#ffffff'
+                    }, {
+                        id: 'theme-night',
+                        name: I18n.t('themeNight'),
+                        color: '#0c0c0c',
+                        check: '#ffffff'
+                    }, {
+                        id: 'theme-sepia',
+                        name: I18n.t('themeSepia'),
+                        color: '#fbf0d9',
+                        check: '#9b816a'
+                    }, {
+                        id: 'theme-console',
+                        name: I18n.t('themeConsole'),
+                        color: '#000000',
+                        check: '#00ff00'
+                    }];
+                    themeSelector.innerHTML = themes.map(theme => `
+                        <label class="flex flex-col items-center justify-center cursor-pointer">
+                            <input type="radio" name="theme" value="${theme.id}" class="hidden" ${readingTheme === theme.id ? 'checked' : ''}>
+                            <span class="theme-swatch w-12 h-12 rounded-full flex items-center justify-center" style="background: ${theme.color}; border-color: ${theme.id === 'theme-light' ? '#e0e0e0' : 'transparent'};">
+                                ${theme.id === 'theme-console' ? '<div class="console-dot w-2 h-2 rounded-full" style="background-color: #008f00;"></div>' : ''}
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${theme.check}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="hidden">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                            </span>
+                            <span class="mt-2 text-xs text-gray-400">${theme.name}</span>
+                        </label>
+                    `).join('');
+
+
+                    // Render progress bar colors
+                    const progressColors = [{
+                        name: I18n.t('colorGray'),
+                        value: '#3f3f3f'
+                    }, {
+                        name: I18n.t('colorRed'),
+                        value: '#ef4444'
+                    }, {
+                        name: I18n.t('colorYellow'),
+                        value: '#eab308'
+                    }, {
+                        name: I18n.t('colorGreen'),
+                        value: '#22c55e'
+                    }, {
+                        name: I18n.t('colorBlue'),
+                        value: '#3b82f6'
+                    }];
+                    progressBarColorSelector.innerHTML = progressColors.map(color => `
+                         <label class="flex flex-col items-center justify-center cursor-pointer">
+                            <input type="radio" name="progress-color" value="${color.value}" class="hidden" ${progressBarColor === color.value ? 'checked' : ''}>
+                             <span class="theme-swatch w-12 h-12 rounded-full flex items-center justify-center" style="background: ${color.value}; border-color: transparent;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="hidden">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                            </span>
+                            <span class="mt-2 text-xs text-gray-400">${color.name}</span>
+                        </label>
+                    `).join('');
+
+                    // Render note colors
+                    const noteColors = [{
+                        name: I18n.t('colorYellow'),
+                        value: 'yellow',
+                        hex: '#FFD700'
+                    }, {
+                        name: I18n.t('colorGreen'),
+                        value: 'green',
+                        hex: '#9edd54'
+                    }, {
+                        name: I18n.t('colorRed'),
+                        value: 'red',
+                        hex: '#ff4133'
+                    }, {
+                        name: I18n.t('colorPurple'),
+                        value: 'purple',
+                        hex: '#d374e3'
+                    },];
+                    noteColorSelector.innerHTML = noteColors.map(color => `
+                         <label class="flex flex-col items-center justify-center cursor-pointer">
+                            <input type="radio" name="note-color" value="${color.value}" class="hidden" ${noteColor === color.value ? 'checked' : ''}>
+                             <span class="theme-swatch w-12 h-12 rounded-full flex items-center justify-center" style="background: ${color.hex}; border-color: transparent;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="hidden">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                            </span>
+                            <span class="mt-2 text-xs text-gray-400">${color.name}</span>
+                        </label>
+                    `).join('');
+
+                    // Render languages
+                    const languages = [{
+                        id: 'ru',
+                        name: I18n.t('langRu'),
+                        svg: '<svg width="24" height="24" viewBox="150 0 600 600" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="clip-ru-circle"><circle cx="450" cy="300" r="300"/></clipPath></defs><g clip-path="url(#clip-ru-circle)"><rect width="900" height="600" fill="#fff"/><rect width="900" height="400" y="200" fill="#0039a6"/><rect width="900" height="200" y="400" fill="#d52b1e"/></g></svg>'
+                    }, {
+                        id: 'ua',
+                        name: I18n.t('langUa'),
+                        svg: '<svg width="24" height="24" viewBox="150 0 600 600" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="clip-ua-circle"><circle cx="450" cy="300" r="300"/></clipPath></defs><g clip-path="url(#clip-ua-circle)"><rect width="900" height="300" fill="#005bbb"/><rect width="900" height="300" y="300" fill="#ffd500"/></g></svg>'
+                    }, {
+                        id: 'en',
+                        name: I18n.t('langEn'),
+                        svg: '<svg width="24" height="24" viewBox="292.5 0 650 650" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="clip-us-circle"><circle cx="617.5" cy="325" r="325"/></clipPath></defs><g clip-path="url(#clip-us-circle)"><path fill="#FFF" d="M0 0h1235v650H0z"/><path fill="#B22234" d="M0 50h1235v50H0zm0 100h1235v50H0zm0 100h1235v50H0zm0 100h1235v50H0zm0 100h1235v50H0zm0 100h1235v50H0z"/><path fill="#3C3B6E" d="M0 0h494v350H0z"/></g></svg>'
+                    }, {
+                        id: 'de',
+                        name: I18n.t('langDe'),
+                        svg: '<svg width="24" height="24" viewBox="150 0 600 600" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="clip-de-circle"><circle cx="450" cy="300" r="300"/></clipPath></defs><g clip-path="url(#clip-de-circle)"><rect width="900" height="600" fill="#000"/><rect width="900" height="400" y="200" fill="#D00"/><rect width="900" height="200" y="400" fill="#FFCE00"/></g></svg>'
+                    }];
+
+                    languageSelector.innerHTML = languages.map(lang => `
+                        <label class="flex items-center justify-start p-1 rounded-md cursor-pointer text-sm transition-colors">
+                            <input type="radio" name="language" value="${lang.id}" class="hidden" ${language === lang.id ? 'checked' : ''}>
+                            <span class="w-full py-2 px-3 rounded-md flex items-center">
+                                <span class="mr-3 flex-shrink-0">${lang.svg}</span>
+                                <span>${lang.name}</span>
+                            </span>
+                        </label>
+                    `).join('');
+
+                    // Set sliders and values
+                    fontSizeSlider.value = fontSize;
+                    fontSizeValue.textContent = `${fontSize}px`;
+                    fontWeightSlider.value = fontWeight;
+                    fontWeightValue.textContent = fontWeight;
+                    lineHeightSlider.value = lineHeight;
+                    lineHeightValue.textContent = `${lineHeight}%`;
+
+                    // Render fonts
+                    const fonts = ['Arial', 'Bookman', 'Courier New', 'Comic Sans MS'];
+                    fontSelector.innerHTML = fonts.map(font => `
+                        <label class="flex items-center justify-center p-2 rounded-md cursor-pointer text-center text-sm transition-colors">
+                            <input type="radio" name="font" value="${font}" class="hidden" ${fontFamily === font ? 'checked' : ''}>
+                            <span class="w-full py-2 rounded-md" style="font-family: '${font}'">${font}</span>
+                        </label>
+                    `).join('');
+                },
+
+                showConfirmationModal(text, onConfirm) {
+                    this.elements['confirm-modal-text'].textContent = text;
+                    AppState.onConfirmAction = onConfirm;
+                    const modal = this.elements['confirm-modal'];
+                    const activeScreen = document.querySelector('.screen:not(.hidden)');
+                    // Сброс и применение классов темы
+                    modal.classList.remove('theme-light', 'theme-sepia', 'theme-console', 'theme-night');
+                    if (activeScreen) {
+                        if (activeScreen.classList.contains('theme-light')) modal.classList.add('theme-light');
+                        if (activeScreen.classList.contains('theme-sepia')) modal.classList.add('theme-sepia');
+                        if (activeScreen.classList.contains('theme-console')) modal.classList.add('theme-console');
+                        if (activeScreen.classList.contains('theme-night')) modal.classList.add('theme-night');
+                    }
+                    // Показать модальное окно с анимацией
+                    modal.classList.add('open');
+                },
+
+                hideConfirmationModal() {
+                    this.elements['confirm-modal'].classList.remove('open');
+                    AppState.onConfirmAction = null;
+                },
+
+                showEmojiPicker(bookId, buttonElement) {
+                    const picker = this.elements['emoji-picker'];
+                    AppState.currentBookIdForStatus = bookId;
+                    const rect = buttonElement.getBoundingClientRect();
+
+                    const pickerWidth = picker.offsetWidth;
+
+                    let top = rect.bottom + window.scrollY + 5;
+                    let left = rect.right + window.scrollX - pickerWidth;
+
+                    const screenPadding = 16; // 1rem for safety margin
+
+                    // Adjust if it overflows the right edge of the viewport
+                    if (left + pickerWidth > window.innerWidth) {
+                        left = window.innerWidth - pickerWidth - screenPadding;
+                    }
+
+                    // Adjust if it overflows the left edge (just in case)
+                    if (left < screenPadding) {
+                        left = screenPadding;
+                    }
+
+                    picker.style.top = `${top}px`;
+                    picker.style.left = `${left}px`;
+
+                    picker.classList.add('open');
+                },
+
+                hideEmojiPicker() {
+                    const animatedItem = document.querySelector('.book-item-content.long-press-active');
+                    if (animatedItem) {
+                        animatedItem.classList.remove('long-press-active');
+                    }
+                    this.elements['emoji-picker'].classList.remove('open');
+                    AppState.currentBookIdForStatus = null;
+                },
+
+                getStatusIconHTML(status) {
+                    if (status && status.symbol && status.color) {
+                        return `<span class="status-symbol ${status.color}">${status.symbol}</span>`;
+                    }
+                    // Возвращаем иконку плюса; CSS управляет ее видимостью (скрыта по умолчанию на мобильных, появляется при наведении на десктопе).
+                    return `<svg class="status-icon-svg" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line class="plus-v" x1="12" y1="8" x2="12" y2="16"></line><line class="plus-h" x1="8" y1="12" x2="16" y2="12"></line></svg>`;
+                }
+            };
+
+            // --- МОДУЛЬ РАБОТЫ С БД ---
+            const DBManager = {
+                init() {
+                    return new Promise((resolve, reject) => {
+                        const request = indexedDB.open('FB2ReaderDB', 1);
+                        request.onerror = () => reject("Ошибка при открытии IndexedDB");
+                        request.onupgradeneeded = e => {
+                            const db = e.target.result;
+                            if (!db.objectStoreNames.contains('books')) {
+                                db.createObjectStore('books', {
+                                    keyPath: 'id',
+                                    autoIncrement: true
+                                });
+                            }
+                        };
+                        request.onsuccess = e => {
+                            AppState.db = e.target.result;
+                            resolve();
+                        };
+                    });
+                },
+
+                getAllBooks() {
+                    return new Promise((resolve, reject) => {
+                        const transaction = AppState.db.transaction('books', 'readonly');
+                        const store = transaction.objectStore('books');
+                        const request = store.getAll();
+                        request.onsuccess = () => resolve(request.result.reverse());
+                        request.onerror = () => reject("Ошибка при получении книг");
+                    });
+                },
+
+                getBookById(id) {
+                    return new Promise((resolve, reject) => {
+                        const transaction = AppState.db.transaction('books', 'readonly');
+                        const store = transaction.objectStore('books');
+                        const request = store.get(id);
+                        request.onsuccess = () => resolve(request.result);
+                        request.onerror = () => reject("Ошибка при получении книги по ID");
+                    });
+                },
+
+                saveBook(bookData) {
+                    return new Promise((resolve, reject) => {
+                        const transaction = AppState.db.transaction('books', 'readwrite');
+                        const store = transaction.objectStore('books');
+                        const request = store.add(bookData);
+                        request.onsuccess = () => resolve();
+                        request.onerror = () => reject("Ошибка при сохранении книги");
+                    });
+                },
+
+                deleteBook(bookId) {
+                    return new Promise((resolve, reject) => {
+                        const transaction = AppState.db.transaction('books', 'readwrite');
+                        const store = transaction.objectStore('books');
+                        const request = store.delete(bookId);
+                        request.onsuccess = () => resolve();
+                        request.onerror = () => reject("Ошибка при удалении книги");
+                    });
+                },
+
+                saveMetadata(bookId, data) {
+                    if (!bookId) return;
+                    return this.getBookById(bookId).then(book => {
+                        if (book) {
+                            Object.assign(book, data);
+                            const transaction = AppState.db.transaction('books', 'readwrite');
+                            const store = transaction.objectStore('books');
+                            store.put(book);
+                        }
+                    });
+                }
+            };
+
+            // --- МОДУЛЬ ПАРСЕРА FB2 ---
+            const FB2Parser = {
+                async parseFile(file) {
+                    let content;
+                    if (file.name.toLowerCase().endsWith('.zip')) {
+                        const jszip = new JSZip();
+                        const zip = await jszip.loadAsync(file);
+                        const fb2File = Object.values(zip.files).find(f => f.name.toLowerCase().endsWith('.fb2'));
+                        if (!fb2File) throw new Error('FB2 файл не найден в архиве.');
+                        content = await fb2File.async('string');
+                    } else {
+                        content = await file.text();
+                    }
+                    return this.parse(content);
+                },
+
+                async _optimizeImage(base64Str, maxWidth = 200, maxHeight = 300, quality = 0.8) {
+                    return new Promise((resolve) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            let {
+                                width,
+                                height
+                            } = img;
+
+                            if (width > height) {
+                                if (width > maxWidth) {
+                                    height *= maxWidth / width;
+                                    width = maxWidth;
+                                }
+                            } else {
+                                if (height > maxHeight) {
+                                    width *= maxHeight / height;
+                                    height = maxHeight;
+                                }
+                            }
+
+                            canvas.width = width;
+                            canvas.height = height;
+
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0, width, height);
+
+                            resolve(canvas.toDataURL('image/jpeg', quality));
+                        };
+                        img.onerror = () => {
+                            resolve(base64Str);
+                        };
+                        img.src = base64Str;
+                    });
+                },
+
+                async parse(xmlString) {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(xmlString, "application/xml");
+
+                    const title = doc.querySelector('book-title')?.textContent || 'Без названия';
+                    const authorFirstName = doc.querySelector('author first-name')?.textContent || '';
+                    const authorLastName = doc.querySelector('author last-name')?.textContent || '';
+                    const author = `${authorFirstName} ${authorLastName}`.trim();
+
+                    let coverImage = null;
+                    const coverpage = doc.querySelector('coverpage image');
+                    if (coverpage) {
+                        const imageId = coverpage.getAttribute('l:href')?.substring(1);
+                        if (imageId) {
+                            const binaryImage = doc.querySelector(`binary[id="${imageId}"]`);
+                            if (binaryImage) {
+                                let base64Image = `data:${binaryImage.getAttribute('content-type') || 'image/jpeg'};base64,${binaryImage.textContent}`;
+                                // Оптимизация изображения обложки
+                                coverImage = await this._optimizeImage(base64Image);
+                            }
+                        }
+                    }
+
+                    const bodyNode = doc.querySelector('body');
+                    let contentHTML = '';
+                    const toc = [];
+
+                    if (bodyNode) {
+                        contentHTML = this._parseBody(bodyNode, doc, toc);
+                    }
+
+                    if (!contentHTML) contentHTML = "<p>Не удалось загрузить содержимое книги.</p>";
+
+                    return {
+                        title,
+                        author,
+                        content: contentHTML,
+                        coverImage,
+                        toc,
+                        notes: [],
+                        scrollPosition: 0,
+                        scrollHeight: 0,
+                        status: null
+                    };
+                },
+
+                _parseBody(rootNode, doc, tocArray) {
+                    if (!rootNode) return "";
+                    let elementCounter = 0;
+
+                    const processFormatting = (node) => {
+                        if (!node || !node.childNodes) return '';
+                        let html = '';
+                        node.childNodes.forEach(child => {
+                            if (child.nodeType === Node.TEXT_NODE) {
+                                html += child.textContent;
+                            } else if (child.nodeType === Node.ELEMENT_NODE) {
+                                const tagName = child.tagName.toLowerCase();
+                                const innerHTML = processFormatting(child);
+                                switch (tagName) {
+                                    case 'emphasis':
+                                        html += `<em>${innerHTML}</em>`;
+                                        break;
+                                    case 'strong':
+                                        html += `<strong>${innerHTML}</strong>`;
+                                        break;
+                                    default:
+                                        html += innerHTML;
+                                }
+                            }
+                        });
+                        return html;
+                    };
+
+                    const processNodeChildren = (parentNode, level) => {
+                        let html = '';
+                        parentNode.childNodes.forEach(node => {
+                            if (node.nodeType !== Node.ELEMENT_NODE) return;
+
+                            const tagName = node.tagName.toLowerCase();
+                            switch (tagName) {
+                                case 'title':
+                                    const parentTagName = parentNode.tagName ? parentNode.tagName.toLowerCase() : '';
+                                    if (parentTagName === 'section') {
+                                        const sectionTitle = processFormatting(node).trim();
+                                        if (sectionTitle) {
+                                            const sectionId = `section-${tocArray.length}`;
+                                            tocArray.push({
+                                                title: sectionTitle,
+                                                id: sectionId,
+                                                level: level - 1
+                                            });
+                                            html += `<h${Math.min(6, level + 1)} id="${sectionId}" data-el-id="${elementCounter++}">${sectionTitle}</h${Math.min(6, level + 1)}>`;
+                                        }
+                                    }
+                                    break;
+                                case 'p':
+                                    html += `<p data-el-id="${elementCounter++}">${processFormatting(node) || '&nbsp;'}</p>`;
+                                    break;
+                                case 'empty-line':
+                                    html += '<div class="empty-line-break"></div>';
+                                    break;
+                                case 'section':
+                                    html += processNodeChildren(node, level + 1);
+                                    break;
+                                case 'subtitle':
+                                    html += `<h3 data-el-id="${elementCounter++}">${processFormatting(node)}</h3>`;
+                                    break;
+                                case 'image':
+                                    const imageId = node.getAttribute('l:href')?.substring(1);
+                                    if (imageId) {
+                                        const binaryImage = doc.querySelector(`binary[id="${imageId}"]`);
+                                        if (binaryImage) {
+                                            html += `<img src="data:${binaryImage.getAttribute('content-type') || 'image/jpeg'};base64,${binaryImage.textContent}" alt="Иллюстрация" />`;
+                                        }
+                                    }
+                                    break;
+                                case 'cite':
+                                    html += `<div class="quote-block" data-el-id="${elementCounter++}">${processFormatting(node)}</div>`;
+                                    break;
+                                default:
+                                    html += processNodeChildren(node, level);
+                                    break;
+                            }
+                        });
+                        return html;
+                    }
+                    return processNodeChildren(rootNode, 0);
+                }
+            };
+
+            // --- МОДУЛЬ УПРАВЛЕНИЯ ЗАМЕТКАМИ ---
+            const NoteManager = {
+                async createNote() {
+                    if (!AppState.currentSelection) return;
+
+                    const selectionText = AppState.currentSelection.toString().trim();
+                    if (!selectionText) {
+                        this.clearSelection();
+                        return;
+                    }
+
+                    const range = AppState.currentSelection;
+                    let startElement = this.findParentWithDataId(range.startContainer);
+                    let endElement = this.findParentWithDataId(range.endContainer);
+
+                    if (!startElement || !endElement) {
+                        const nodesInRange = this.getNodesInRange(range);
+                        if (nodesInRange.length > 0) {
+                            if (!startElement) startElement = this.findParentWithDataId(nodesInRange[0]);
+                            if (!endElement) endElement = this.findParentWithDataId(nodesInRange[nodesInRange.length - 1]);
+                            range.setStart(nodesInRange[0], 0);
+                            const lastNode = nodesInRange[nodesInRange.length - 1];
+                            range.setEnd(lastNode, lastNode.length);
+                        }
+                    }
+
+                    if (!startElement || !endElement) {
+                        alert(I18n.t('noteCreationError'));
+                        this.clearSelection();
+                        return;
+                    }
+
+                    const startPath = this.getNodePath(startElement, range.startContainer);
+                    const endPath = this.getNodePath(endElement, range.endContainer);
+
+                    if (startPath === null || endPath === null) {
+                        alert(I18n.t('selectionStructureError'));
+                        this.clearSelection();
+                        return;
+                    }
+
+                    const newNote = {
+                        id: Date.now(),
+                        text: selectionText,
+                        startElId: startElement.dataset.elId,
+                        startPath: startPath,
+                        startOffset: range.startOffset,
+                        endElId: endElement.dataset.elId,
+                        endPath: endPath,
+                        endOffset: range.endOffset,
+                    };
+
+                    const book = await DBManager.getBookById(AppState.currentBookId);
+                    if (!book.notes) book.notes = [];
+                    book.notes.push(newNote);
+                    await DBManager.saveMetadata(AppState.currentBookId, {
+                        notes: book.notes
+                    });
+
+                    this.applyAllHighlights(book);
+                    this.clearSelection();
+                },
+
+                async deleteNote(noteId) {
+                    if (!AppState.currentBookId || !noteId) return;
+                    const book = await DBManager.getBookById(AppState.currentBookId);
+                    if (!book || !book.notes) return;
+                    book.notes = book.notes.filter(note => note.id !== noteId);
+                    await DBManager.saveMetadata(AppState.currentBookId, {
+                        notes: book.notes
+                    });
+                    this.renderNotes();
+                    this.applyAllHighlights(book);
+                },
+
+                clearSelection() {
+                    window.getSelection().removeAllRanges();
+                    AppState.currentSelection = null;
+                },
+
+                getNodePath(ancestor, descendant) {
+                    const path = [];
+                    let current = descendant;
+                    while (current && current !== ancestor) {
+                        const parent = current.parentNode;
+                        if (!parent) return null; // Path is broken
+                        const index = Array.from(parent.childNodes).indexOf(current);
+                        path.unshift(index);
+                        current = parent;
+                    }
+                    return path;
+                },
+
+                getNodeByPath(ancestor, path) {
+                    let current = ancestor;
+                    for (const index of path) {
+                        if (current && current.childNodes[index]) {
+                            current = current.childNodes[index];
+                        } else {
+                            return null; // Path is invalid
+                        }
+                    }
+                    return current;
+                },
+
+                applyAllHighlights(book) {
+                    const bookContent = UIManager.elements['book-content'];
+                    // First, remove all old highlights to avoid duplicates
+                    bookContent.querySelectorAll('span.highlight').forEach(el => {
+                        const parent = el.parentNode;
+                        if (!parent) return;
+                        while (el.firstChild) parent.insertBefore(el.firstChild, el);
+                        parent.removeChild(el);
+                        parent.normalize();
+                    });
+
+                    if (!book || !book.notes) return;
+
+                    book.notes.forEach(note => {
+                        const startNodeContainer = bookContent.querySelector(`[data-el-id='${note.startElId}']`);
+                        const endNodeContainer = bookContent.querySelector(`[data-el-id='${note.endElId}']`);
+
+                        const startNode = this.getNodeByPath(startNodeContainer, note.startPath || []);
+                        const endNode = this.getNodeByPath(endNodeContainer, note.endPath || []);
+
+                        if (!startNode || !endNode) {
+                            console.warn("Could not find nodes for note:", note.id);
+                            return;
+                        }
+
+                        try {
+                            const range = document.createRange();
+                            range.setStart(startNode, Math.min(note.startOffset, startNode.length || 0));
+                            range.setEnd(endNode, Math.min(note.endOffset, endNode.length || 0));
+                            this.highlightRange(range);
+                        } catch (e) {
+                            console.error("Could not apply highlight for note:", note.id, e);
+                        }
+                    });
+                },
+
+                getNodesInRange(range) {
+                    const nodes = [];
+                    const walker = document.createTreeWalker(
+                        range.commonAncestorContainer,
+                        NodeFilter.SHOW_TEXT, {
+                        acceptNode: (node) => {
+                            if (!node.textContent.trim()) return NodeFilter.FILTER_REJECT;
+                            return range.intersectsNode(node) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+                        }
+                    }
+                    );
+                    while (walker.nextNode()) nodes.push(walker.currentNode);
+                    return nodes;
+                },
+
+                highlightRange(range) {
+                    if (range.collapsed) return;
+                    try {
+                        const wrapper = document.createElement('span');
+                        wrapper.className = `highlight ${AppState.settings.noteColor}`;
+                        range.surroundContents(wrapper);
+                    } catch (e) {
+                        console.warn("surroundContents failed, using fallback. Error:", e);
+                        // Fallback for complex ranges that cross element boundaries
+                        const nodes = this.getNodesInRange(range);
+                        nodes.forEach(node => {
+                            const nodeRange = document.createRange();
+                            nodeRange.selectNodeContents(node);
+
+                            if (range.intersectsNode(node)) {
+                                const intersection = document.createRange();
+                                // Clamp the intersection to the node's boundaries
+                                intersection.selectNode(node);
+                                if (range.startContainer === node) {
+                                    intersection.setStart(node, range.startOffset);
+                                }
+                                if (range.endContainer === node) {
+                                    intersection.setEnd(node, range.endOffset);
+                                }
+
+                                const fallbackWrapper = document.createElement('span');
+                                fallbackWrapper.className = `highlight ${AppState.settings.noteColor}`;
+                                try {
+                                    intersection.surroundContents(fallbackWrapper);
+                                } catch (e2) {
+                                    console.error("Fallback highlight failed for node", node, e2);
+                                }
+                            }
+                        });
+                    }
+                },
+
+                findParentWithDataId(node) {
+                    let current = node;
+                    while (current) {
+                        if (current.nodeType === 1 && current.hasAttribute('data-el-id')) return current;
+                        current = current.parentElement;
+                    }
+                    return null;
+                },
+
+                async renderNotes() {
+                    const book = await DBManager.getBookById(AppState.currentBookId);
+                    const notesList = UIManager.elements['notes-list'];
+                    notesList.innerHTML = '';
+
+                    if (!book || !book.notes || book.notes.length === 0) {
+                        notesList.innerHTML = `<p class="text-gray-400 p-4 text-center">${I18n.t('noNotesYet')}</p>`;
+                        return;
+                    }
+
+                    book.notes.forEach(note => {
+                        notesList.innerHTML += `
+                            <div class="note-item" data-target-id="${note.startElId}" data-note-id="${note.id}">
+                                <p class="note-text">${note.text}</p>
+                                <button class="delete-note-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                </button>
+                            </div>`;
+                    });
+                }
+            };
+
+            // --- ГЛАВНЫЙ МОДУЛЬ ПРИЛОЖЕНИЯ ---
+            const App = {
+                init() {
+                    UIManager.init();
+                    AppState.loadSettings();
+                    UIManager.applyTranslations();
+
+                    try {
+                        window.Telegram.WebApp.ready();
+                        window.Telegram.WebApp.expand();
+                    } catch (e) {
+                        console.warn("Telegram Web App script not found.");
+                    }
+
+                    this.addEventListeners();
+
+                    UIManager.showLoader(true);
+                    DBManager.init()
+                        .then(() => this.renderLibrary())
+                        .catch(err => {
+                            console.error("Ошибка инициализации:", err);
+                            alert(I18n.t('dbInitError'));
+                        })
+                        .finally(() => UIManager.showLoader(false));
+
+                    UIManager.applyThemeToApp();
+                },
+
+                addEventListeners() {
+                    const {
+                        elements
+                    } = UIManager;
+                    // File inputs
+                    elements['file-input-top'].addEventListener('change', e => this.handleFileSelect(e));
+                    elements['file-input-center'].addEventListener('change', e => this.handleFileSelect(e));
+
+                    // Navigation
+                    elements['back-to-library-btn'].addEventListener('click', () => this.closeBook());
+                    elements['settings-btn'].addEventListener('click', () => UIManager.switchToScreen('settings-screen'));
+                    elements['back-to-library-from-settings-btn'].addEventListener('click', () => UIManager.switchToScreen('library-screen'));
+
+                    // Book list interaction (delegated)
+                    elements['book-list'].addEventListener('click', async e => {
+                        const statusBtn = e.target.closest('.status-btn');
+                        // Desktop: Handle click on status button
+                        if (statusBtn) {
+                            e.stopPropagation();
+                            const bookId = parseInt(statusBtn.dataset.bookId, 10);
+                            const currentlyOpenBookId = AppState.currentBookIdForStatus;
+
+                            // Close other pickers
+                            if (currentlyOpenBookId && currentlyOpenBookId !== bookId) {
+                                const oldButton = document.querySelector(`.status-btn[data-book-id="${currentlyOpenBookId}"]`);
+                                if (oldButton) {
+                                    oldButton.classList.remove('picker-open');
+                                    const oldBook = await DBManager.getBookById(currentlyOpenBookId);
+                                    oldButton.innerHTML = UIManager.getStatusIconHTML(oldBook.status);
+                                }
+                            }
+
+                            // Toggle current picker
+                            if (statusBtn.classList.contains('picker-open')) {
+                                statusBtn.classList.remove('picker-open');
+                                UIManager.hideEmojiPicker();
+                                const book = await DBManager.getBookById(bookId);
+                                if (book.status) {
+                                    setTimeout(() => {
+                                        if (!statusBtn.classList.contains('picker-open')) {
+                                            statusBtn.innerHTML = UIManager.getStatusIconHTML(book.status);
+                                        }
+                                    }, 300);
+                                }
+                            } else {
+                                const book = await DBManager.getBookById(bookId);
+                                if (book.status) {
+                                    statusBtn.innerHTML = UIManager.getStatusIconHTML(null);
+                                    void statusBtn.offsetWidth;
+                                }
+                                statusBtn.classList.add('picker-open');
+                                UIManager.showEmojiPicker(bookId, statusBtn);
+                            }
+                            return;
+                        }
+
+                        // General click to open book
+                        const wrapper = e.target.closest('.book-item-wrapper');
+                        if (!wrapper) return;
+
+                        if (wrapper.dataset.isSwipe === 'true') {
+                            wrapper.dataset.isSwipe = 'false';
+                            return;
+                        }
+
+                        this.openBook(parseInt(wrapper.dataset.bookId, 10));
+                    });
+
+
+                    elements['book-list'].addEventListener('mousedown', e => this._handleSwipe(e));
+                    elements['book-list'].addEventListener('touchstart', e => this._handleSwipe(e), {
+                        passive: false
+                    });
+
+
+                    // Settings
+                    elements['settings-screen'].addEventListener('input', e => {
+                        const target = e.target;
+                        if (target.id === 'font-size-slider') {
+                            AppState.settings.fontSize = parseInt(target.value, 10);
+                            UIManager.elements['font-size-value'].textContent = `${target.value}px`;
+                            AppState.saveSettings();
+                            UIManager.applyThemeToApp();
+                        } else if (target.id === 'font-weight-slider') {
+                            AppState.settings.fontWeight = parseInt(target.value, 10);
+                            UIManager.elements['font-weight-value'].textContent = target.value;
+                            AppState.saveSettings();
+                            UIManager.applyThemeToApp();
+                        } else if (target.id === 'line-height-slider') {
+                            AppState.settings.lineHeight = parseInt(target.value, 10);
+                            UIManager.elements['line-height-value'].textContent = `${target.value}%`;
+                            AppState.saveSettings();
+                            UIManager.applyThemeToApp();
+                        }
+                    });
+
+                    elements['settings-screen'].addEventListener('change', async e => {
+                        const target = e.target;
+                        if (target.name === 'theme') {
+                            AppState.settings.readingTheme = target.value;
+                            AppState.saveSettings();
+                            UIManager.applyThemeToApp();
+                            UIManager.renderSettings(); // To update checkmark
+                            App.renderLibrary();
+                        } else if (target.name === 'progress-color') {
+                            AppState.settings.progressBarColor = target.value;
+                            AppState.saveSettings();
+                            this.renderLibrary();
+                        } else if (target.name === 'note-color') {
+                            AppState.settings.noteColor = target.value;
+                            AppState.saveSettings();
+                            if (AppState.currentBookId) {
+                                const book = await DBManager.getBookById(AppState.currentBookId);
+                                NoteManager.applyAllHighlights(book);
+                            }
+                        } else if (target.name === 'font') {
+                            AppState.settings.fontFamily = target.value;
+                            AppState.saveSettings();
+                            UIManager.applyThemeToApp();
+                        } else if (target.name === 'language') {
+                            AppState.settings.language = target.value;
+                            AppState.saveSettings();
+                            document.documentElement.lang = target.value;
+                            UIManager.applyTranslations();
+                        }
+                    });
+
+                    elements['reset-settings-btn'].addEventListener('click', () => {
+                        UIManager.showConfirmationModal(I18n.t('areYouSureResetSettings'), () => {
+                            AppState.resetSettings();
+                            UIManager.applyThemeToApp();
+                            UIManager.applyTranslations();
+                        });
+                    });
+
+
+                    // Modal
+                    elements['confirm-modal-yes'].addEventListener('click', () => {
+                        if (typeof AppState.onConfirmAction === 'function') AppState.onConfirmAction();
+                        UIManager.hideConfirmationModal();
+                    });
+                    elements['confirm-modal-no'].addEventListener('click', () => {
+                        const swipedWrapper = document.querySelector('.book-item-wrapper.swiped');
+                        if (swipedWrapper) swipedWrapper.classList.remove('swiped');
+                        UIManager.hideConfirmationModal();
+                    });
+
+                    // Reader UI
+                    elements['fullscreen-btn'].addEventListener('click', () => {
+                        elements['reader-screen'].classList.toggle('ui-hidden');
+                    });
+
+                    let scrollTimeout;
+                    elements['book-content-wrapper'].addEventListener('scroll', () => {
+                        this.updateScrollUI();
+                        clearTimeout(scrollTimeout);
+                        scrollTimeout = setTimeout(() => {
+                            DBManager.saveMetadata(AppState.currentBookId, {
+                                scrollPosition: elements['book-content-wrapper'].scrollTop,
+                                scrollHeight: elements['book-content-wrapper'].scrollHeight
+                            });
+                        }, 250);
+                    });
+
+                    // TOC and Notes Panel
+                    elements['toc-btn'].addEventListener('click', () => {
+                        const panelEl = elements['toc-panel'];
+                        if (panelEl.classList.contains('open') && AppState.currentPanelType === 'toc') {
+                            this.closeSidePanel();
+                        } else {
+                            this.openSidePanel('toc');
+                        }
+                    });
+                    elements['open-notes-btn'].addEventListener('click', () => {
+                        if (AppState.currentSelection) {
+                            NoteManager.createNote();
+                        } else {
+                            const panelEl = elements['toc-panel'];
+                            if (panelEl.classList.contains('open') && AppState.currentPanelType === 'notes') {
+                                this.closeSidePanel();
+                            } else {
+                                this.openSidePanel('notes');
+                            }
+                        }
+                    });
+                    elements['toc-overlay'].addEventListener('click', () => this.closeSidePanel());
+                    elements['toc-list'].addEventListener('click', e => {
+                        if (e.target.tagName === 'A') {
+                            const targetElement = document.getElementById(e.target.dataset.id);
+                            if (targetElement) setTimeout(() => targetElement.scrollIntoView({
+                                behavior: 'smooth'
+                            }), 300);
+                            this.closeSidePanel();
+                        }
+                    });
+                    elements['notes-list'].addEventListener('click', e => {
+                        const deleteButton = e.target.closest('.delete-note-btn');
+                        const targetItem = e.target.closest('.note-item');
+                        if (deleteButton) {
+                            NoteManager.deleteNote(parseInt(targetItem.dataset.noteId, 10));
+                        } else if (targetItem) {
+                            const targetElement = elements['book-content'].querySelector(`[data-el-id='${targetItem.dataset.targetId}']`);
+                            if (targetElement) setTimeout(() => targetElement.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'center'
+                            }), 300);
+                            this.closeSidePanel();
+                        }
+                    });
+
+                    // Note creation
+                    document.addEventListener('selectionchange', () => this.handleSelectionChange());
+
+                    // Emoji Picker
+                    elements['emoji-picker'].addEventListener('click', async (e) => {
+                        const button = e.target.closest('button');
+                        if (!button) return;
+
+                        const bookId = AppState.currentBookIdForStatus;
+                        if (!bookId) return;
+
+                        const openButton = document.querySelector(`.status-btn[data-book-id="${bookId}"]`);
+                        if (openButton) openButton.classList.remove('picker-open');
+
+                        const statusData = button.dataset.status;
+                        const status = statusData === "null" ? null : JSON.parse(statusData);
+
+                        await DBManager.saveMetadata(bookId, {
+                            status: status
+                        });
+
+                        UIManager.hideEmojiPicker();
+                        await App.renderLibrary();
+                    });
+
+                    document.body.addEventListener('click', async (e) => {
+                        if (!e.target.closest('#emoji-picker') && !e.target.closest('.status-btn')) {
+                            const openBookId = AppState.currentBookIdForStatus;
+                            if (openBookId) {
+                                const buttonToReset = document.querySelector(`.status-btn[data-book-id="${openBookId}"]`);
+                                if (buttonToReset && buttonToReset.classList.contains('picker-open')) {
+                                    buttonToReset.classList.remove('picker-open');
+                                    const book = await DBManager.getBookById(openBookId);
+                                    // After animation, restore status icon if it exists
+                                    if (book.status) {
+                                        setTimeout(() => {
+                                            if (!buttonToReset.classList.contains('picker-open')) {
+                                                buttonToReset.innerHTML = UIManager.getStatusIconHTML(book.status);
+                                            }
+                                        }, 300);
+                                    }
+                                }
+                            }
+                            UIManager.hideEmojiPicker();
+                        }
+                    });
+                },
+
+                async renderLibrary() {
+                    const books = await DBManager.getAllBooks();
+                    UIManager.renderLibrary(books);
+                },
+
+                async handleFileSelect(event) {
+                    const file = event.target.files[0];
+                    if (!file) return;
+
+                    UIManager.showLoader(true);
+                    try {
+                        const bookData = await FB2Parser.parseFile(file);
+                        await DBManager.saveBook(bookData);
+                        await this.renderLibrary();
+                    } catch (error) {
+                        console.error("Ошибка обработки файла:", error);
+                        alert(I18n.t('fileProcessError'));
+                    } finally {
+                        UIManager.showLoader(false);
+                        event.target.value = '';
+                    }
+                },
+
+                async openBook(bookId) {
+                    const book = await DBManager.getBookById(bookId);
+                    if (!book) return;
+
+                    AppState.currentBookId = bookId;
+                    const bookTitleEl = UIManager.elements['book-title'];
+                    const bookContentEl = UIManager.elements['book-content'];
+                    const wrapperEl = UIManager.elements['book-content-wrapper'];
+                    const tocBtnEl = UIManager.elements['toc-btn'];
+
+                    bookTitleEl.textContent = book.title;
+                    bookContentEl.innerHTML = book.content;
+                    tocBtnEl.style.display = book.toc && book.toc.length > 0 ? 'flex' : 'none';
+
+                    UIManager.switchToScreen('reader-screen');
+                    NoteManager.applyAllHighlights(book);
+
+                    requestAnimationFrame(() => {
+                        wrapperEl.scrollTop = book.scrollPosition || 0;
+                        this.updateScrollUI();
+                        DBManager.saveMetadata(bookId, {
+                            scrollHeight: wrapperEl.scrollHeight
+                        });
+                    });
+                },
+
+                closeBook() {
+                    AppState.currentBookId = null;
+                    UIManager.switchToScreen('library-screen');
+                },
+
+                async deleteBook(bookId) {
+                    await DBManager.deleteBook(bookId);
+                    // Вызов вибрации после успешного удаления
+                    try {
+                        window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+                    } catch (e) {
+                        console.warn("Haptic feedback is not available.");
+                    }
+                    await this.renderLibrary();
+                },
+
+                updateScrollUI() {
+                    const wrapper = UIManager.elements['book-content-wrapper'];
+                    const pageInfo = UIManager.elements['page-info'];
+                    const {
+                        scrollTop,
+                        scrollHeight,
+                        clientHeight
+                    } = wrapper;
+                    if (scrollHeight <= clientHeight) {
+                        pageInfo.textContent = '1 / 1';
+                        return;
+                    }
+                    const totalPages = Math.ceil(scrollHeight / clientHeight);
+                    const currentPage = Math.round(scrollTop / clientHeight) + 1;
+                    pageInfo.textContent = `${currentPage} / ${totalPages}`;
+                },
+
+                _handleSwipe(startEvent) {
+                    const wrapper = startEvent.target.closest('.book-item-wrapper');
+                    if (!wrapper || (startEvent.type === 'mousedown' && startEvent.button !== 0)) return;
+
+                    const bookItemContent = wrapper.querySelector('.book-item-content');
+                    const deleteIcon = wrapper.querySelector('.delete-swipe-icon');
+                    const threshold = 60;
+
+                    let isDragging = true;
+                    let isSwiping = false;
+                    let isVerticalScroll = false;
+                    wrapper.dataset.isSwipe = 'false';
+
+                    // --- Логика для долгого нажатия (только для мобильных) ---
+                    let longPressTimeout;
+                    let isLongPress = false;
+
+                    if (isMobile) {
+                        const longPressDuration = 500; // 500ms
+                        longPressTimeout = setTimeout(() => {
+                            isLongPress = true;
+                            isDragging = false;
+                            wrapper.dataset.isSwipe = 'true'; // Предотвращаем клик
+
+                            if (bookItemContent) {
+                                bookItemContent.classList.add('long-press-active');
+                            }
+
+                            // Вибрация для обратной связи
+                            try {
+                                window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+                            } catch (e) {
+                                console.warn("Haptic feedback is not available.");
+                            }
+
+                            // Открываем меню выбора статуса
+                            const bookId = parseInt(wrapper.dataset.bookId, 10);
+                            const statusBtnAnchor = wrapper.querySelector('.status-btn');
+                            UIManager.showEmojiPicker(bookId, statusBtnAnchor);
+
+                        }, longPressDuration);
+                    }
+
+                    const touchStart = startEvent.type === 'touchstart' ? startEvent.touches[0] : startEvent;
+                    let startX = touchStart.clientX;
+                    let startY = touchStart.clientY;
+                    let currentX = startX;
+
+                    const cancelLongPress = () => {
+                        if (isMobile) clearTimeout(longPressTimeout);
+                    };
+
+                    const swipeMove = (moveEvent) => {
+                        if (!isDragging) return;
+
+                        const touchMove = moveEvent.type === 'touchmove' ? moveEvent.touches[0] : moveEvent;
+                        currentX = touchMove.clientX;
+                        const currentY = touchMove.clientY;
+
+                        const diffX = currentX - startX;
+                        const diffY = currentY - startY;
+
+                        // Если пользователь начал двигать палец, отменяем долгое нажатие
+                        if (Math.abs(diffX) > 10 || Math.abs(diffY) > 10) {
+                            cancelLongPress();
+                        }
+
+                        if (!isSwiping && !isVerticalScroll) {
+                            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 10) {
+                                isSwiping = true;
+                                wrapper.dataset.isSwipe = 'true';
+                            } else if (Math.abs(diffY) > 10) {
+                                isVerticalScroll = true;
+                            }
+                        }
+
+                        if (isVerticalScroll) {
+                            swipeEnd();
+                            return;
+                        }
+
+                        if (isSwiping) {
+                            if (moveEvent.cancelable) moveEvent.preventDefault();
+                            const swipeProgress = Math.min(1, Math.abs(diffX) / threshold);
+                            const clampedDiff = Math.max(-threshold * 1.5, Math.min(0, diffX));
+
+                            bookItemContent.style.transition = 'none';
+                            bookItemContent.style.transform = `translateX(${clampedDiff}px)`;
+
+                            const r = 142 + (255 - 142) * swipeProgress;
+                            const g = 142 - (142 - 59) * swipeProgress;
+                            const b = 147 - (147 - 48) * swipeProgress;
+                            deleteIcon.style.color = `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
+                            deleteIcon.style.opacity = swipeProgress;
+                        }
+                    };
+
+                    const swipeEnd = () => {
+                        cancelLongPress(); // Всегда отменяем таймер при отпускании
+                        if (!isDragging) return;
+                        isDragging = false;
+
+                        document.removeEventListener('mousemove', swipeMove);
+                        document.removeEventListener('mouseup', swipeEnd);
+                        document.removeEventListener('touchmove', swipeMove);
+                        document.removeEventListener('touchend', swipeEnd);
+
+                        UIManager.elements.body.classList.remove('grabbing');
+
+                        const diff = currentX - startX;
+
+                        // Если это не было долгое нажатие, проверяем на свайп
+                        if (!isLongPress && isSwiping && diff < -threshold) {
+                            UIManager.showConfirmationModal(
+                                I18n.t('areYouSureDeleteBook'),
+                                () => this.deleteBook(parseInt(wrapper.dataset.bookId, 10))
+                            );
+                        }
+
+                        bookItemContent.style.transition = 'transform 0.3s ease';
+                        bookItemContent.style.transform = '';
+                        deleteIcon.style.color = '';
+                        deleteIcon.style.opacity = 0;
+                    };
+
+                    if (startEvent.type === 'mousedown') {
+                        UIManager.elements.body.classList.add('grabbing');
+                        document.addEventListener('mousemove', swipeMove);
+                        document.addEventListener('mouseup', swipeEnd);
+                    } else {
+                        document.addEventListener('touchmove', swipeMove, {
+                            passive: false
+                        });
+                        document.addEventListener('touchend', swipeEnd);
+                    }
+                },
+
+                async openSidePanel(type) {
+                    const titleEl = UIManager.elements['side-panel-title'];
+                    const notesListEl = UIManager.elements['notes-list'];
+                    const tocListEl = UIManager.elements['toc-list'];
+                    const panelEl = UIManager.elements['toc-panel'];
+                    if (type === 'toc') {
+                        titleEl.textContent = I18n.t('tocTitle');
+                        notesListEl.classList.add('hidden');
+                        tocListEl.classList.remove('hidden');
+                        const book = await DBManager.getBookById(AppState.currentBookId);
+                        tocListEl.innerHTML = (!book.toc || book.toc.length === 0) ?
+                            `<p class="text-gray-400 p-4 text-center">${I18n.t('noToc')}</p>` :
+                            book.toc.map(item => `<a data-id="${item.id}" style="padding-left: ${0.75 + item.level * 1}rem">${item.title}</a>`).join('');
+                    } else if (type === 'notes') {
+                        titleEl.textContent = I18n.t('notesTitle');
+                        tocListEl.classList.add('hidden');
+                        notesListEl.classList.remove('hidden');
+                        NoteManager.renderNotes();
+                    }
+                    panelEl.classList.add('open');
+                    AppState.currentPanelType = type;
+                },
+
+                closeSidePanel() {
+                    UIManager.elements['toc-panel'].classList.remove('open');
+                    AppState.currentPanelType = null;
+                },
+
+                handleSelectionChange() {
+                    const selection = window.getSelection();
+                    const {
+                        'open-notes-btn': notesBtn,
+                        'book-content': bookContent
+                    } = UIManager.elements;
+                    const colorClasses = ['yellow', 'green', 'red', 'purple'];
+
+                    notesBtn.classList.remove('active-selection', ...colorClasses);
+
+                    if (selection && !selection.isCollapsed && selection.toString().trim().length > 0) {
+                        const range = selection.getRangeAt(0);
+                        if (bookContent.contains(range.commonAncestorContainer)) {
+                            AppState.currentSelection = range.cloneRange();
+                            notesBtn.classList.add('active-selection', AppState.settings.noteColor);
+                        } else {
+                            AppState.currentSelection = null;
+                        }
+                    } else {
+                        AppState.currentSelection = null;
+                    }
+                }
+            };
+
+            App.init();
+        });
+    </script>
+</body>
+
 </html>
