@@ -1007,9 +1007,9 @@
             transform: translateY(-150%);
         }
 
-        /* Animate the custom reader menu to slide down and fade when UI is hidden */
+        /* Animate the custom reader menu to slide down and fade when UI is hidden or panels open */
         #reader-menu {
-            transition: transform 5.45s cubic-bezier(.22,.9,.28,1), opacity 5.45s ease;
+            transition: transform 0.32s cubic-bezier(.22,.9,.28,1), opacity 0.32s ease;
             transform: translateX(-50%) translateY(0);
             opacity: 1;
         }
@@ -1130,10 +1130,156 @@
 
         #toc-panel.open #toc-overlay {
             opacity: 1;
+            pointer-events: auto;
         }
 
         #toc-panel.open>div:last-child {
             transform: translateX(0);
+        }
+
+        /* Make TOC behave as a bottom sheet by default (appears from bottom instead of sliding from side) */
+        #toc-panel > div:last-child {
+            position: fixed;
+            left: 50%;
+            bottom: 24px;
+            transform: translate(-50%, 100%);
+            width: min(560px, calc(92vw));
+            max-height: 70vh;
+            height: auto;
+            border-radius: 14px;
+            border-top-left-radius: 18px;
+            border-top-right-radius: 18px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 18px 40px rgba(0,0,0,0.7);
+            transition: transform 0.45s cubic-bezier(.22,.9,.28,1), opacity 0.45s ease;
+            opacity: 0;
+            /* Glass / frosted background to match settings panel */
+            background: rgb(30 30 30 / 60%);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.04);
+            z-index: 60;
+        }
+
+        #toc-panel.open>div:last-child {
+            transform: translate(-50%, 0);
+            opacity: 1;
+        }
+
+#reader-screen #toc-panel > div:last-child {
+    position: fixed;
+    left: 50%;
+    bottom: 40px;
+    max-width: 450px;
+    max-height: 450px;
+    border-radius: 14px;
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform 0.45s 
+cubic-bezier(.22, .9, .28, 1), opacity 0.45s 
+ease;
+    opacity: 0;
+    background: rgb(30 30 30 / 80%);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(3px);
+    box-shadow: 0px 0px 10px 0px rgb(0 0 0 / 40%), inset 3px 6px 10px rgb(255 255 255 / 15%);
+    z-index: 60;
+}
+
+        /* When opened, slide the bottom sheet up into view */
+        #reader-screen #toc-panel.open > div:last-child {
+            transform: translate(-50%, 0);
+            opacity: 1;
+        }
+
+        /* Style the TOC header inside the centered modal */
+        #reader-screen #toc-panel > div:last-child header {
+            padding: 14px 16px;
+            border-bottom: none;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+        }
+
+        /* Make the TOC content scrollable inside the square modal */
+        #reader-screen #toc-panel > div:last-child nav,
+        #reader-screen #toc-panel > div:last-child #toc-list {
+            flex: 1 1 auto;
+            overflow-y: auto;
+            padding: 12px 16px 18px 16px;
+        }
+
+        /* Back button in TOC header */
+        .toc-back-btn {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.03);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            z-index: 70;
+        }
+
+        .toc-back-btn svg { width: 18px; height: 18px; }
+
+        /* Make TOC items look like pills in the centered modal */
+#reader-screen #toc-list a {
+    background: rgb(40 40 40 / 70%);
+    padding: 12px 18px;
+    border-radius: 10px;
+    margin: 10px 16px;
+    justify-content: center;
+    font-weight: 600;
+    box-shadow: inset 1px 2px 5px 0px rgb(138 138 138 / 30%);
+    width: calc(100% - 32px);
+    display: inline-block;
+    border-radius: 100px;
+}
+
+        /* The label inside the TOC item: single-line text with right-side fade (text only) */
+        #reader-screen #toc-list a .toc-label {
+            display: inline-block;
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            /* no ellipsis: use mask fade instead */
+            -webkit-mask-image: linear-gradient(90deg, black 0%, black calc(100% - 40px), transparent 100%);
+            mask-image: linear-gradient(90deg, black 0%, black calc(100% - 40px), transparent 100%);
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+        }
+
+        #reader-screen #toc-list a + a {
+            margin-top: 8px;
+        }
+
+        /* Ensure overlay does not block clicks when TOC is closed, and does NOT dim background */
+        #reader-screen #toc-overlay {
+            background: transparent !important;
+            pointer-events: none;
+        }
+
+        /* When TOC or other overlay panels are open, slide the bottom reader menu down and hide it */
+        #reader-screen #toc-panel.open + .flex-grow #reader-menu,
+        #reader-screen #toc-panel.open ~ #reader-menu,
+        #emoji-picker.open ~ #reader-menu,
+        #confirm-modal.open ~ #reader-menu {
+            transform: translateX(-50%) translateY(36px);
+            opacity: 0;
+            pointer-events: none;
         }
 
         #toc-list a,
@@ -1149,16 +1295,43 @@
             text-align: left;
         }
 
+        /* Ensure TOC anchors are flex pills: text left-aligned, vertically centered */
+        #reader-screen #toc-list a {
+            display: flex;
+            align-items: center; /* vertical centering */
+            justify-content: flex-start; /* horizontal: text starts from left */
+            padding: 12px 18px; /* restore pill padding */
+            box-sizing: border-box;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        /* Ensure inner label is vertically centered and left-aligned */
+        #reader-screen #toc-list a .toc-label {
+            display: block;
+            align-self: center;
+            text-align: left;
+            width: 100%;
+        }
+
         #notes-list .note-text {
             font-style: italic;
             color: var(--meta-color);
             overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            line-clamp: 2;
-            -webkit-box-orient: vertical;
             flex-grow: 1;
+        }
+
+        /* Note label: single-line with right-side fade (text only) */
+        #notes-list .note-text .note-label {
+            display: inline-block;
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            /* no ellipsis: use mask fade instead */
+            -webkit-mask-image: linear-gradient(90deg, black 0%, black calc(100% - 40px), transparent 100%);
+            mask-image: linear-gradient(90deg, black 0%, black calc(100% - 40px), transparent 100%);
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
         }
 
         .delete-note-btn {
@@ -1684,10 +1857,12 @@
                 <div id="toc-overlay"
                     class="absolute top-0 left-0 h-full w-full bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 ease-in-out">
                 </div>
-                <div class="h-full w-full max-w-xs flex flex-col shadow-lg pointer-events-auto relative transform translate-x-full transition-transform duration-300 ease-in-out ml-auto z-10"
-                    style="background-color: var(--ui-bg);">
+                <div class="h-full w-full max-w-xs flex flex-col shadow-lg pointer-events-auto relative transform translate-x-full transition-transform duration-300 ease-in-out ml-auto z-10">
                     <header class="p-2 border-b flex items-center justify-center relative flex-shrink-0 h-[56px]">
-                        <h2 id="side-panel-title" class="text-lg font-bold px-2 text-center"></h2>
+                        <button id="toc-back-btn" class="toc-back-btn" title="Назад" aria-label="Назад">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </button>
+                        <h2 id="side-panel-title" class="text-lg font-bold px-2 text-center">Содержание</h2>
                     </header>
                     <nav id="toc-list" class="flex-grow overflow-y-auto p-2"></nav>
                     <div id="notes-list" class="hidden flex-grow overflow-y-auto p-2"></div>
@@ -1711,9 +1886,7 @@
 
                         <div id="menu-page-counter" class="page-counter">1 / 1</div>
 
-                        <button id="reader-menu-audio" class="menu-btn" title="Озвучивание">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19 5a8 8 0 0 1 0 14"></path></svg>
-                        </button>
+                        <!-- audio button removed; replaced by settings button inserted after TOC button -->
 
                         <button id="reader-menu-annotate" class="menu-btn" title="Заметка/Редактировать">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path></svg>
@@ -1721,6 +1894,11 @@
 
                         <button id="reader-menu-toc" class="menu-btn" title="Оглавление">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line></svg>
+                        </button>
+
+                        <!-- Settings button (replaces audio) placed between TOC and Fullscreen -->
+                        <button id="reader-menu-settings" class="menu-btn" title="Настройки">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                         </button>
 
                         <button id="reader-menu-fullscreen" class="menu-btn" title="Полноэкранный режим">
@@ -3029,7 +3207,7 @@
                     book.notes.forEach(note => {
                         notesList.innerHTML += `
                             <div class="note-item" data-target-id="${note.startElId}" data-note-id="${note.id}">
-                                <p class="note-text">${note.text}</p>
+                                <p class="note-text"><span class="note-label">${note.text}</span></p>
                                 <button class="delete-note-btn">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                                 </button>
@@ -3253,13 +3431,15 @@
                     });
                     elements['toc-overlay'].addEventListener('click', () => this.closeSidePanel());
                     elements['toc-list'].addEventListener('click', e => {
-                        if (e.target.tagName === 'A') {
-                            const targetElement = document.getElementById(e.target.dataset.id);
-                            if (targetElement) setTimeout(() => targetElement.scrollIntoView({
-                                behavior: 'smooth'
-                            }), 300);
-                            this.closeSidePanel();
-                        }
+                        const a = e.target.closest('a');
+                        if (!a) return;
+                        const id = a.dataset.id;
+                        if (!id) return;
+                        const targetElement = document.getElementById(id);
+                        if (targetElement) setTimeout(() => targetElement.scrollIntoView({
+                            behavior: 'smooth'
+                        }), 300);
+                        this.closeSidePanel();
                     });
                     elements['notes-list'].addEventListener('click', e => {
                         const deleteButton = e.target.closest('.delete-note-btn');
@@ -3555,7 +3735,7 @@
                         const book = await DBManager.getBookById(AppState.currentBookId);
                         tocListEl.innerHTML = (!book.toc || book.toc.length === 0) ?
                             `<p class="text-gray-400 p-4 text-center">${I18n.t('noToc')}</p>` :
-                            book.toc.map(item => `<a data-id="${item.id}" style="padding-left: ${0.75 + item.level * 1}rem">${item.title}</a>`).join('');
+                            book.toc.map(item => `<a data-id="${item.id}" style="padding-left: ${2 + item.level * 1}rem"><span class="toc-label">${item.title}</span></a>`).join('');
                     } else if (type === 'notes') {
                         titleEl.textContent = I18n.t('notesTitle');
                         tocListEl.classList.add('hidden');
@@ -3628,19 +3808,46 @@
             const annotateMenuBtn = qs('reader-menu-annotate');
             if(annotateMenuBtn && notesBtn) annotateMenuBtn.addEventListener('click', ()=> notesBtn.click());
 
-            const audioMenuBtn = qs('reader-menu-audio');
-            if(audioMenuBtn) audioMenuBtn.addEventListener('click', ()=> { console.log('Audio toggle clicked'); /* placeholder */ });
+            const settingsMenuBtn = qs('reader-menu-settings');
+            const settingsBtn = qs('settings-btn');
+            if(settingsMenuBtn && settingsBtn) settingsMenuBtn.addEventListener('click', ()=> settingsBtn.click());
 
             const fsMenuBtn = qs('reader-menu-fullscreen');
             if(fsMenuBtn && fullscreenBtn) fsMenuBtn.addEventListener('click', ()=> fullscreenBtn.click());
+
+            // TOC back button: close the side panel (call App.closeSidePanel if available, otherwise fallback)
+            const tocBackBtn = qs('toc-back-btn');
+            if(tocBackBtn) tocBackBtn.addEventListener('click', ()=> {
+                let handled = false;
+                try {
+                    if(typeof App !== 'undefined' && typeof App.closeSidePanel === 'function'){
+                        App.closeSidePanel();
+                        handled = true;
+                    }
+                } catch(e){ /* ignore */ }
+
+                if(!handled){
+                    const panel = qs('toc-panel');
+                    if(panel){
+                        panel.classList.remove('open');
+                        const overlay = qs('toc-overlay');
+                        if(overlay) overlay.style.opacity = '';
+                    }
+                }
+            });
 
             // Скрытие/показ меню синхронно с другими UI-элементами
             const uiObserver = new MutationObserver(()=>{
                 const uiHidden = document.querySelector('#reader-screen')?.classList.contains('ui-hidden');
                 const menu = qs('reader-menu');
                 if(menu){
-                    if(uiHidden) menu.style.opacity = '0';
-                    else menu.style.opacity = '';
+                    if(uiHidden){
+                        menu.style.opacity = '0';
+                        menu.style.transform = 'translateX(-50%) translateY(36px)';
+                    } else {
+                        menu.style.opacity = '';
+                        menu.style.transform = '';
+                    }
                 }
             });
             const readerScreen = qs('reader-screen');
