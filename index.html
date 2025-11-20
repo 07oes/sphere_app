@@ -37,6 +37,7 @@
         #library-screen.theme-night .book-item-content h3,
         #reader-screen.theme-night #book-title {
             color: #e3e3e3;
+            text-shadow: #00000052 0 0 10px;
         }
 
         #library-screen.theme-light .book-item-content h3,
@@ -850,8 +851,8 @@
         }
 
         #reader-screen.ui-hidden #book-content-wrapper {
-            height: 100vh;
-            margin-top: -57px;
+            height: calc(100vh);
+            margin-top: 0; /* prevent shifting upward when UI hidden */
         }
 
         #book-content {
@@ -936,14 +937,87 @@
             transition: border-color 0.3s ease-in-out;
         }
 
+        /* Убираем фон и разделительную полосу в шапке экрана чтения
+           и делаем её overlay (абсолютно позиционированной), чтобы остался только текст */
+        #reader-screen {
+            position: relative;
+        }
+
+        #reader-screen > header {
+            position: absolute !important;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent !important;
+            border-bottom: none !important;
+            box-shadow: none !important;
+            backdrop-filter: none !important;
+            z-index: 40;
+            pointer-events: none; /* предотвращаем блокировку кликов по контенту; заголовок будет кликабельным отдельно */
+            transform: translateY(0);
+            opacity: 1;
+            transition: transform 0.52s cubic-bezier(.22,.9,.28,1), opacity 0.52s ease, border-color 0.52s ease-in-out;
+        }
+
+        /* Top drop-shadow: always present as a pseudo-element, but shown/hidden via opacity/transform
+           so it can transition smoothly when UI toggles. */
+        #reader-screen::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            pointer-events: none;
+            background: linear-gradient(to bottom, rgb(26 26 26), rgb(30 30 30 / 65%), rgba(255, 255, 255, 0));
+            z-index: 20; /* ниже заголовка (z-index:40) */
+            transform: translateY(0);
+            opacity: 0;
+            transition: transform 0.45s cubic-bezier(.22,.9,.28,1), opacity 0.45s ease;
+        }
+
+        /* When reader screen is visible and UI is not hidden, show the shadow */
+        #reader-screen:not(.hidden):not(.ui-hidden)::before {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Заголовок оставляем кликабельным, но без фона */
+        #reader-screen > header #book-title {
+            pointer-events: auto;
+        }
+
+        /* Чтобы содержимое не пряталось под overlay-хедером, добавляем внутренний отступ сверху */
+        #book-content-wrapper {
+            padding-top: 64px;
+            height: calc(100vh);
+        }
+
         .ui-element-to-hide {
-            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            transition: transform 5.45s cubic-bezier(.22,.9,.28,1), opacity 5.45s ease;
         }
 
         #reader-screen.ui-hidden .ui-element-to-hide {
             opacity: 0;
             pointer-events: none;
             transform: translateY(-150%);
+        }
+
+        /* Animate the custom reader menu to slide down and fade when UI is hidden */
+        #reader-menu {
+            transition: transform 5.45s cubic-bezier(.22,.9,.28,1), opacity 5.45s ease;
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        #reader-screen.ui-hidden #reader-menu {
+            transform: translateX(-50%) translateY(28px);
+            opacity: 0;
+            pointer-events: none;
         }
 
         #reader-screen.ui-hidden #page-overlay {
@@ -954,6 +1028,18 @@
 
         #reader-screen.ui-hidden>header {
             border-bottom-color: transparent !important;
+        }
+
+        /* Когда скрываем UI (полный экран), поднимаем и скрываем заголовок и тень сверху */
+        #reader-screen.ui-hidden > header {
+            transform: translateY(-72px);
+            opacity: 0;
+        }
+
+        #reader-screen.ui-hidden::before {
+            transform: translateY(-72px);
+            opacity: 0;
+            pointer-events: none;
         }
 
         .loader-container {
@@ -990,6 +1076,7 @@
 
         input[type=range] {
             -webkit-appearance: none;
+            appearance: none;
             width: 100%;
             background: transparent;
         }
@@ -1069,6 +1156,7 @@
             text-overflow: ellipsis;
             display: -webkit-box;
             -webkit-line-clamp: 2;
+            line-clamp: 2;
             -webkit-box-orient: vertical;
             flex-grow: 1;
         }
@@ -1465,6 +1553,76 @@
             transform: scale(1);
             opacity: 1;
         }
+
+        /* --- Меню управления чтением (нижняя плавающая панель) --- */
+        #reader-menu {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 40px;
+            z-index: 40;
+            pointer-events: auto;
+        }
+
+        #reader-menu .menu-pill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 15px;
+            border-radius: 999px;
+            background: rgb(30 30 30 / 80%);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(6px);
+            box-shadow: 0px 0px 10px 0px rgb(0 0 0 / 40%), inset 0 6px 10px rgb(255 255 255 / 23%);
+            color: var(--text-color);
+            min-width: 370px;
+            max-width: calc(100% - 48px);
+        }
+
+        #reader-menu .menu-btn {
+            background: transparent;
+            border: none;
+            color: inherit;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 999px;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        #reader-menu .menu-btn:active { background: rgba(255,255,255,0.02); }
+
+        /* Disable focus/active highlight for menu buttons (no visible selection) */
+        #reader-menu .menu-btn:focus,
+        #reader-menu .menu-btn:focus-visible,
+        #reader-menu .menu-btn:active {
+            outline: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+
+        /* Remove tap highlight on mobile */
+        #reader-menu .menu-btn {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #reader-menu .page-counter {
+            flex: 1 1 auto;
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        /* Скрываем вместе с другими UI-элементами (используется в коде) */
+        #reader-menu.ui-element-to-hide { transition: opacity 0.32s ease, transform 0.32s ease; }
+
+        /* Скрываем дублирующий счётчик страниц внизу экрана (оставляем только счётчик в меню) */
+        #reader-screen #page-overlay {
+            display: none !important;
+        }
     </style>
 </head>
 
@@ -1512,49 +1670,14 @@
 
         <!-- Экран Чтения -->
         <div id="reader-screen" class="screen hidden w-full h-full flex flex-col">
-            <header class="p-2 border-b flex items-center justify-between relative flex-shrink-0 h-[56px]">
-                <div class="w-32 text-left">
-                    <button id="back-to-library-btn"
-                        class="back-button font-bold py-2 px-3 rounded-lg inline-flex items-center ui-element-to-hide"
-                        data-translate="back">❮
-                        Назад</button>
-                </div>
-                <div class="flex-grow text-center overflow-hidden px-2">
-                    <h2 id="book-title" class="text-lg font-bold truncate ui-element-to-hide">Название книги</h2>
-                </div>
-                <div id="header-buttons" class="w-32 flex items-center justify-end space-x-1 flex-shrink-0">
-                    <button id="open-notes-btn"
-                        class="back-button p-2 rounded-lg w-10 h-10 flex items-center justify-center ui-element-to-hide">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z">
-                            </path>
-                        </svg>
-                    </button>
-                    <button id="toc-btn"
-                        class="back-button p-2 rounded-lg w-10 h-10 flex items-center justify-center ui-element-to-hide"
-                        style="display: none;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="8" y1="6" x2="21" y2="6"></line>
-                            <line x1="8" y1="12" x2="21" y2="12"></line>
-                            <line x1="8" y1="18" x2="21" y2="18"></line>
-                            <line x1="3" y1="6" x2="3.01" y2="6"></line>
-                            <line x1="3" y1="12" x2="3.01" y2="12"></line>
-                            <line x1="3" y1="18" x2="3.01" y2="18"></line>
-                        </svg>
-                    </button>
-                    <button id="fullscreen-btn"
-                        class="back-button p-2 rounded-lg w-10 h-10 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3">
-                            </path>
-                        </svg>
-                    </button>
-                </div>
+            <header class="p-2 relative flex-shrink-0 h-[56px] flex items-center justify-center" style="background: transparent; border-bottom: none;">
+                <h2 id="book-title" class="text-lg font-bold">Название книги</h2>
+                <!-- Скрытые служебные элементы (сохраняем идентификаторы для совместимости JS) -->
+                <button id="back-to-library-btn" class="hidden" data-translate="back"></button>
+                <button id="open-notes-btn" class="hidden" aria-hidden="true"></button>
+                <button id="toc-btn" class="hidden" aria-hidden="true"></button>
+                <button id="fullscreen-btn" class="hidden" aria-hidden="true"></button>
+                <div id="header-buttons" class="hidden"></div>
             </header>
 
             <div id="toc-panel" class="absolute top-0 left-0 h-full w-full pointer-events-none z-30">
@@ -1578,6 +1701,32 @@
                 <div id="page-overlay"
                     class="absolute bottom-0 left-0 right-0 h-24 pointer-events-none flex justify-center items-end p-4 ui-element-to-hide">
                     <span id="page-info" class="text-sm text-gray-400">1 / 1</span>
+                </div>
+                <!-- Нижняя плавающая панель управления чтением -->
+                <div id="reader-menu" class="ui-element-to-hide">
+                    <div class="menu-pill">
+                        <button id="reader-menu-back" class="menu-btn" title="Назад">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </button>
+
+                        <div id="menu-page-counter" class="page-counter">1 / 1</div>
+
+                        <button id="reader-menu-audio" class="menu-btn" title="Озвучивание">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19 5a8 8 0 0 1 0 14"></path></svg>
+                        </button>
+
+                        <button id="reader-menu-annotate" class="menu-btn" title="Заметка/Редактировать">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path></svg>
+                        </button>
+
+                        <button id="reader-menu-toc" class="menu-btn" title="Оглавление">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line></svg>
+                        </button>
+
+                        <button id="reader-menu-fullscreen" class="menu-btn" title="Полноэкранный режим">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"></path><path d="M16 3h3a2 2 0 0 1 2 2v3"></path><path d="M8 21H5a2 2 0 0 1-2-2v-3"></path><path d="M16 21h3a2 2 0 0 0 2-2v-3"></path></svg>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -3448,6 +3597,105 @@
 
             App.init();
         });
+    </script>
+    <script>
+        // Инициализация нижнего меню чтения: синхронизируем счётчик и привязываем кнопки
+        (function(){
+            function qs(id){ return document.getElementById(id); }
+
+            const pageInfo = qs('page-info');
+            const menuCounter = qs('menu-page-counter');
+            const backBtn = qs('back-to-library-btn');
+            const tocBtn = qs('toc-btn');
+            const notesBtn = qs('open-notes-btn');
+            const fullscreenBtn = qs('fullscreen-btn');
+
+            function updateCounter(){
+                if(pageInfo && menuCounter) menuCounter.textContent = pageInfo.textContent || '';
+            }
+
+            // Обновляем при старте и при изменении содержимого page-info
+            updateCounter();
+            const observer = pageInfo ? new MutationObserver(updateCounter) : null;
+            if(observer && pageInfo) observer.observe(pageInfo, { childList: true, characterData:true, subtree:true });
+
+            const backMenuBtn = qs('reader-menu-back');
+            if(backMenuBtn && backBtn) backMenuBtn.addEventListener('click', ()=> backBtn.click());
+
+            const tocMenuBtn = qs('reader-menu-toc');
+            if(tocMenuBtn && tocBtn) tocMenuBtn.addEventListener('click', ()=> tocBtn.click());
+
+            const annotateMenuBtn = qs('reader-menu-annotate');
+            if(annotateMenuBtn && notesBtn) annotateMenuBtn.addEventListener('click', ()=> notesBtn.click());
+
+            const audioMenuBtn = qs('reader-menu-audio');
+            if(audioMenuBtn) audioMenuBtn.addEventListener('click', ()=> { console.log('Audio toggle clicked'); /* placeholder */ });
+
+            const fsMenuBtn = qs('reader-menu-fullscreen');
+            if(fsMenuBtn && fullscreenBtn) fsMenuBtn.addEventListener('click', ()=> fullscreenBtn.click());
+
+            // Скрытие/показ меню синхронно с другими UI-элементами
+            const uiObserver = new MutationObserver(()=>{
+                const uiHidden = document.querySelector('#reader-screen')?.classList.contains('ui-hidden');
+                const menu = qs('reader-menu');
+                if(menu){
+                    if(uiHidden) menu.style.opacity = '0';
+                    else menu.style.opacity = '';
+                }
+            });
+            const readerScreen = qs('reader-screen');
+            if(readerScreen) uiObserver.observe(readerScreen, { attributes: true, attributeFilter: ['class'] });
+        })();
+    </script>
+    <script>
+        // Keyboard (desktop) and double-tap (mobile) handlers to exit fullscreen (hide UI)
+        (function(){
+            function qs(id){ return document.getElementById(id); }
+            const fullscreenBtn = qs('fullscreen-btn');
+            const readerScreen = qs('reader-screen');
+            const bookWrapper = qs('book-content-wrapper') || readerScreen;
+
+            // Ignore key events when user types in inputs/textareas or contenteditable
+            function isTypingTarget() {
+                const el = document.activeElement;
+                if(!el) return false;
+                const tag = el.tagName;
+                return tag === 'INPUT' || tag === 'TEXTAREA' || el.isContentEditable;
+            }
+
+            // Space: handle on keydown (prevent scrolling)
+            document.addEventListener('keydown', function(e){
+                if(isTypingTarget()) return;
+                const isSpace = e.key === ' ' || e.code === 'Space' || e.key === 'Spacebar';
+                if(!isSpace) return;
+                const rs = qs('reader-screen');
+                if(!rs || rs.classList.contains('hidden')) return;
+                if(fullscreenBtn) fullscreenBtn.click();
+                e.preventDefault();
+            });
+
+            // NOTE: Enter handling removed — only Space toggles fullscreen now.
+
+            // Double-tap detection for mobile: two taps within 300ms
+            let lastTap = 0;
+            if(bookWrapper) {
+                bookWrapper.addEventListener('touchend', function(e){
+                    // Only single-finger taps
+                    if((e.changedTouches && e.changedTouches.length > 1) || (e.touches && e.touches.length > 1)) return;
+                    const now = Date.now();
+                    if(now - lastTap < 300){
+                        const rs = qs('reader-screen');
+                        if(rs && rs.classList.contains('ui-hidden')){
+                            if(fullscreenBtn) fullscreenBtn.click();
+                            e.preventDefault();
+                        }
+                        lastTap = 0;
+                    } else {
+                        lastTap = now;
+                    }
+                }, { passive: false });
+            }
+        })();
     </script>
 </body>
 
