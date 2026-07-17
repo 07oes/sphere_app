@@ -151,9 +151,16 @@ document.addEventListener('DOMContentLoaded', () => {
         bookDiv.title = book.title;
         bookDiv.dataset.id = book.id;
         
+        const fallbackCover = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="hsl(0, 0%, 40%)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width: 50%; height: 50%; opacity: 0.5;">
+                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
+            </svg>
+        `;
+        const renderCover = book.coverHTML || fallbackCover;
+
         bookDiv.innerHTML = `
             <div class="book-cover">
-                ${book.coverHTML}
+                ${renderCover}
                 <div class="long-press-overlay">
                     <div class="long-press-bar">
                         <div class="long-press-fill"></div>
@@ -232,9 +239,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const wrapper = document.createElement('div');
         wrapper.className = 'active-card-wrapper';
         
+        const fallbackCover = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="hsl(0, 0%, 40%)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width: 50%; height: 50%; opacity: 0.5;">
+                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
+            </svg>
+        `;
+        const renderCover = book.coverHTML || fallbackCover;
+
         wrapper.innerHTML = `
             <div class="active-card">
-                ${book.coverHTML}
+                ${renderCover}
             </div>
             <div class="active-progress-container">
                 <div class="active-progress-fill" style="width: ${book.progress}%;"></div>
@@ -722,7 +736,12 @@ document.addEventListener('DOMContentLoaded', () => {
             modalGenre.textContent = data.genre;
             if(modalNotes) modalNotes.textContent = data.notesCount;
             
-            modalCoverWrapper.innerHTML = data.coverHTML;
+            const fallbackCover = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="hsl(0, 0%, 40%)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width: 50%; height: 50%; opacity: 0.5;">
+                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
+                </svg>
+            `;
+            modalCoverWrapper.innerHTML = data.coverHTML || fallbackCover;
             
             // Сохраняем ID книги для возможного удаления и чтения
             if(btnDelete) btnDelete.dataset.currentBookId = data.id;
