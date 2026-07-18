@@ -910,10 +910,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // Глобальная функция открытия читалки (используется при клике по обложке и по кнопке "Читать")
     window.openBookReader = function(book) {
         if (book.isCloudStub) {
-            alert('Эта книга была загружена на мобильной версии приложения. Пожалуйста, загрузите её здесь (выберите .fb2 файл), чтобы продолжить чтение.');
-            window.pendingCloudStub = book;
-            const fileInput = document.getElementById('file-input');
-            if (fileInput) fileInput.click();
+            const message = 'Эта книга была загружена на другом устройстве. Пожалуйста, загрузите её здесь (выберите .fb2 файл), чтобы продолжить чтение.';
+            const triggerFileInput = () => {
+                window.pendingCloudStub = book;
+                const fileInput = document.getElementById('file-input');
+                if (fileInput) fileInput.click();
+            };
+            
+            if (tg && tg.showAlert) {
+                // Используем нативное всплывающее окно Telegram (без URL сайта)
+                tg.showAlert(message, triggerFileInput);
+            } else {
+                alert(message);
+                triggerFileInput();
+            }
             return;
         }
 
