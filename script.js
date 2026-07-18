@@ -64,6 +64,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 isCloudStub: true // Пометка, что это загружено из облака
             }));
             
+            // Защита от race condition: сразу сохраняем локальную копию
+            window.cloudLibrary = cloudLibrary;
+            
             // Telegram CloudStorage value limit is 4096 bytes. We might need to chunk it if library is huge,
             // but for a typical list of 10-20 books, JSON string will be around 1-2KB.
             tg.CloudStorage.setItem('SphereLibrary', JSON.stringify(cloudLibrary));
@@ -319,6 +322,26 @@ document.addEventListener('DOMContentLoaded', () => {
                         mergedBooks.push(cloudBook);
                     }
                 });
+                
+                // Строгое зеркалирование (Strict Mirroring):
+                // Если мы доверяем облаку как главному авторитету, мы должны удалить
+                // локальные книги, которых больше нет в облаке.
+                const booksToDelete = mergedBooks.filter(localBook => 
+                    !localBook.isCloudStub && !window.cloudLibrary.find(cb => cb.id === localBook.id)
+                );
+                
+                booksToDelete.forEach(bookToDel => {
+                    if (typeof deleteBook === 'function') {
+                        deleteBook(bookToDel.id).catch(e => console.error("Удаление локальной копии:", e));
+                    }
+                    mergedBooks = mergedBooks.filter(b => b.id !== bookToDel.id);
+                });
+            } else if (window.cloudLibrary && window.cloudLibrary.length === 0) {
+                // Если облако сказало, что книг ровно 0, значит надо удалить все локальные книги (Строгое зеркалирование)
+                mergedBooks.forEach(localBook => {
+                    if (typeof deleteBook === 'function') deleteBook(localBook.id).catch(e => console.error(e));
+                });
+                mergedBooks = [];
             }
             
             const books = mergedBooks;
@@ -520,6 +543,31 @@ document.addEventListener('DOMContentLoaded', () => {
             refreshLibraryUI();
         }
     }).catch(e => console.error("Ошибка инициализации БД", e));
+
+    // --- Логика мгновенной синхронизации (Real-time Sync) ---
+    const pullCloudData = () => {
+        if (!tg || !tg.CloudStorage || document.visibilityState === 'hidden') return;
+        tg.CloudStorage.getItems(['SphereLibrary'], (err, values) => {
+            if (!err && values && values.SphereLibrary) {
+                const newCloudLibrary = JSON.parse(values.SphereLibrary);
+                // Проверяем, изменились ли данные в облаке, чтобы не перерисовывать интерфейс просто так
+                if (JSON.stringify(window.cloudLibrary) !== JSON.stringify(newCloudLibrary)) {
+                    window.cloudLibrary = newCloudLibrary;
+                    refreshLibraryUI();
+                }
+            }
+        });
+    };
+
+    // Фоновый опрос каждые 10 секунд (только если приложение открыто на экране)
+    setInterval(pullCloudData, 10000);
+
+    // Принудительная синхронизация при возвращении в приложение (Focus/Visibility)
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            pullCloudData();
+        }
+    });
 
     // Клик по нашей круглой кнопке программно вызывает клик по скрытому input type="file"
     addButton.addEventListener('click', () => {
