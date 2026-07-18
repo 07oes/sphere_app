@@ -546,7 +546,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Логика мгновенной синхронизации (Real-time Sync) ---
     const pullCloudData = () => {
-        if (!tg || !tg.CloudStorage || document.visibilityState === 'hidden') return;
+        if (!tg || !tg.CloudStorage) return; // Убрали проверку visibilityState, так как в некоторых WebView Telegram она глючит
         tg.CloudStorage.getItems(['SphereLibrary'], (err, values) => {
             if (!err && values && values.SphereLibrary) {
                 const newCloudLibrary = JSON.parse(values.SphereLibrary);
@@ -559,15 +559,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // Фоновый опрос каждые 10 секунд (только если приложение открыто на экране)
-    setInterval(pullCloudData, 10000);
+    // Фоновый опрос каждую 1 секунду для максимальной скорости синхронизации
+    setInterval(pullCloudData, 1000);
 
     // Принудительная синхронизация при возвращении в приложение (Focus/Visibility)
     document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible') {
-            pullCloudData();
-        }
+        if (document.visibilityState === 'visible') pullCloudData();
     });
+    // Дополнительный надежный триггер для мобильных устройств
+    window.addEventListener('focus', pullCloudData);
 
     // Клик по нашей круглой кнопке программно вызывает клик по скрытому input type="file"
     addButton.addEventListener('click', () => {
