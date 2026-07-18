@@ -41,7 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
         theme: 'dark',
         applyBgInActive: false,
         showProgress: true,
-        lang: 'ru'
+        lang: 'ru',
+        syncEnabled: true
     };
     
     window.appSettings = JSON.parse(localStorage.getItem('SphereSettings')) || defaultSettings;
@@ -49,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Глобальная функция для принудительной синхронизации стейта в облако Телеграм
     window.syncToCloud = async (booksArray) => {
         if (!tg || !tg.CloudStorage) return;
+        if (window.appSettings && window.appSettings.syncEnabled === false) return;
         
         // 1. Синхронизируем настройки
         tg.CloudStorage.setItem('SphereSettings', JSON.stringify(window.appSettings));
@@ -305,43 +307,45 @@ document.addEventListener('DOMContentLoaded', () => {
         getAllBooks().then((localBooks) => {
             let mergedBooks = [...(localBooks || [])];
             
-            // Слияние с облачной библиотекой
-            if (window.cloudLibrary && window.cloudLibrary.length > 0) {
-                window.cloudLibrary.forEach(cloudBook => {
-                    const localBook = mergedBooks.find(b => b.id === cloudBook.id);
-                    if (localBook) {
-                        // Если облачный прогресс новее, доверяем ему
-                        if (cloudBook.lastRead > localBook.lastRead) {
-                            localBook.progress = cloudBook.progress;
-                            localBook.lastRead = cloudBook.lastRead;
-                            // Сохраняем свежий прогресс локально в фоне
-                            saveBook(localBook).catch(e => console.error(e));
+            // Слияние с облачной библиотекой (только если синхронизация включена)
+            if (window.appSettings && window.appSettings.syncEnabled !== false) {
+                if (window.cloudLibrary && window.cloudLibrary.length > 0) {
+                    window.cloudLibrary.forEach(cloudBook => {
+                        const localBook = mergedBooks.find(b => b.id === cloudBook.id);
+                        if (localBook) {
+                            // Если облачный прогресс новее, доверяем ему
+                            if (cloudBook.lastRead > localBook.lastRead) {
+                                localBook.progress = cloudBook.progress;
+                                localBook.lastRead = cloudBook.lastRead;
+                                // Сохраняем свежий прогресс локально в фоне
+                                saveBook(localBook).catch(e => console.error(e));
+                            }
+                        } else {
+                            // Книги нет локально, добавляем как облачную "заглушку"
+                            mergedBooks.push(cloudBook);
                         }
-                    } else {
-                        // Книги нет локально, добавляем как облачную "заглушку"
-                        mergedBooks.push(cloudBook);
-                    }
-                });
-                
-                // Строгое зеркалирование (Strict Mirroring):
-                // Если мы доверяем облаку как главному авторитету, мы должны удалить
-                // локальные книги, которых больше нет в облаке.
-                const booksToDelete = mergedBooks.filter(localBook => 
-                    !localBook.isCloudStub && !window.cloudLibrary.find(cb => cb.id === localBook.id)
-                );
-                
-                booksToDelete.forEach(bookToDel => {
-                    if (typeof deleteBook === 'function') {
-                        deleteBook(bookToDel.id).catch(e => console.error("Удаление локальной копии:", e));
-                    }
-                    mergedBooks = mergedBooks.filter(b => b.id !== bookToDel.id);
-                });
-            } else if (window.cloudLibrary && window.cloudLibrary.length === 0) {
-                // Если облако сказало, что книг ровно 0, значит надо удалить все локальные книги (Строгое зеркалирование)
-                mergedBooks.forEach(localBook => {
-                    if (typeof deleteBook === 'function') deleteBook(localBook.id).catch(e => console.error(e));
-                });
-                mergedBooks = [];
+                    });
+                    
+                    // Строгое зеркалирование (Strict Mirroring):
+                    // Если мы доверяем облаку как главному авторитету, мы должны удалить
+                    // локальные книги, которых больше нет в облаке.
+                    const booksToDelete = mergedBooks.filter(localBook => 
+                        !localBook.isCloudStub && !window.cloudLibrary.find(cb => cb.id === localBook.id)
+                    );
+                    
+                    booksToDelete.forEach(bookToDel => {
+                        if (typeof deleteBook === 'function') {
+                            deleteBook(bookToDel.id).catch(e => console.error("Удаление локальной копии:", e));
+                        }
+                        mergedBooks = mergedBooks.filter(b => b.id !== bookToDel.id);
+                    });
+                } else if (window.cloudLibrary && window.cloudLibrary.length === 0) {
+                    // Если облако сказало, что книг ровно 0, значит надо удалить все локальные книги (Строгое зеркалирование)
+                    mergedBooks.forEach(localBook => {
+                        if (typeof deleteBook === 'function') deleteBook(localBook.id).catch(e => console.error(e));
+                    });
+                    mergedBooks = [];
+                }
             }
             
             const books = mergedBooks;
@@ -547,6 +551,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Логика мгновенной синхронизации (Real-time Sync) ---
     const pullCloudData = () => {
         if (!tg || !tg.CloudStorage) return; // Убрали проверку visibilityState, так как в некоторых WebView Telegram она глючит
+        if (window.appSettings && window.appSettings.syncEnabled === false) return;
         tg.CloudStorage.getItems(['SphereLibrary'], (err, values) => {
             if (!err && values && values.SphereLibrary) {
                 const newCloudLibrary = JSON.parse(values.SphereLibrary);
@@ -1858,9 +1863,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Инициализация UI настроек при загрузке
         const toggleBg = document.getElementById('toggle-bg');
         const toggleProgress = document.getElementById('toggle-progress');
+        const toggleSync = document.getElementById('toggle-sync');
         
         if (toggleBg) toggleBg.classList.toggle('active', window.appSettings.applyBgInActive);
         if (toggleProgress) toggleProgress.classList.toggle('active', window.appSettings.showProgress);
+        if (toggleSync) toggleSync.classList.toggle('active', window.appSettings.syncEnabled !== false);
 
         // Логика переключателей (чекбоксов)
         const toggles = document.querySelectorAll('.checkbox-btn');
@@ -1876,6 +1883,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (grid) {
                         if (isActive) grid.classList.remove('hide-progress');
                         else grid.classList.add('hide-progress');
+                    }
+                } else if (toggle.id === 'toggle-sync') {
+                    window.appSettings.syncEnabled = isActive;
+                    if (isActive && window.syncToCloud) {
+                        getAllBooks().then(books => window.syncToCloud(books));
+                    } else if (!isActive && typeof refreshLibraryUI === 'function') {
+                        // Моментально убираем облачные "заглушки" из интерфейса при выключении
+                        refreshLibraryUI();
                     }
                 }
                 
