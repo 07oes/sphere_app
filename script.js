@@ -10,6 +10,30 @@ document.addEventListener('DOMContentLoaded', () => {
     if (tg) {
         tg.ready();
         tg.expand();
+        
+        // Подгружаем аватарку пользователя и имя, если они есть
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            const user = tg.initDataUnsafe.user;
+            
+            // Получаем все элементы аватарок (кнопка сверху и внутри меню)
+            const avatarImages = document.querySelectorAll('.avatar img');
+            const dropdownTitle = document.querySelector('.dropdown-title');
+            
+            // Если у юзера есть фото, ставим его. Иначе генерируем по первой букве имени
+            let avatarUrl = '';
+            if (user.photo_url) {
+                avatarUrl = user.photo_url;
+            } else {
+                const initials = (user.first_name || 'TG').substring(0, 2).toUpperCase();
+                avatarUrl = `https://ui-avatars.com/api/?name=${initials}&background=333&color=fff&size=80`;
+            }
+            
+            avatarImages.forEach(img => img.src = avatarUrl);
+            
+            if (dropdownTitle) {
+                dropdownTitle.textContent = user.first_name || 'Профиль';
+            }
+        }
     }
 
     // --- Управление настройками ---
