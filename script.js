@@ -1794,42 +1794,61 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
+        // Функция для идеального вычисления позиции кольца
+        const updateRingPosition = (option, ring, color) => {
+            if (!ring || !option) return;
+            const box = option.querySelector('.theme-box');
+            if (!box) return;
+            
+            // Используем offsetLeft/offsetTop, так как они игнорируют CSS-трансформации (scale)
+            // в отличие от getBoundingClientRect, который ломался из-за анимации нажатия.
+            // Кольцо имеет размер 60px, а кружок 56px (или 56 и 52 на мобильных). Разница всегда 4px.
+            const x = option.offsetLeft + box.offsetLeft - 2;
+            const y = option.offsetTop + box.offsetTop - 2;
+            
+            ring.style.transform = `translate(${x}px, ${y}px)`;
+            if (color) ring.style.borderColor = color;
+        };
+
         // Логика выбора темы
         const themeOptions = settingsModal ? settingsModal.querySelectorAll('.theme-option') : [];
         const themeRing = settingsModal ? settingsModal.querySelector('.theme-selection-ring') : null;
-        
-        // Цвета окантовки для тем: 0 - Light, 1 - Sepia, 2 - Dark
         const ringColors = ['#ffffff', '#f4ecd8', '#141414'];
         
-        // Инициализация положения рамки
         themeOptions.forEach((option, index) => {
-            if (option.classList.contains('active') && themeRing) {
-                const box = option.querySelector('.theme-box');
-                const x = option.offsetLeft + (box ? box.offsetLeft : 0);
-                themeRing.style.transform = `translateX(${x - 2}px)`;
-                themeRing.style.borderColor = ringColors[index];
+            if (option.classList.contains('active')) {
+                // Инициализация без анимации
+                if (themeRing) {
+                    themeRing.style.transition = 'none';
+                    updateRingPosition(option, themeRing, ringColors[index]);
+                    setTimeout(() => {
+                        themeRing.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.35, 0.64, 1), border-color 0.4s ease';
+                    }, 50);
+                }
             }
             
             option.addEventListener('click', () => {
                 themeOptions.forEach(opt => opt.classList.remove('active'));
                 option.classList.add('active');
                 
-                if (themeRing) {
-                    const box = option.querySelector('.theme-box');
-                    const x = option.offsetLeft + (box ? box.offsetLeft : 0);
-                    themeRing.style.transform = `translateX(${x - 2}px)`;
-                    themeRing.style.borderColor = ringColors[index];
+                if (themeRing) updateRingPosition(option, themeRing, ringColors[index]);
+                
+                // Перехватываем название темы
+                let themeId = option.id.replace('theme-', '');
+                if (themeId === 'light' || themeId === 'sepia' || themeId === 'dark') {
+                    window.appSettings.theme = themeId;
+                    applyTheme(themeId);
+                    saveSettings();
                 }
             });
         });
         
         // Обновляем позицию кольца при перевороте или изменении размера экрана
         window.addEventListener('resize', () => {
-            const activeOption = document.querySelector('.theme-option.active');
+            const activeOption = settingsModal ? settingsModal.querySelector('.theme-option.active') : null;
             if (activeOption && themeRing) {
-                themeRing.style.transition = 'none'; // Убираем анимацию во время ресайза
-                themeRing.style.transform = `translateX(${activeOption.offsetLeft}px)`;
-                // Возвращаем анимацию обратно
+                themeRing.style.transition = 'none';
+                updateRingPosition(activeOption, themeRing);
                 setTimeout(() => {
                     themeRing.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.35, 0.64, 1), border-color 0.4s ease';
                 }, 50);
@@ -1889,10 +1908,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const activeReaderTheme = document.querySelector('.reader-theme-option.active');
         if (activeReaderTheme && readerThemeRing) {
             readerThemeRing.style.transition = 'none';
+            
+            // Используем offsetLeft/offsetTop для защиты от искажений CSS-анимаций (scale)
             const box = activeReaderTheme.querySelector('.theme-box');
-            const x = activeReaderTheme.offsetLeft + (box ? box.offsetLeft : 0);
-            const y = activeReaderTheme.offsetTop + (box ? box.offsetTop : 0);
-            readerThemeRing.style.transform = `translate(${x - 2}px, ${y - 2}px)`;
+            if (box) {
+                const x = activeReaderTheme.offsetLeft + box.offsetLeft - 2;
+                const y = activeReaderTheme.offsetTop + box.offsetTop - 2;
+                readerThemeRing.style.transform = `translate(${x}px, ${y}px)`;
+            }
+            
             const index = Array.from(readerThemeOptions).indexOf(activeReaderTheme);
             if (index !== -1) readerThemeRing.style.borderColor = readerRingColors[index];
             setTimeout(() => {

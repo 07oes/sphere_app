@@ -1148,8 +1148,11 @@ mark.highlight-orange {
     background: rgb(20 20 20 / 85%);
     box-shadow: 0px 0px 10px 0px rgb(0 0 0 / 40%), inset 0 6px 10px rgb(255 255 255 / 23%);
     color: var(--text-color);
-    will-change: transform, opacity, height;
+    will-change: transform, opacity;
     transform: translateZ(0); /* Дополнительный форс аппаратного ускорения */
+    -webkit-font-smoothing: antialiased; /* Убирает дёргание (twitching) шрифтов при анимации высоты */
+    -moz-osx-font-smoothing: grayscale;
+    backface-visibility: hidden;
     
     height: 52px;
     /* Добавили transform обратно для анимации скрытия панели (режим чистого экрана) */
@@ -1178,7 +1181,15 @@ mark.highlight-orange {
     box-sizing: border-box;
     z-index: 10;
     
-    /* Аппаратное ускорение для устранения "дёргания" во время анимации */
+    /* Изолируем слой от перерисовки родителя (height animation) */
+    contain: strict;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+}
+
+.reader-nav-controls * {
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
     backface-visibility: hidden;
     transform: translateZ(0);
 }
@@ -1282,7 +1293,11 @@ mark.highlight-orange {
     pointer-events: none;
 }
 
-/* Активный статус текста страниц, когда открыто меню */
+/* Подсветка текста желтым цветом, когда активен ползунок */
+#reader-progress-text {
+    font-variant-numeric: tabular-nums; /* Фиксированная ширина цифр от дёргания */
+}
+
 #reader-progress-text.slider-active {
     color: #ffcc00;
 }
