@@ -152,9 +152,13 @@ document.addEventListener('DOMContentLoaded', () => {
         bookDiv.dataset.id = book.id;
         
         const fallbackCover = `
-            <svg viewBox="0 0 24 24" fill="none" stroke="hsl(0, 0%, 40%)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width: 50%; height: 50%; opacity: 0.5;">
-                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
-            </svg>
+            <div class="fallback-cover">
+                <svg viewBox="0 0 24 24" fill="none" stroke="hsl(0, 0%, 40%)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width: 32px; height: 32px; opacity: 0.5; margin-bottom: 8px; flex-shrink: 0;">
+                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
+                </svg>
+                <div class="fallback-cover-title">${book.title || 'Неизвестная книга'}</div>
+                <div class="fallback-cover-author">${book.author || ''}</div>
+            </div>
         `;
         const renderCover = book.coverHTML || fallbackCover;
 
@@ -240,9 +244,13 @@ document.addEventListener('DOMContentLoaded', () => {
         wrapper.className = 'active-card-wrapper';
         
         const fallbackCover = `
-            <svg viewBox="0 0 24 24" fill="none" stroke="hsl(0, 0%, 40%)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width: 50%; height: 50%; opacity: 0.5;">
-                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
-            </svg>
+            <div class="fallback-cover">
+                <svg viewBox="0 0 24 24" fill="none" stroke="hsl(0, 0%, 40%)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width: 32px; height: 32px; opacity: 0.5; margin-bottom: 8px; flex-shrink: 0;">
+                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
+                </svg>
+                <div class="fallback-cover-title">${book.title || 'Неизвестная книга'}</div>
+                <div class="fallback-cover-author">${book.author || ''}</div>
+            </div>
         `;
         const renderCover = book.coverHTML || fallbackCover;
 
@@ -737,9 +745,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if(modalNotes) modalNotes.textContent = data.notesCount;
             
             const fallbackCover = `
-                <svg viewBox="0 0 24 24" fill="none" stroke="hsl(0, 0%, 40%)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width: 50%; height: 50%; opacity: 0.5;">
-                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
-                </svg>
+                <div class="fallback-cover">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="hsl(0, 0%, 40%)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width: 32px; height: 32px; opacity: 0.5; margin-bottom: 8px; flex-shrink: 0;">
+                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
+                    </svg>
+                    <div class="fallback-cover-title">${data.title || 'Неизвестная книга'}</div>
+                    <div class="fallback-cover-author">${data.author || ''}</div>
+                </div>
             `;
             modalCoverWrapper.innerHTML = data.coverHTML || fallbackCover;
             

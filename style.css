@@ -654,13 +654,48 @@ body {
 .book-cover img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Обложка заполняет весь прямоугольник без искажения пропорций */
+    object-fit: cover; /* Плавно заполняем весь прямоугольник без искажения пропорций */
 }
 
 .book-cover svg {
-    width: 32px;
-    height: 32px;
-    stroke: hsl(0, 0%, 40%);
+    width: 40px;
+    height: 40px;
+}
+
+/* Стили для обложек-заглушек (книги из облака без картинки) */
+.fallback-cover {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, hsl(0, 0%, 15%), hsl(0, 0%, 10%));
+    padding: 15px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.fallback-cover-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    color: hsl(0, 0%, 90%);
+    line-height: 1.2;
+}
+
+.fallback-cover-author {
+    font-size: 11px;
+    opacity: 0.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    color: hsl(0, 0%, 80%);
 }
 
 .progress-container {
