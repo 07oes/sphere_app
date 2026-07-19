@@ -11,6 +11,14 @@ document.addEventListener('DOMContentLoaded', () => {
         tg.ready();
         tg.expand();
         
+        // Отключаем вертикальный свайп, чтобы он не мешал чтению
+        if (tg.disableVerticalSwipes) tg.disableVerticalSwipes();
+        
+        // Применяем полноэкранный режим при старте, если он включен
+        if (window.appSettings && window.appSettings.fullscreen && typeof tg.requestFullscreen === 'function') {
+            tg.requestFullscreen();
+        }
+        
         // Подгружаем аватарку пользователя и имя, если они есть
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
             const user = tg.initDataUnsafe.user;
@@ -41,6 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
         theme: 'dark',
         applyBgInActive: false,
         showProgress: true,
+        fullscreen: false,
+        horizontalMode: false,
         lang: 'ru'
     };
     
@@ -1763,9 +1773,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Инициализация UI настроек при загрузке
         const toggleBg = document.getElementById('toggle-bg');
         const toggleProgress = document.getElementById('toggle-progress');
+        const toggleFullscreen = document.getElementById('toggle-fullscreen');
         
-        if (toggleBg) toggleBg.classList.toggle('active', window.appSettings.applyBgInActive);
-        if (toggleProgress) toggleProgress.classList.toggle('active', window.appSettings.showProgress);
+        if (toggleBg) toggleBg.classList.toggle('active', !!window.appSettings.applyBgInActive);
+        if (toggleProgress) toggleProgress.classList.toggle('active', !!window.appSettings.showProgress);
+        if (toggleFullscreen) toggleFullscreen.classList.toggle('active', !!window.appSettings.fullscreen);
 
         // Логика переключателей (чекбоксов)
         const toggles = document.querySelectorAll('.checkbox-btn');
@@ -1781,6 +1793,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (grid) {
                         if (isActive) grid.classList.remove('hide-progress');
                         else grid.classList.add('hide-progress');
+                    }
+                } else if (toggle.id === 'toggle-fullscreen') {
+                    window.appSettings.fullscreen = isActive;
+                    if (tg) {
+                        if (isActive && typeof tg.requestFullscreen === 'function') {
+                            tg.requestFullscreen();
+                        } else if (!isActive && typeof tg.exitFullscreen === 'function') {
+                            tg.exitFullscreen();
+                        }
                     }
                 }
                 
