@@ -1204,7 +1204,7 @@ mark.highlight-orange {
     visibility: hidden;
     overflow-y: auto;
     transition: opacity 0.2s ease, visibility 0s linear 0.2s;
-    padding: 0 30px;
+    padding: 20px 30px;
     box-sizing: border-box;
     /* Плавное затухание (растворение) текста снизу */
     -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
@@ -1305,8 +1305,6 @@ mark.highlight-orange {
 .reader-bottom-bar.expanded .toc-container.active {
     opacity: 1;
     visibility: visible;
-    padding-top: 20px;
-    padding-.inline-font-selector: 20px;
     transition: opacity 0.3s ease 0.2s, visibility 0s linear 0s;
 }
 
@@ -1636,6 +1634,12 @@ mark.highlight-orange {
     font-size: 12px;
     color: rgba(255, 255, 255, 0.4);
     text-transform: capitalize;
+    
+    /* Жестко фиксируем высоту, чтобы при увеличении шрифта (active) строка Grid не меняла свою высоту! */
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .theme-option.active .theme-label {

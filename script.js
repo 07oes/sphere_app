@@ -41,43 +41,15 @@ document.addEventListener('DOMContentLoaded', () => {
         theme: 'dark',
         applyBgInActive: false,
         showProgress: true,
-        lang: 'ru',
-        syncEnabled: true
+        lang: 'ru'
     };
     
     window.appSettings = JSON.parse(localStorage.getItem('SphereSettings')) || defaultSettings;
     
-    // Глобальная функция для принудительной синхронизации стейта в облако Телеграм
-    window.syncToCloud = async (booksArray) => {
-        if (!tg || !tg.CloudStorage) return;
-        if (window.appSettings && window.appSettings.syncEnabled === false) return;
-        
-        // 1. Синхронизируем настройки
-        tg.CloudStorage.setItem('SphereSettings', JSON.stringify(window.appSettings));
-        
-        // 2. Синхронизируем библиотеку (только метаданные, без тяжелых файлов и обложек!)
-        if (booksArray) {
-            const cloudLibrary = booksArray.map(b => ({
-                id: b.id,
-                title: b.title,
-                author: b.author,
-                progress: b.progress,
-                lastRead: b.lastRead,
-                isCloudStub: true // Пометка, что это загружено из облака
-            }));
-            
-            // Защита от race condition: сразу сохраняем локальную копию
-            window.cloudLibrary = cloudLibrary;
-            
-            // Telegram CloudStorage value limit is 4096 bytes. We might need to chunk it if library is huge,
-            // but for a typical list of 10-20 books, JSON string will be around 1-2KB.
-            tg.CloudStorage.setItem('SphereLibrary', JSON.stringify(cloudLibrary));
-        }
-    };
+
 
     const saveSettings = () => {
         localStorage.setItem('SphereSettings', JSON.stringify(window.appSettings));
-        if (tg) window.syncToCloud(); // Фоновая синхронизация при изменении настроек
         
         // Принудительно обновляем фон, если открыта вкладка Активные
         if (window.updateDynamicBackground && window.currentCarouselBook) {
@@ -139,10 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const req = store.put(bookObj);
             req.onsuccess = () => {
                 resolve();
-                // Фоновая синхронизация прогресса и библиотеки в облако Телеграм
-                getAllBooks().then(books => {
-                    if (window.syncToCloud) window.syncToCloud(books);
-                }).catch(e => console.error("Ошибка при синхронизации", e));
+
             };
             req.onerror = (e) => reject(e.target.error);
         });
@@ -165,10 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const req = store.delete(id);
             req.onsuccess = () => {
                 resolve();
-                // Фоновая синхронизация удаления
-                getAllBooks().then(books => {
-                    if (window.syncToCloud) window.syncToCloud(books);
-                }).catch(e => console.error("Ошибка при синхронизации", e));
+
             };
             req.onerror = (e) => reject(e.target.error);
         });
@@ -305,50 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const refreshLibraryUI = () => {
         getAllBooks().then((localBooks) => {
-            let mergedBooks = [...(localBooks || [])];
-            
-            // Слияние с облачной библиотекой (только если синхронизация включена)
-            if (window.appSettings && window.appSettings.syncEnabled !== false) {
-                if (window.cloudLibrary && window.cloudLibrary.length > 0) {
-                    window.cloudLibrary.forEach(cloudBook => {
-                        const localBook = mergedBooks.find(b => b.id === cloudBook.id);
-                        if (localBook) {
-                            // Если облачный прогресс новее, доверяем ему
-                            if (cloudBook.lastRead > localBook.lastRead) {
-                                localBook.progress = cloudBook.progress;
-                                localBook.lastRead = cloudBook.lastRead;
-                                // Сохраняем свежий прогресс локально в фоне
-                                saveBook(localBook).catch(e => console.error(e));
-                            }
-                        } else {
-                            // Книги нет локально, добавляем как облачную "заглушку"
-                            mergedBooks.push(cloudBook);
-                        }
-                    });
-                    
-                    // Строгое зеркалирование (Strict Mirroring):
-                    // Если мы доверяем облаку как главному авторитету, мы должны удалить
-                    // локальные книги, которых больше нет в облаке.
-                    const booksToDelete = mergedBooks.filter(localBook => 
-                        !localBook.isCloudStub && !window.cloudLibrary.find(cb => cb.id === localBook.id)
-                    );
-                    
-                    booksToDelete.forEach(bookToDel => {
-                        if (typeof deleteBook === 'function') {
-                            deleteBook(bookToDel.id).catch(e => console.error("Удаление локальной копии:", e));
-                        }
-                        mergedBooks = mergedBooks.filter(b => b.id !== bookToDel.id);
-                    });
-                } else if (window.cloudLibrary && window.cloudLibrary.length === 0) {
-                    // Если облако сказало, что книг ровно 0, значит надо удалить все локальные книги (Строгое зеркалирование)
-                    mergedBooks.forEach(localBook => {
-                        if (typeof deleteBook === 'function') deleteBook(localBook.id).catch(e => console.error(e));
-                    });
-                    mergedBooks = [];
-                }
-            }
-            
-            const books = mergedBooks;
+            const books = localBooks || [];
             const libraryGrid = document.getElementById('library-grid');
             const contentActive = document.getElementById('content-active');
             
@@ -527,52 +450,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Глобальная переменная для отслеживания текущей открытой книги
     let currentReaderBook = null;
 
-    // Инициализация БД и загрузка книг при старте (с учетом облака)
+    // Инициализация БД и загрузка книг при старте
     initDB().then(() => {
-        if (tg && tg.CloudStorage) {
-            tg.CloudStorage.getItems(['SphereSettings', 'SphereLibrary'], (err, values) => {
-                if (!err && values) {
-                    if (values.SphereSettings) {
-                        const cloudSettings = JSON.parse(values.SphereSettings);
-                        window.appSettings = { ...window.appSettings, ...cloudSettings };
-                        localStorage.setItem('SphereSettings', JSON.stringify(window.appSettings));
-                    }
-                    if (values.SphereLibrary) {
-                        window.cloudLibrary = JSON.parse(values.SphereLibrary);
-                    }
-                }
-                refreshLibraryUI();
-            });
-        } else {
-            refreshLibraryUI();
-        }
+        refreshLibraryUI();
     }).catch(e => console.error("Ошибка инициализации БД", e));
 
-    // --- Логика мгновенной синхронизации (Real-time Sync) ---
-    const pullCloudData = () => {
-        if (!tg || !tg.CloudStorage) return; // Убрали проверку visibilityState, так как в некоторых WebView Telegram она глючит
-        if (window.appSettings && window.appSettings.syncEnabled === false) return;
-        tg.CloudStorage.getItems(['SphereLibrary'], (err, values) => {
-            if (!err && values && values.SphereLibrary) {
-                const newCloudLibrary = JSON.parse(values.SphereLibrary);
-                // Проверяем, изменились ли данные в облаке, чтобы не перерисовывать интерфейс просто так
-                if (JSON.stringify(window.cloudLibrary) !== JSON.stringify(newCloudLibrary)) {
-                    window.cloudLibrary = newCloudLibrary;
-                    refreshLibraryUI();
-                }
-            }
-        });
-    };
 
-    // Фоновый опрос каждую 1 секунду для максимальной скорости синхронизации
-    setInterval(pullCloudData, 1000);
-
-    // Принудительная синхронизация при возвращении в приложение (Focus/Visibility)
-    document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible') pullCloudData();
-    });
-    // Дополнительный надежный триггер для мобильных устройств
-    window.addEventListener('focus', pullCloudData);
 
     // Клик по нашей круглой кнопке программно вызывает клик по скрытому input type="file"
     addButton.addEventListener('click', () => {
@@ -1402,9 +1285,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
             
-            // ЗАТЕМ переключаем экраны
+            // ЗАТЕМ переключаем экраны и сбрасываем UI читалки
             document.getElementById('page-reader').classList.remove('active');
             document.getElementById('page-main').classList.add('active');
+            
+            // Жесткий сброс состояния всех меню, чтобы при повторном открытии книги не висели старые окна
+            const bottomBar = document.querySelector('.reader-bottom-bar');
+            if (bottomBar) {
+                bottomBar.classList.remove('expanded', 'slider-expanded');
+            }
+            ['btn-toc', 'btn-notes', 'btn-reader-settings'].forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) btn.classList.remove('active');
+            });
+            ['toc-container', 'notes-container', 'reader-settings-container'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.remove('active');
+            });
+            ['toc-header-floating', 'notes-header-floating', 'reader-settings-header-floating'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.remove('expanded');
+            });
         });
     }
 
@@ -1799,15 +1700,14 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Функция для идеального вычисления позиции кольца
+        // Функция для вычисления позиции кольца
         const updateRingPosition = (option, ring, color) => {
             if (!ring || !option) return;
             const box = option.querySelector('.theme-box');
             if (!box) return;
             
-            // Используем offsetLeft/offsetTop, так как они игнорируют CSS-трансформации (scale)
-            // в отличие от getBoundingClientRect, который ломался из-за анимации нажатия.
-            // Кольцо имеет размер 60px, а кружок 56px (или 56 и 52 на мобильных). Разница всегда 4px.
+            // Используем offsetLeft/offsetTop, так как они полностью игнорируют CSS-трансформации
+            // всего модального окна (scale 0.6), которые ломали вычисления getBoundingClientRect.
             const x = option.offsetLeft + box.offsetLeft - 2;
             const y = option.offsetTop + box.offsetTop - 2;
             
@@ -1863,11 +1763,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Инициализация UI настроек при загрузке
         const toggleBg = document.getElementById('toggle-bg');
         const toggleProgress = document.getElementById('toggle-progress');
-        const toggleSync = document.getElementById('toggle-sync');
         
         if (toggleBg) toggleBg.classList.toggle('active', window.appSettings.applyBgInActive);
         if (toggleProgress) toggleProgress.classList.toggle('active', window.appSettings.showProgress);
-        if (toggleSync) toggleSync.classList.toggle('active', window.appSettings.syncEnabled !== false);
 
         // Логика переключателей (чекбоксов)
         const toggles = document.querySelectorAll('.checkbox-btn');
@@ -1883,14 +1781,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (grid) {
                         if (isActive) grid.classList.remove('hide-progress');
                         else grid.classList.add('hide-progress');
-                    }
-                } else if (toggle.id === 'toggle-sync') {
-                    window.appSettings.syncEnabled = isActive;
-                    if (isActive && window.syncToCloud) {
-                        getAllBooks().then(books => window.syncToCloud(books));
-                    } else if (!isActive && typeof refreshLibraryUI === 'function') {
-                        // Моментально убираем облачные "заглушки" из интерфейса при выключении
-                        refreshLibraryUI();
                     }
                 }
                 
@@ -1924,11 +1814,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if (activeReaderTheme && readerThemeRing) {
             readerThemeRing.style.transition = 'none';
             
-            // Используем offsetLeft/offsetTop для защиты от искажений CSS-анимаций (scale)
             const box = activeReaderTheme.querySelector('.theme-box');
             if (box) {
-                const x = activeReaderTheme.offsetLeft + box.offsetLeft - 2;
-                const y = activeReaderTheme.offsetTop + box.offsetTop - 2;
+                // Временно отключаем transform для точных измерений
+                const originalTransform = activeReaderTheme.style.transform;
+                activeReaderTheme.style.transform = 'none';
+                
+                const container = readerThemeRing.parentElement;
+                const containerRect = container.getBoundingClientRect();
+                const boxRect = box.getBoundingClientRect();
+                
+                activeReaderTheme.style.transform = originalTransform;
+                
+                const x = boxRect.left - containerRect.left - 2;
+                const y = boxRect.top - containerRect.top - 2;
                 readerThemeRing.style.transform = `translate(${x}px, ${y}px)`;
             }
             
