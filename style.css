@@ -2134,3 +2134,85 @@ mark.highlight-orange {
 .custom-slider::-moz-range-thumb:active {
     transform: scale(1.2);
 }
+
+/* =========================================
+   СТАТИСТИКА
+   ========================================= */
+.stat-time-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.stat-time-value {
+    font-size: 42px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+    text-shadow: 0 2px 15px rgba(255, 255, 255, 0.2);
+}
+
+.stat-time-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 20px;
+}
+
+.stat-row {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.stat-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.stat-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.btn-clear-stats-text {
+    margin-top: 15px;
+    width: 100%;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.4);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    font-size: 14px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: color 0.2s ease, font-size 0.2s ease;
+}
+
+.btn-clear-stats-text:hover {
+    color: #ff4d4d;
+    font-size: 16px;
+}

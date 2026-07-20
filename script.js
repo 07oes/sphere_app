@@ -51,7 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
         showProgress: true,
         fullscreen: false,
         horizontalMode: false,
-        lang: 'ru'
+        lang: 'ru',
+        totalReadingTimeMs: 0
     };
     
     window.appSettings = JSON.parse(localStorage.getItem('SphereSettings')) || defaultSettings;
@@ -457,8 +458,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // Глобальная переменная для отслеживания текущей открытой книги
+    // Глобальные переменные для отслеживания текущей открытой книги
     let currentReaderBook = null;
+    let readingTimerInterval = null;
 
     // Инициализация БД и загрузка книг при старте
     initDB().then(() => {
@@ -830,6 +832,15 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('page-main').classList.remove('active');
         document.getElementById('page-welcome').classList.remove('active');
         document.getElementById('page-reader').classList.add('active');
+        
+        // Запуск таймера чтения (добавляем 10 секунд каждые 10 секунд)
+        if (readingTimerInterval) clearInterval(readingTimerInterval);
+        readingTimerInterval = setInterval(() => {
+            if (window.appSettings) {
+                window.appSettings.totalReadingTimeMs = (window.appSettings.totalReadingTimeMs || 0) + 10000;
+                if (typeof saveSettings === 'function') saveSettings();
+            }
+        }, 10000);
         
         // Скрываем нижнюю панель навигации на время загрузки и сбрасываем состояние оглавления
         const bottomBar = document.querySelector('.reader-bottom-bar');
@@ -1298,6 +1309,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // ЗАТЕМ переключаем экраны и сбрасываем UI читалки
             document.getElementById('page-reader').classList.remove('active');
             document.getElementById('page-main').classList.add('active');
+            
+            // Останавливаем таймер чтения
+            if (readingTimerInterval) {
+                clearInterval(readingTimerInterval);
+                readingTimerInterval = null;
+            }
             
             // Жесткий сброс состояния всех меню, чтобы при повторном открытии книги не висели старые окна
             const bottomBar = document.querySelector('.reader-bottom-bar');
@@ -2027,6 +2044,98 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Устанавливаем правильный текст счетчика при загрузке без вызова reflow
         updateFontUI(true);
+    }
+
+    // ==========================================
+    // СТАТИСТИКА
+    // ==========================================
+    const btnStatistics = document.getElementById('btn-statistics');
+    const statisticsBackdrop = document.getElementById('statistics-modal-backdrop');
+    
+    const formatReadingTime = (ms) => {
+        if (!ms) return '0ч 0м';
+        const totalMinutes = Math.floor(ms / 60000);
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+        return `${hours}ч ${minutes}м`;
+    };
+
+    const calculateStatistics = () => {
+        getAllBooks().then(books => {
+            books = books || [];
+            document.getElementById('stat-total').innerText = books.length;
+            
+            let completed = 0;
+            let inProgress = 0;
+            
+            books.forEach(b => {
+                if (b.progress >= 99.5) {
+                    completed++;
+                } else if (b.progress > 0) {
+                    inProgress++;
+                }
+            });
+            
+            document.getElementById('stat-completed').innerText = completed;
+            document.getElementById('stat-progress').innerText = inProgress;
+            
+            const timeMs = window.appSettings.totalReadingTimeMs || 0;
+            document.getElementById('stat-time').innerText = formatReadingTime(timeMs);
+        }).catch(e => console.error("Ошибка загрузки статистики:", e));
+    };
+
+    if (btnStatistics && statisticsBackdrop) {
+        btnStatistics.addEventListener('click', () => {
+            // Закрываем меню профиля
+            if (profileDropdown) profileDropdown.classList.remove('open');
+            
+            // Вычисляем и отображаем данные
+            calculateStatistics();
+            statisticsBackdrop.classList.add('open');
+        });
+        
+        statisticsBackdrop.addEventListener('click', (e) => {
+            if (e.target === statisticsBackdrop) {
+                statisticsBackdrop.classList.remove('open');
+            }
+        });
+        
+        const statModal = statisticsBackdrop.querySelector('.statistics-modal');
+        if (statModal) {
+            statModal.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        }
+        
+        const btnClearStats = document.getElementById('btn-clear-stats');
+        const confirmStatsBackdrop = document.getElementById('confirm-stats-modal-backdrop');
+        const btnConfirmStatsCancel = document.getElementById('btn-confirm-stats-cancel');
+        const btnConfirmStatsReset = document.getElementById('btn-confirm-stats-reset');
+
+        if (btnClearStats && confirmStatsBackdrop) {
+            btnClearStats.addEventListener('click', () => {
+                confirmStatsBackdrop.classList.add('open');
+            });
+            
+            confirmStatsBackdrop.addEventListener('click', (e) => {
+                if (e.target === confirmStatsBackdrop) {
+                    confirmStatsBackdrop.classList.remove('open');
+                }
+            });
+            
+            btnConfirmStatsCancel.addEventListener('click', () => {
+                confirmStatsBackdrop.classList.remove('open');
+            });
+            
+            btnConfirmStatsReset.addEventListener('click', () => {
+                if (window.appSettings) {
+                    window.appSettings.totalReadingTimeMs = 0;
+                    if (typeof saveSettings === 'function') saveSettings();
+                }
+                calculateStatistics();
+                confirmStatsBackdrop.classList.remove('open');
+            });
+        }
     }
 
 });

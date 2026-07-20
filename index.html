@@ -13,7 +13,7 @@
 <body ontouchstart="">
 
     <!-- Экран 1: Приветствие (Пустая библиотека) -->
-    <div class="page active" id="page-welcome">
+    <div class="page" id="page-welcome">
         <main class="empty-state-container" id="empty-state">
             <button class="add-button" id="add-book-btn" aria-label="Добавить книгу">
                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -54,10 +54,11 @@
                             </div>
                         </div>
                         <div class="dropdown-menu">
-                            <button class="dropdown-item">
+                            <button class="dropdown-item" id="btn-statistics">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="12" cy="7" r="4"></circle>
+                                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                                    <line x1="6" y1="20" x2="6" y2="14"></line>
                                 </svg>
                                 Статистика
                             </button>
@@ -126,13 +127,25 @@
     <!-- Модальное окно подтверждения удаления -->
     <div id="confirm-modal-backdrop" class="modal-backdrop">
         <div class="confirm-modal">
-            <p id="confirm-text">Вы действительно хотите удалить выбранную книгу?</p>
+            <p id="confirm-text">Вы действительно хотите удалить данную книгу?</p>
             <div class="modal-actions confirm-actions">
                 <button id="btn-confirm-cancel" class="action-btn btn-gray">Отмена</button>
                 <button id="btn-confirm-delete" class="action-btn btn-red">Удалить</button>
             </div>
         </div>
     </div>
+
+    <!-- Модальное окно подтверждения сброса статистики -->
+    <div id="confirm-stats-modal-backdrop" class="modal-backdrop">
+        <div class="confirm-modal">
+            <p id="confirm-stats-text">Вы уверены, что хотите сбросить таймер чтения?</p>
+            <div class="modal-actions confirm-actions">
+                <button id="btn-confirm-stats-cancel" class="action-btn btn-gray">Отмена</button>
+                <button id="btn-confirm-stats-reset" class="action-btn btn-red">Сбросить</button>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Модальное окно настроек -->
     <div id="settings-modal-backdrop" class="modal-backdrop">
@@ -383,6 +396,37 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
                 </button>
             </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно статистики -->
+    <div class="modal-backdrop statistics-modal-backdrop" id="statistics-modal-backdrop">
+        <div class="book-modal statistics-modal" style="width: 380px;">
+            <div class="settings-modal-body" style="overflow-y: visible;">
+                <div class="stat-time-hero">
+                    <div class="stat-time-value" id="stat-time">0ч 0м</div>
+                    <div class="stat-time-label">Общее время чтения</div>
+                </div>
+                
+                <div class="stat-list">
+                    <div class="stat-row">
+                        <div class="stat-label">Книг в библиотеке:</div>
+                        <div class="stat-value" id="stat-total">0</div>
+                    </div>
+                    <div class="stat-row">
+                        <div class="stat-label">Книг прочитано:</div>
+                        <div class="stat-value" id="stat-completed">0</div>
+                    </div>
+                    <div class="stat-row">
+                        <div class="stat-label">В процессе чтения:</div>
+                        <div class="stat-value" id="stat-progress">0</div>
+                    </div>
+                </div>
+
+                <button id="btn-clear-stats" class="btn-clear-stats-text">
+                    сбросить статистику
+                </button>
             </div>
         </div>
     </div>
