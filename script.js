@@ -57,6 +57,18 @@ document.addEventListener('DOMContentLoaded', () => {
     
     window.appSettings = JSON.parse(localStorage.getItem('SphereSettings')) || defaultSettings;
     
+    // Функция применения темы
+    function applyTheme(themeId) {
+        document.body.classList.remove('theme-light', 'theme-sepia', 'theme-dark');
+        if (themeId && themeId !== 'dark') {
+            document.body.classList.add('theme-' + themeId);
+        }
+    }
+    
+    // Применяем тему при загрузке
+    if (window.appSettings && window.appSettings.theme) {
+        applyTheme(window.appSettings.theme);
+    }
 
 
     const saveSettings = () => {

@@ -1,16 +1,277 @@
 :root {
+    /* ТЕМНАЯ ТЕМА (ПО УМОЛЧАНИЮ) */
     --bg-color: hsl(0, 0%, 10%);
-    --text-color: hsl(0, 0%, 20%);
+    --text-color: hsl(0, 0%, 90%); /* Исправлено с 20% на 90% для читаемости */
     --btn-bg: hsla(0, 0%, 20%, 0.2);
-    /* Легкая обводка и тень для усиления эффекта стекла */
     --glass-border: hsla(0, 0%, 100%, 0.05); 
     --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
     
     /* НАСТРОЙКИ ЧИТАЛКИ */
-    --text-max-width: 900px; /* Вы можете изменить это значение, чтобы сделать текст шире или уже на ПК */
-    --toc-size: min(calc(100vw - 40px), 450px); /* 450px - это максимальный размер квадрата */
-    --toc-height: var(--toc-size); /* Высота всегда равна ширине (идеальный квадрат) */
+    --text-max-width: 900px;
+    --toc-size: min(calc(100vw - 40px), 450px);
+    --toc-height: var(--toc-size);
 }
+
+body.theme-light {
+    --bg-color: hsl(0, 0%, 100%);
+    --text-color: black;
+    --btn-bg: hsla(0, 0%, 100%, 0.6);
+    --glass-border: hsla(0, 0%, 0%, 0.05); 
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* Переопределения кнопок верхней панели для светлой темы (Шаблон для ручной настройки) */
+body.theme-light .tab-btn {
+    background: hsl(0deg 0% 100% / 10%);
+    box-shadow: 0px 0px 3px 0px rgb(75 75 75 / 22%), inset 0px 6px 8px 0px rgb(255 255 255 / 5%);
+    border: none;
+    color: hsl(0 0% 5% / 1);
+}
+
+body.theme-light .tab-btn.active {
+    background: hsl(0deg 0% 100% / 10%);
+    box-shadow: 0px 0px 3px 0px rgb(75 75 75 / 22%), inset 0px 6px 10px 0px rgb(205 205 205 / 60%);
+    border: none;
+    color: hsl(0 0% 0% / 1);
+}
+
+body.theme-light .icon-btn {
+    background: hsl(0deg 0% 100% / 10%);
+    box-shadow: 0px 0px 3px 0px rgb(75 75 75 / 22%), inset 0px 6px 8px 0px rgb(255 255 255 / 5%);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: none;
+}
+
+body.theme-light .icon-btn svg {
+    stroke: black;
+}
+
+/* Выпадающее меню профиля для светлой темы (Шаблон для ручной настройки) */
+body.theme-light .profile-dropdown {
+    background: hsl(0deg 0% 100% / 40%); /* Светлый полупрозрачный фон */
+    box-shadow: 0px 0px 3px 0px rgb(0 0 0 / 10%), inset 0 6px 10px rgb(255 255 255 / 80%);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+body.theme-light .dropdown-title {
+    color: black;
+}
+
+body.theme-light .dropdown-item {
+    color: black;
+}
+
+body.theme-light .dropdown-item svg {
+    stroke: black;
+}
+
+/* Модальное окно настроек и подтверждений для светлой темы (Шаблон для ручной настройки) */
+body.theme-light .book-modal, 
+body.theme-light .confirm-modal {
+    background: hsl(0deg 0% 100% / 50%);
+    box-shadow: 0px 0px 10px 0px rgb(0 0 0 / 10%), inset 0 6px 10px rgb(255 255 255 / 80%);
+}
+
+body.theme-light #modal-title {
+    color: black;
+}
+
+body.theme-light .modal-meta {
+    color: rgba(0, 0, 0, 0.5);
+}
+
+body.theme-light .btn-red { box-shadow: 0px 0px 10px 0px rgb(0 0 0 / 10%), inset 0 6px 10px hsl(0 100% 75% / 1); }
+body.theme-light .btn-gray { 
+    background: rgba(0, 0, 0, 0.05);
+    box-shadow: 0px 0px 10px 0px rgb(0 0 0 / 40%), inset 0 6px 10px hsl(0deg 0% 100%);
+    color: white;
+}
+body.theme-light .btn-blue { box-shadow: 0px 0px 10px 0px rgb(0 0 0 / 10%), inset 0 6px 10px hsl(200 100% 85% / 1); }
+
+body.theme-light .settings-title,
+body.theme-light #confirm-text {
+    color: black;
+}
+
+body.theme-light .theme-label {
+    color: rgba(0, 0, 0, 0.4);
+}
+
+body.theme-light .theme-option.active .theme-label {
+    color: black;
+}
+
+body.theme-light .settings-divider {
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+body.theme-light .toggle-label {
+    color: black;
+}
+
+body.theme-light .checkbox-btn {
+    background: rgb(0 0 0 / 5%);
+    box-shadow: inset 0 8px 8px 0px hsl(0deg 0% 100% / 40%);
+    border: 1px solid hsl(0deg 0.71% 59.71% / 7%);
+}
+
+body.theme-light .checkbox-btn.active {
+    box-shadow: inset 0 8px 8px 0px hsl(0deg 0% 100% / 70%);
+}
+
+body.theme-light .checkbox-btn .checkmark-icon {
+    stroke: black;
+}
+
+body.theme-light .lang-btn {
+    background: rgba(0, 0, 0, 0.05);
+    color: black;
+}
+
+body.theme-light .lang-btn.active {
+    background: rgba(0, 0, 0, 0.15);
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Статистика для светлой темы */
+body.theme-light .stat-time-value { color: #000; text-shadow: none; }
+body.theme-light .stat-time-label { color: rgba(0, 0, 0, 0.7); }
+body.theme-light .stat-row { 
+    background: rgb(255 255 255);
+    border: 1px solid rgba(0, 0, 0, 0.1); 
+    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.5);
+}
+body.theme-light .stat-label { color: rgba(0, 0, 0, 0.7); }
+body.theme-light .stat-value { color: #000; }
+body.theme-light .btn-clear-stats-text { color: rgba(0, 0, 0, 0.7); }
+
+body.theme-sepia {
+    --bg-color: hsl(40, 40%, 90%);
+    --text-color: hsl(30, 20%, 20%);
+    --btn-bg: hsla(40, 50%, 95%, 0.6);
+    --glass-border: hsla(30, 50%, 0%, 0.05); 
+    --glass-shadow: 0 8px 32px 0 rgba(60, 40, 0, 0.1);
+}
+
+/* Переопределения кнопок верхней панели для темы Sepia (Шаблон) */
+body.theme-sepia .tab-btn {
+    background: hsl(0deg 0% 100% / 10%);
+    box-shadow: 0px 0px 3px 0px rgb(75 75 75 / 22%), inset 0px 6px 8px 0px rgb(255 255 255 / 5%);
+    border: none;
+    color: hsl(30 20% 12% / 1);
+}
+
+body.theme-sepia .tab-btn.active {
+    background: hsl(0deg 0% 100% / 10%);
+    box-shadow: 0px 0px 3px 0px rgb(75 75 75 / 22%), inset 0px 6px 10px 0px rgb(255 255 255 / 40%);
+    border: none;
+    color: hsl(30 20% 00% / 1);
+}
+
+body.theme-sepia .icon-btn {
+    background: hsl(0deg 0% 100% / 10%);
+    box-shadow: 0px 0px 3px 0px rgb(75 75 75 / 22%), inset 0px 6px 8px 0px rgb(255 255 255 / 5%);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: none;
+}
+
+body.theme-sepia .icon-btn svg {
+    stroke: hsl(30 20% 12% / 1);
+}
+
+/* Выпадающее меню профиля для темы Sepia (Шаблон) */
+body.theme-sepia .profile-dropdown {
+    background: hsl(40deg 40% 90% / 40%); 
+    box-shadow: 0px 0px 3px 0px rgb(0 0 0 / 10%), inset 0 6px 10px rgb(255 255 255 / 80%);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+body.theme-sepia .dropdown-title,
+body.theme-sepia .dropdown-item {
+    color: var(--text-color);
+}
+
+body.theme-sepia .dropdown-item svg {
+    stroke: var(--text-color);
+}
+
+/* Модальное окно настроек и подтверждений для темы Sepia (Шаблон) */
+body.theme-sepia .book-modal, 
+body.theme-sepia .confirm-modal {
+    background: hsl(40deg 83.83% 91.17% / 50%);
+    box-shadow: 0px 0px 10px 0px rgb(0 0 0 / 10%), inset 0 6px 10px rgb(255 248 240 / 60%);
+}
+
+body.theme-sepia #modal-title {
+    color: var(--text-color);
+}
+
+body.theme-sepia .modal-meta {
+    color: hsl(30, 20%, 25%);
+}
+
+body.theme-sepia .btn-red { box-shadow: 0px 0px 10px 0px rgb(0 0 0 / 10%), inset 0 6px 10px hsl(0 100% 75% / 1); }
+body.theme-sepia .btn-gray { 
+    background: rgba(0, 0, 0, 0.04);
+    box-shadow: 0px 0px 10px 0px rgb(0 0 0 / 40%), inset 0 6px 10px hsl(0deg 0% 100%);
+    color: white;
+}
+body.theme-sepia .btn-blue { box-shadow: 0px 0px 10px 0px rgb(0 0 0 / 10%), inset 0 6px 10px hsl(200 100% 85% / 1); }
+
+body.theme-sepia .settings-title,
+body.theme-sepia #confirm-text,
+body.theme-sepia .theme-option.active .theme-label,
+body.theme-sepia .toggle-label {
+    color: hsl(30 20% 10% / 1);
+}
+
+body.theme-sepia .theme-label {
+    color: hsl(30 20% 30% / 1);
+}
+
+body.theme-sepia .settings-divider {
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+body.theme-sepia .checkbox-btn {
+    background: rgb(0 0 0 / 5%);
+    border: 1px solid hsl(0deg 0% 55.27% / 7%);
+    box-shadow: inset 0 8px 8px 0px hsl(0deg 0% 100% / 40%);
+}
+
+body.theme-sepia .checkbox-btn.active {
+    box-shadow: inset 0 8px 8px 0px hsl(0deg 0% 100% / 60%);
+}
+
+body.theme-sepia .checkbox-btn .checkmark-icon {
+    stroke: var(--text-color);
+}
+
+body.theme-sepia .lang-btn {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--text-color);
+}
+
+body.theme-sepia .lang-btn.active {
+    background: rgba(0, 0, 0, 0.15);
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Статистика для темы Sepia */
+body.theme-sepia .stat-time-value { color: var(--text-color); text-shadow: none; }
+body.theme-sepia .stat-time-label { color: hsl(30, 20%, 25%); }
+body.theme-sepia .stat-row { 
+    background: rgb(255 250 240);
+    border: 1px solid rgba(0, 0, 0, 0.08); 
+    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.4);
+}
+body.theme-sepia .stat-label { color: hsl(30, 20%, 25%); }
+body.theme-sepia .stat-value { color: var(--text-color); }
+body.theme-sepia .btn-clear-stats-text { color: hsl(30, 20%, 25%); }
 
 html, body {
     height: 100%;
@@ -493,7 +754,7 @@ body {
     width: 100%;
     max-width: 460px;
     height: 4px;
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--btn-bg);
     border-radius: 2px;
     margin-top: 15px;
     overflow: hidden;
@@ -501,7 +762,7 @@ body {
 
 .active-progress-fill {
     height: 100%;
-    background: #FFF;
+    background: var(--text-color);
     border-radius: 2px;
     transition: width 0.3s ease;
 }
@@ -722,20 +983,20 @@ body {
 .progress-bar {
     flex: 1;
     height: 6px;
-    background: hsla(0, 0%, 20%);
+    background: var(--btn-bg);
     border-radius: 10px;
     overflow: hidden;
 }
 
 .progress-fill {
     height: 100%;
-    background: hsl(0, 0%, 95%); /* Яркая белая линия заполнения */
+    background: var(--text-color); /* Яркая белая линия заполнения */
     border-radius: 1px;
 }
 
 .progress-text {
     font-size: 16px;
-    color: hsl(0, 0%, 100%);
+    color: var(--text-color);
     font-variant-numeric: tabular-nums;
     line-height: 1;
 }
@@ -1698,7 +1959,7 @@ mark.highlight-orange {
 }
 
 .checkbox-btn.active {
-    background: rgb(255 255 255 / 5%);
+    box-shadow: inset 0 8px 8px 0px hsl(0deg 0% 100% / 30%);
 }
 
 .checkbox-btn .checkmark-icon {
