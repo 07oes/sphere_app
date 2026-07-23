@@ -1755,6 +1755,13 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         // Логика выбора темы
+        if (settingsModal && window.appSettings && window.appSettings.theme) {
+            const activeOpt = settingsModal.querySelector('#theme-' + window.appSettings.theme);
+            if (activeOpt) {
+                settingsModal.querySelectorAll('.theme-option').forEach(o => o.classList.remove('active'));
+                activeOpt.classList.add('active');
+            }
+        }
         const themeOptions = settingsModal ? settingsModal.querySelectorAll('.theme-option') : [];
         const themeRing = settingsModal ? settingsModal.querySelector('.theme-selection-ring') : null;
         const ringColors = ['#ffffff', '#f4ecd8', '#141414'];
